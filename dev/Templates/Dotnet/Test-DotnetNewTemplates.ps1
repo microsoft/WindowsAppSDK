@@ -7,11 +7,12 @@ Validates the WinUI 3 dotnet new template pack end-to-end.
 
 .DESCRIPTION
 Builds (or consumes) the template NuGet package, reinstalls it locally, and
-scaffolds every WinUI 3 project and item template. Each generated project is
-built; app templates build with -p:WindowsPackageType=None, so the packaged
-(single-project MSIX) path is not exercised. When launching is enabled, app
-templates are started directly from the built executable rather than via
-dotnet run, so they run without MSIX package identity.
+scaffolds every WinUI 3 project and item template. Apps with a Packaging option
+are built in both modes without overriding the generated package settings.
+Representative unpackaged XAML and Reactor apps are also published in Release;
+their PRI and icon output is checked, followed by a startup smoke test unless
+SkipAppLaunch is specified. Legacy app and item-host builds still override
+WindowsPackageType=None.
 
 .PARAMETER PackagePath
 Path to an existing Microsoft.WindowsAppSDK.WinUI.CSharp.Templates .nupkg. When
@@ -28,8 +29,8 @@ the .nupkg (default: localpackages).
 One or more MSBuild Platform values to validate for each template (default: x64).
 
 .PARAMETER SkipAppLaunch
-Skips launching the generated WinUI apps at the end of the run. Builds still
-occur.
+Skips published-app startup smoke tests and launching the generated WinUI apps
+at the end of the run. Builds, publishes, and publish-output checks still occur.
 
 .PARAMETER RunTimeoutSeconds
 If greater than zero, any WinUI apps launched at the end of the run are
@@ -247,10 +248,14 @@ function Remove-StaleTemplateEnginePackage {
 function Get-AppExecutablePath {
     param(
         [string]$ProjectPath,
-        [string]$ProjectName
+        [string]$ProjectName,
+        [string]$Platform
     )
 
     $binFolder = Join-Path -Path $ProjectPath -ChildPath 'bin'
+    if ($Platform) {
+        $binFolder = Join-Path -Path $binFolder -ChildPath "$Platform\Debug"
+    }
     if (-not (Test-Path -Path $binFolder -PathType Container)) {
         return $null
     }
@@ -445,23 +450,75 @@ function Test-PackagingParameters {
     }
 }
 
+function Test-UnpackagedPublish {
+    param(
+        [string]$TemplateShortName,
+        [string]$ProjectName,
+        [string]$ProjectPath,
+        [string]$Platform
+    )
+
+    $projectFile = Join-Path -Path $ProjectPath -ChildPath "$ProjectName.csproj"
+    $publishPath = Join-Path -Path $ProjectPath -ChildPath "publish\$Platform"
+    Invoke-DotnetCommand -Arguments @('publish', $projectFile, '-c', 'Release', "-p:Platform=$Platform", "-r", "win-$($Platform.ToLowerInvariant())", '-o', $publishPath) -WorkingDirectory $ProjectPath -Description "publish $TemplateShortName (Unpackaged)"
+    foreach ($relativePath in @("$ProjectName.exe", "$ProjectName.pri", 'Assets\AppIcon.ico')) {
+        if (-not (Test-Path -LiteralPath (Join-Path -Path $publishPath -ChildPath $relativePath) -PathType Leaf)) {
+            throw "Published '$TemplateShortName' (Unpackaged, $Platform) is missing '$relativePath'."
+        }
+    }
+    Add-Result -Template $TemplateShortName -Platform $Platform -Step 'unpackaged publish output' -Status 'Succeeded' -Path $publishPath
+
+    $hostArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString()
+    if ($SkipAppLaunch.IsPresent -or ($Platform -ieq 'ARM64' -and $hostArchitecture -ine 'ARM64')) {
+        Add-Result -Template $TemplateShortName -Platform $Platform -Step 'published startup' -Status 'Skipped' -Path $publishPath
+        return
+    }
+
+    $executable = Join-Path -Path $publishPath -ChildPath "$ProjectName.exe"
+    $process = Start-Process -FilePath $executable -WorkingDirectory $publishPath -PassThru
+    try {
+        $deadline = [DateTime]::UtcNow.AddSeconds(15)
+        do {
+            Start-Sleep -Milliseconds 250
+            $process.Refresh()
+            if ($process.HasExited) {
+                throw "Published '$TemplateShortName' exited during startup with code $($process.ExitCode)."
+            }
+        } while ($process.MainWindowHandle -eq [IntPtr]::Zero -and [DateTime]::UtcNow -lt $deadline)
+
+        if ($process.MainWindowHandle -eq [IntPtr]::Zero) {
+            throw "Published '$TemplateShortName' did not create a window within 15 seconds."
+        }
+        if ($process.WaitForExit(5000)) {
+            throw "Published '$TemplateShortName' exited after creating its window with code $($process.ExitCode)."
+        }
+        Add-Result -Template $TemplateShortName -Platform $Platform -Step 'published startup' -Status 'Succeeded' -Path $executable
+    }
+    finally {
+        if (-not $process.HasExited) {
+            Stop-Process -Id $process.Id -Force
+            $process.WaitForExit()
+        }
+        $process.Dispose()
+    }
+}
+
 function Test-PackagingOptions {
     param(
         [string]$TemplateShortName,
         [string]$Kind,
-        [string]$WorkingRoot
+        [string]$WorkingRoot,
+        [string[]]$Platforms
     )
 
     foreach ($packaging in @('Default', 'Packaged', 'Unpackaged')) {
         $projectName = 'Packaging_{0}_{1}' -f $TemplateShortName.Replace('-', '_'), $packaging
         $projectPath = Join-Path -Path $WorkingRoot -ChildPath $projectName
         $createArgs = @('new', $TemplateShortName, '-n', $projectName, '-o', $projectPath, '--no-update-check')
-        if ($TemplateShortName.StartsWith('reactor')) {
-            $createArgs += '--no-restore'
-        }
         if ($packaging -ne 'Default') {
             $createArgs += @('--packaging', $packaging)
         }
+        $createArgs += @('--wasdk-version', $script:windowsAppSdkVersion)
         Invoke-DotnetCommand -Arguments $createArgs -WorkingDirectory $WorkingRoot -Description "create $TemplateShortName ($packaging)"
         $unpackaged = $packaging -eq 'Unpackaged'
 
@@ -480,6 +537,7 @@ function Test-PackagingOptions {
             [xml]$project = Get-Content -LiteralPath $projectFile -Raw
             $packageType = $project.SelectSingleNode('/Project/PropertyGroup/WindowsPackageType')
             $msixTooling = $project.SelectSingleNode('/Project/PropertyGroup/EnableMsixTooling')
+            $msixReference = $project.SelectSingleNode('//PackageReference[@Include="Microsoft.Windows.SDK.BuildTools.MSIX"]')
             $winappReference = $project.SelectSingleNode('//PackageReference[@Include="Microsoft.Windows.SDK.BuildTools.WinApp"]')
             $msixCapability = $project.SelectSingleNode('//ProjectCapability[@Include="Msix"]')
             $packageMenu = $project.SelectSingleNode('//HasPackageAndPublishMenu')
@@ -498,11 +556,13 @@ function Test-PackagingOptions {
             if ($unpackaged) {
                 if (-not $packageType -or $packageType.InnerText -ne 'None' -or
                     -not $msixTooling -or $msixTooling.InnerText -ne 'false' -or
+                    -not $msixReference -or
                     $winappReference -or $msixCapability -or $packageMenu -or
                     (Test-Path -LiteralPath $manifestPath) -or
                     $commands -contains 'MsixPackage' -or $commands -notcontains 'Project') {
                     throw "Packaged content or settings remain in '$TemplateShortName' (Unpackaged)."
                 }
+                Assert-CsprojPackageVersionPinned -CsprojPath $projectFile -PackageName 'Microsoft.Windows.SDK.BuildTools.MSIX'
                 $assets = @(Get-ChildItem -LiteralPath $assetsPath -Recurse -File)
                 if ($assets.Count -ne 1 -or $assets[0].Name -ne 'AppIcon.ico') {
                     throw "MSIX-only assets remain in '$TemplateShortName' (Unpackaged)."
@@ -516,6 +576,7 @@ function Test-PackagingOptions {
                 }
             }
             elseif ($packageType -or -not $msixTooling -or $msixTooling.InnerText -ne 'true' -or
+                $msixReference -or
                 -not $winappReference -or -not $msixCapability -or -not $packageMenu -or
                 -not (Test-Path -LiteralPath $manifestPath) -or -not (Test-Path -LiteralPath $assetsPath) -or
                 $commands.Count -ne 1 -or $commands[0] -ne 'MsixPackage') {
@@ -523,6 +584,28 @@ function Test-PackagingOptions {
             }
         }
         Add-Result -Template $TemplateShortName -Platform 'N/A' -Step "packaging: $packaging" -Status 'Succeeded' -Path $projectPath
+        if ($packaging -ne 'Default') {
+            foreach ($platform in $Platforms) {
+                Invoke-DotnetCommand -Arguments @('build', $projectFile, '-c', 'Debug', "-p:Platform=$platform", '-r', "win-$($platform.ToLowerInvariant())") -WorkingDirectory $projectPath -Description "build $TemplateShortName ($packaging)"
+                Add-Result -Template $TemplateShortName -Platform $platform -Step "build: $packaging" -Status 'Succeeded' -Path $projectFile
+                if ($unpackaged) {
+                    $exePath = Get-AppExecutablePath -ProjectPath $projectPath -ProjectName $projectName -Platform $platform
+                    if ($exePath) {
+                        $appExecutables.Add([pscustomobject]@{
+                                Template = $TemplateShortName
+                                Platform = $platform
+                                Path     = $exePath
+                            }) | Out-Null
+                    }
+                    else {
+                        Write-Warning "Unable to locate executable for template '$TemplateShortName' at '$projectPath'."
+                    }
+                }
+                if ($unpackaged -and $TemplateShortName -in @('winui', 'reactor')) {
+                    Test-UnpackagedPublish -TemplateShortName $TemplateShortName -ProjectName $projectName -ProjectPath $projectPath -Platform $platform
+                }
+            }
+        }
     }
 }
 
@@ -820,9 +903,7 @@ try {
         # template builds cleanly.
         @{ ShortName = 'winui-unittest'; Kind = 'App' },
         # Reactor (Microsoft.UI.Reactor) app templates: pure C#, dotnet-new-only.
-        # Like the other app templates they are packaged (single-project MSIX),
-        # and they build through the same App path below, which passes
-        # -p:WindowsPackageType=None; the .csproj itself does not set it.
+        # Build both generated packaging modes, just like the XAML apps.
         @{ ShortName = 'reactor'; Kind = 'App' },
         @{ ShortName = 'reactor-mvu'; Kind = 'App' },
         @{ ShortName = 'reactor-navview'; Kind = 'App' },
@@ -834,7 +915,8 @@ try {
 
     foreach ($template in $projectTemplates) {
         if ($template.Kind -eq 'App' -and $template.ShortName -ne 'winui-unittest') {
-            Test-PackagingOptions -TemplateShortName $template.ShortName -Kind $template.Kind -WorkingRoot $workingRoot
+            Test-PackagingOptions -TemplateShortName $template.ShortName -Kind $template.Kind -WorkingRoot $workingRoot -Platforms $Platforms
+            continue
         }
         foreach ($platform in $Platforms) {
             Test-WinUiProjectTemplate -TemplateShortName $template.ShortName -Kind $template.Kind -Platform $platform -WorkingRoot $workingRoot

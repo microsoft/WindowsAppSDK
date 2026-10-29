@@ -286,6 +286,18 @@
       }
     },
     {
+      "condition": "unpackaged",
+      "description": "Pin Microsoft.Windows.SDK.BuildTools.MSIX to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.MSIX'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools.MSIX",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true,
       "description": "Restore NuGet packages required by this project.",
