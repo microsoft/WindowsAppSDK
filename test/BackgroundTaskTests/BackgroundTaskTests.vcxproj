@@ -257,14 +257,14 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('$(NugetPackageDirectory)\Microsoft.Windows.CppWinRT.$(MicrosoftWindowsCppWinRTVersion)\build\native\Microsoft.Windows.CppWinRT.targets')" />
-    <Import Project="..\..\Packages\Microsoft.Taef.10.95.240918004\build\Microsoft.Taef.targets" Condition="Exists('..\..\Packages\Microsoft.Taef.10.95.240918004\build\Microsoft.Taef.targets')" />
+    <Import Project="..\..\Packages\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets" Condition="Exists('..\..\Packages\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" />
     <Import Project="..\..\Packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\Packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\Packages\Microsoft.Taef.10.95.240918004\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Packages\Microsoft.Taef.10.95.240918004\build\Microsoft.Taef.targets'))" />
+    <Error Condition="!Exists('..\..\Packages\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Packages\Microsoft.Taef.$(MicrosoftTaefVersion)\build\Microsoft.Taef.targets'))" />
     <Error Condition="!Exists('..\..\Packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
   </Target>
 </Project>
