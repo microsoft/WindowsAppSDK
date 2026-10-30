@@ -19,7 +19,9 @@ states. The legacy `EnergySaverStatus` API is unchanged for backward compatibili
 > `PowerManager.EnergySaverStatus2Changed`, and the `EnergySaverStatus2` enum instead.
 
 > **Minimum OS requirement:** These APIs require a Windows 11, 24H2 build. On earlier OS versions,
-> `EnergySaverStatus2` returns `Unknown`.
+> `EnergySaverStatus2` returns `Unknown`, and subscribing to `EnergySaverStatus2Changed` throws
+> `E_NOTIMPL` so callers get a clear signal that the API isn't available. Callers who want to avoid the exception can check
+> `ApiInformation.IsPropertyPresent`/`IsEventPresent` for `Windows.System.Power.PowerManager`.
 
 # Conceptual pages 
 
@@ -38,8 +40,8 @@ with varying levels of optimization:
 Use `PowerManager.EnergySaverStatus2` to read the current state and subscribe to
 `PowerManager.EnergySaverStatus2Changed` to respond to transitions at runtime.
 
-On unsupported systems, the property
-returns `Unknown` and the changed event is never raised.
+On unsupported systems, the property returns `Unknown`, and subscribing to the changed event
+throws `E_NOTIMPL`.
 
 # API Pages
 ## PowerManager.EnergySaverStatus2 property
@@ -108,6 +110,9 @@ public static event System.EventHandler<object> EnergySaverStatus2Changed;
 
 Subscribe to this event to receive notifications when the device transitions between Energy Saver
 states. When the event fires, call `PowerManager.EnergySaverStatus2` to retrieve the new value.
+
+> **Note:** On OS versions that don't support `EnergySaverStatus2` (earlier than Windows 11, 24H2),
+> subscribing to this event throws `E_NOTIMPL`.
 
 ### Example – Subscribing to status changes (C#)
 
