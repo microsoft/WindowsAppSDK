@@ -67,6 +67,13 @@ steps:
     arguments: >
       -SdkVersion "10.1.17763"
 
+- task: PowerShell@2
+  displayName: 'Install Windows SDK 26100 servicing update'
+  inputs:
+    targetType: filePath
+    filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
+    arguments: '-SdkVersion "10.0.26100"'
+
 - task: powershell@2
   displayName: 'DevCheck: Setup/Verify development environment'
   inputs:
