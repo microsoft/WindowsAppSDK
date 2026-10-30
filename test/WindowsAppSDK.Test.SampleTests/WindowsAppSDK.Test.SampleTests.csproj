@@ -12,12 +12,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTv3PackageVersion)" Condition="$(TargetFramework.StartsWith('net10.0'))" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-    <PackageReference Include="Microsoft.Taef" Version="10.75.221207001" />
+    <PackageReference Include="Microsoft.Taef" Version="10.75.221207001" Condition="!$(TargetFramework.StartsWith('net10.0'))" />
+    <!-- TAEF build that supports CsWinRT 3.0's generic attributes. -->
+    <PackageReference Include="Microsoft.Taef" Version="11.0.261015001-cswinrt3Attributes" Condition="$(TargetFramework.StartsWith('net10.0'))" />
     <PackageReference Include="Microsoft.Windows.Apps.Test" Version="1.0.181205002" />
   </ItemGroup>
 
-  <!-- TAEF runs the net6 build only; the pipeline provides its .NET 6 runtime ('net6' folder) next to it. -->
-  <Target Name="CopyTestDefFiles" AfterTargets="AfterBuild" Condition="$(TargetFramework.StartsWith('net6.0'))">
+  <Target Name="CopyTestDefFiles" AfterTargets="AfterBuild">
     <Copy SkipUnchangedFiles="true" SourceFiles="SampleTest.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 

@@ -39,9 +39,9 @@ variables:
   # Mixing backslashes silently fails to match. Excluded:
   #   - NuGet package contents (**/packages/**)
   #   - Test CoreCLR distributions copied from .NET runtime packs
-  #     (**/WindowsAppSDK.Test.NetCore/** and **/MrtCoreCsWinRTTests/net6/**)
+  #     (**/WindowsAppSDK.Test.NetCore/** and the per-TFM **/MrtCoreCsWinRTTests/*/net6/** and **/MrtCoreCsWinRTTests/*/net10/**)
   #   - The @WinAppSDK monorepo checkout (tool binaries like pdbcopy.exe, pgort140.dll)
-  ob_sdl_binskim_scannerParameters: '+:f|**.exe;+:f|**.dll;-:f|**/packages/**/*.dll;-:f|**/packages/**/*.exe;-:f|**/WindowsAppSDK.Test.NetCore/**;-:f|**/MrtCoreCsWinRTTests/net6/**;-:f|**/WinAppSDK/**/pdbcopy.exe;-:f|**/WinAppSDK/**/pgort140.dll'
+  ob_sdl_binskim_scannerParameters: '+:f|**.exe;+:f|**.dll;-:f|**/packages/**/*.dll;-:f|**/packages/**/*.exe;-:f|**/WindowsAppSDK.Test.NetCore/**;-:f|**/MrtCoreCsWinRTTests/*/net6/**;-:f|**/MrtCoreCsWinRTTests/*/net10/**;-:f|**/WinAppSDK/**/pdbcopy.exe;-:f|**/WinAppSDK/**/pgort140.dll'
 
   enableTestPass: true
 
@@ -49,7 +49,7 @@ variables:
   # Includes all EXEs/DLLs (+:f|**.exe, +:f|**.dll) then excludes:
   #   - NuGet package contents restored during build (**/packages/**)
   #   - Test CoreCLR distributions copied from .NET runtime packs
-  #     (**/WindowsAppSDK.Test.NetCore/** and **/MrtCoreCsWinRTTests/net6/**)
+  #     (**/WindowsAppSDK.Test.NetCore/** and the per-TFM **/MrtCoreCsWinRTTests/*/net6/** and **/MrtCoreCsWinRTTests/*/net10/**)
   #   - Tool binaries from the @WinAppSDK monorepo checkout (pdbcopy.exe, pgort140.dll)
   #     which are pre-built and not built from source in this repo
-  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**/packages/**/*.dll;-:f|**/packages/**/*.exe;-:f|**/WindowsAppSDK.Test.NetCore/**;-:f|**/MrtCoreCsWinRTTests/net6/**;-:f|**/WinAppSDK/**/pdbcopy.exe;-:f|**/WinAppSDK/**/pgort140.dll
+  BinskimExclusionForFoundationRepo: +:f|**.exe;+:f|**.dll;-:f|**/packages/**/*.dll;-:f|**/packages/**/*.exe;-:f|**/WindowsAppSDK.Test.NetCore/**;-:f|**/MrtCoreCsWinRTTests/*/net6/**;-:f|**/MrtCoreCsWinRTTests/*/net10/**;-:f|**/WinAppSDK/**/pdbcopy.exe;-:f|**/WinAppSDK/**/pgort140.dll

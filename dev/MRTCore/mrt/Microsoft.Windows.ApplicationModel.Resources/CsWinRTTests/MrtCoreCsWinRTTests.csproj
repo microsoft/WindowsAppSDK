@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(RepoRoot)\build\CsMultiTargetPaths.props" />
+
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+    <TargetFrameworks>net6.0-windows10.0.17763.0;net10.0-windows10.0.26100.1</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <Platforms>x64;x86;arm64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -8,19 +10,32 @@
     <IsTestProject>true</IsTestProject>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
     <RuntimeIdentifier>win-$(Platform.ToLowerInvariant())</RuntimeIdentifier>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <SelfContained>true</SelfContained>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Taef" Version="$(MicrosoftTaefVersion)" />
-  </ItemGroup>
+  <!-- CsWinRT 3.0 only generates its interop assembly for executables; see Program.cs. -->
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net10.0'))">
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Taef" Version="$(MicrosoftTaefVersion)" Condition="!$(TargetFramework.StartsWith('net10.0'))" />
+    <!-- TAEF build that supports CsWinRT 3.0's generic attributes. -->
+    <PackageReference Include="Microsoft.Taef" Version="11.0.261015001-cswinrt3Attributes" Condition="$(TargetFramework.StartsWith('net10.0'))" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTv3PackageVersion)" Condition="$(TargetFramework.StartsWith('net10.0'))" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!$(TargetFramework.StartsWith('net10.0'))">
     <ProjectReference Include="..\projection\Microsoft.Windows.ApplicationModel.Resources.Projection.csproj" ReferenceOutputAssembly="false" />
     <Reference Include="Microsoft.Windows.ApplicationModel.Resources.Projection">
       <HintPath>$(BaseOutputPath)\Microsoft.Windows.ApplicationModel.Resources.Projection\net6.0-windows10.0.17763.0\Microsoft.Windows.ApplicationModel.Resources.Projection.dll</HintPath>
       <Private>true</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net10.0'))">
+    <ProjectReference Include="..\projection\Microsoft.Windows.ApplicationModel.Resources.Projection.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,11 +57,16 @@
     <Copy SkipUnchangedFiles="true" SourceFiles="MrtCoreCsWinRTTests.testdef" DestinationFolder="$(OutDir)" />
   </Target>
 
+  <!-- TAEF loads CoreCLR from the CoreClrProfile subfolder (net6 or net10, see TestAssembly.cs). -->
   <Target Name="CopyCoreClrProfile" AfterTargets="AfterBuild" DependsOnTargets="ResolveRuntimePackAssets">
+    <PropertyGroup>
+      <CoreClrProfileName Condition="$(TargetFramework.StartsWith('net10.0'))">net10</CoreClrProfileName>
+      <CoreClrProfileName Condition="'$(CoreClrProfileName)' == ''">net6</CoreClrProfileName>
+    </PropertyGroup>
     <ItemGroup>
       <CoreClrProfileFile Include="@(RuntimePackAsset)" Condition="'%(RuntimePackAsset.AssetType)' == 'runtime' Or '%(RuntimePackAsset.AssetType)' == 'native'" />
     </ItemGroup>
-    <Copy SkipUnchangedFiles="true" SourceFiles="@(CoreClrProfileFile)" DestinationFolder="$(OutDir)\net6" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(CoreClrProfileFile)" DestinationFolder="$(OutDir)\$(CoreClrProfileName)" />
   </Target>
 
 </Project>

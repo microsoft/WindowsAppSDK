@@ -14,8 +14,15 @@ namespace WindowsAppSDK.Test.SampleTests
     [TestClass]
     class TestAssembly
     {
+        // TAEF loads CoreCLR from this subfolder next to the test DLL; the pipeline copies the matching .NET runtime there.
+#if NET10_0_OR_GREATER
+        private const string CoreClrProfile = "net10";
+#else
+        private const string CoreClrProfile = "net6";
+#endif
+
         [AssemblyInitialize]
-        [TestProperty("CoreClrProfile", "net6")]
+        [TestProperty("CoreClrProfile", CoreClrProfile)]
         [TestProperty("IsolationLevel", "Class")]
         public static void AssemblyInitialize(TestContext testContext)
         {

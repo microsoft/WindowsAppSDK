@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.Windows.ApplicationModel.Resources;
 using WEX.TestExecution;
 using WEX.TestExecution.Markup;
@@ -22,7 +21,7 @@ namespace MrtCoreCsWinRTTests
             using var buffer = candidate.ValueAsMemoryBuffer();
             using var reference = buffer.CreateReference();
 
-            Verify.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(reference, out IntPtr data, out uint capacity));
+            Verify.IsTrue(BufferMarshal.TryGetDataUnsafe(reference, out IntPtr data, out uint capacity));
             Verify.AreNotEqual(IntPtr.Zero, data);
             Verify.AreEqual((uint)expected.Length, capacity);
 
@@ -51,7 +50,7 @@ namespace MrtCoreCsWinRTTests
 
             using (reference)
             {
-                Verify.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(reference, out IntPtr data, out uint capacity));
+                Verify.IsTrue(BufferMarshal.TryGetDataUnsafe(reference, out IntPtr data, out uint capacity));
                 Verify.AreNotEqual(IntPtr.Zero, data);
                 Verify.AreEqual((uint)expected.Length, capacity);
 
@@ -72,18 +71,23 @@ namespace MrtCoreCsWinRTTests
             using var existingReference = buffer.CreateReference();
             buffer.Dispose();
 
-            Verify.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(existingReference, out IntPtr data, out uint capacity));
+            Verify.IsTrue(BufferMarshal.TryGetDataUnsafe(existingReference, out IntPtr data, out uint capacity));
             Verify.AreNotEqual(IntPtr.Zero, data);
             Verify.AreEqual((uint)expected.Length, capacity);
 
             using var emptyReference = buffer.CreateReference();
             Verify.AreEqual(0u, emptyReference.Capacity);
-            Verify.IsTrue(WindowsRuntimeMarshal.TryGetDataUnsafe(emptyReference, out data, out capacity));
+            Verify.IsTrue(BufferMarshal.TryGetDataUnsafe(emptyReference, out data, out capacity));
             Verify.AreEqual(IntPtr.Zero, data);
             Verify.AreEqual(0u, capacity);
         }
 
         [TestMethod]
+#if NET10_0_OR_GREATER
+        // CsWinRT 3.0 (3.0.0-preview.261029.1) doesn't generate the event source for IMemoryBufferReference.Closed,
+        // so subscribing throws TypeLoadException. Re-enable once fixed in CsWinRT.
+        [TestProperty("Ignore", "True")]
+#endif
         public void ReferenceCloseRaisesClosedBeforeInvalidatingData()
         {
             var resourceManager = new ResourceManager("resources.pri.standalone");

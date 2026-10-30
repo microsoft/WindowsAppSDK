@@ -16,6 +16,8 @@
          NETSDK1083 and then silently skips ALL NETCore projects, cascading into NETSDK1004. -->
     <RuntimeIdentifier Condition="'$(Platform)'=='arm64ec'">win-arm64</RuntimeIdentifier>
     <IsPackable>false</IsPackable>
+    <!-- Provides the CoreCLR runtime for TAEF tests; the SDK only implies self-contained from a RuntimeIdentifier for net6. -->
+    <SelfContained>true</SelfContained>
     <GenerateProjectSpecificOutputFolder>False</GenerateProjectSpecificOutputFolder>
     <Platforms>x86;x64;arm64</Platforms>
   </PropertyGroup>
