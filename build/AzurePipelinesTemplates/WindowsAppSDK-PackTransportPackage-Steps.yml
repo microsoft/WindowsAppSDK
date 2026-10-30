@@ -132,7 +132,7 @@ steps:
       targetType: 'inline'
       ${{ if parameters.IsMonobuild }}:
         script: |
-          $packageVersion = '$(WindowsAppSDKFormattedVersion)'
+          $packageVersion = '$(WindowsAppSDKNugetPackageVersion)'
           [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\WindowsAppSDK\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
           $publicNuspec.package.metadata.version = $packageVersion
           Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\WindowsAppSDK\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.TransportPackage.nuspec
@@ -149,9 +149,11 @@ steps:
       ${{ if parameters.IsMonobuild }}:
         filePath: '$(Build.SourcesDirectory)\WindowsAppSDK\BuildAll.ps1'
         workingDirectory: '$(Build.SourcesDirectory)\WindowsAppSDK'
+        # Monobuild packages share one NuGet version, which omits the revision for official experimental/preview builds.
+        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(WindowsAppSDKNugetPackageVersion)" -ComponentPackageVersion "$(WindowsAppSDKNugetPackageVersion)" -WindowsAppSDKVersionPinned "$(WindowsAppSDKVersionPinned)"
       ${{ else }}:
         filePath: 'BuildAll.ps1'
-      arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(WindowsAppSDKFormattedVersion)" -ComponentPackageVersion "$(WindowsAppSDKFormattedVersion)" -WindowsAppSDKVersionPinned "$(WindowsAppSDKVersionPinned)"
+        arguments: -Platform "x64" -Configuration "release" -AzureBuildStep "PackNuget" -OutputDirectory "$(build.artifactStagingDirectory)\FullNuget" -PackageVersion "$(WindowsAppSDKFormattedVersion)" -ComponentPackageVersion "$(WindowsAppSDKFormattedVersion)" -WindowsAppSDKVersionPinned "$(WindowsAppSDKVersionPinned)"
 
   # ── Sign ──
   - ${{ if eq(parameters.SignOutput, 'true') }}:
