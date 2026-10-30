@@ -38,8 +38,8 @@
 
   <!-- CsWinRT target framework dependencies (not NuGet packages; toolchain values) -->
   <PropertyGroup Label="CsWinRT Toolchain">
-    <CsWinRTDependencyDotNetCoreRuntimePackageVersion>6.0.33</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
-    <CsWinRTDependencyDotNetCoreSdkPackageVersion>6.0.425</CsWinRTDependencyDotNetCoreSdkPackageVersion>
+    <CsWinRTDependencyDotNetCoreRuntimePackageVersion>10.0.14</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
+    <CsWinRTDependencyDotNetCoreSdkPackageVersion>10.0.114</CsWinRTDependencyDotNetCoreSdkPackageVersion>
     <CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>38</CsWinRTDependencyWindowsSdkVersionSuffixPackageVersion>
   </PropertyGroup>
 
@@ -67,7 +67,7 @@
     <MicrosoftBuildTasksGitVersion>1.1.1</MicrosoftBuildTasksGitVersion>
     <MicrosoftSourceLinkCommonVersion>1.1.1</MicrosoftSourceLinkCommonVersion>
     <MicrosoftSourceLinkGitHubVersion>1.1.1</MicrosoftSourceLinkGitHubVersion>
-    <MicrosoftTaefVersion>10.95.240918004</MicrosoftTaefVersion>
+    <MicrosoftTaefVersion>10.106.260723003</MicrosoftTaefVersion>
     <MicrosoftWebWebView2Version>1.0.2903.40</MicrosoftWebWebView2Version>
     <MicrosoftTelemetryInboxNativeVersion>10.0.19041.1-191206-1406.vb-release.x86fre</MicrosoftTelemetryInboxNativeVersion>
     <MicrosoftWindowsAppSDKProtobufVersion>3.21.12</MicrosoftWindowsAppSDKProtobufVersion>
