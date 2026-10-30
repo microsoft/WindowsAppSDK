@@ -145,10 +145,10 @@ steps:
       Exit 1
 
 - task: UseDotNet@2
-  displayName: 'Use .NET SDK 10.0.112'
+  displayName: 'Use .NET SDK 10.0.114'
   inputs:
     packageType: 'sdk'
-    version: '10.0.112'
+    version: '10.0.114'
 
 - task: NuGetAuthenticate@1
 
