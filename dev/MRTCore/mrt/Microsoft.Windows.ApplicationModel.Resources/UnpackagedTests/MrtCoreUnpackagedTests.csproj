@@ -41,6 +41,10 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.Windows.Globalization">
+      <HintPath>$(BaseOutputPath)Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.Globalization.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
     <Reference Include="TE.Managed, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>$(NugetPackageDirectory)\Microsoft.Taef.$(MicrosoftTaefVersion)\lib\net452\TE.Managed.dll</HintPath>
     </Reference>
