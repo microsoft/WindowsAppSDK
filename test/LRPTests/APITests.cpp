@@ -19,6 +19,7 @@ namespace Test::LRP
 {
     static const PCWSTR c_processName = L"TAEF.exe";
     static const PCWSTR c_appId = L"toastAppId";
+    static const PCWSTR c_lrpExeName = L"PushNotificationsLongRunningTask.exe";
 
     class LRPTests
     {
@@ -106,31 +107,94 @@ namespace Test::LRP
         {
             VerifyLRP_IsRunning(false);
 
-            STARTUPINFO startupInfo{};
-            ZeroMemory(&startupInfo, sizeof(startupInfo));
-            startupInfo.cb = sizeof(startupInfo);
-
             // Build the Solution OutDir path where the Startup Task exe is.
             // Path: $OutDir/WindowsAppRuntime.Test.Singleton.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe
             auto startupTaskExePath{ Test::FileSystem::GetSolutionOutDirPath() / Test::Packages::WindowsAppRuntimeSingleton::c_PackageDirName };
             startupTaskExePath += LR"(.Msix/msix/PushNotificationsLongRunningTask.StartupTask.exe)";
 
-            wil::unique_process_information processInfo;
-            VERIFY_NO_THROW(winrt::check_bool(CreateProcess(
-                startupTaskExePath.c_str(),
-                nullptr, // command line options
-                nullptr, // process attributes
-                nullptr, // thread attributes
-                FALSE,   // inherit handles
-                NORMAL_PRIORITY_CLASS, // creation flags
-                nullptr, // lpEnvironment
-                nullptr, // current directory for the process
-                &startupInfo,
-                &processInfo)));
+            // The startup task starts the LRP via out-of-proc COM activation of the Singleton package's LRP
+            // server and exits once that activation completes. On loaded test agents that intermittently took
+            // longer than the fixed 5s this test used to sleep, and the first activation right after ClassInit
+            // (re)registers the Singleton package can transiently fail. So wait for the startup task to finish
+            // rather than sleeping a fixed amount, give the LRP a moment to show up in the process snapshot, and
+            // relaunch the startup task (bounded) if it exited without starting the LRP.
+            constexpr int c_maxLaunches{ 3 };
+            constexpr DWORD c_startupTaskTimeoutInMilliseconds{ 60000 };
+            constexpr ULONGLONG c_lrpStartTimeoutInMilliseconds{ 5000 };
+            for (int launch{ 1 }; launch <= c_maxLaunches; ++launch)
+            {
+                STARTUPINFO startupInfo{};
+                ZeroMemory(&startupInfo, sizeof(startupInfo));
+                startupInfo.cb = sizeof(startupInfo);
 
-            // Wait for the process to come up and be captured in the snapshot from verification step.
-            Sleep(5000);
+                wil::unique_process_information processInfo;
+                VERIFY_NO_THROW(winrt::check_bool(CreateProcess(
+                    startupTaskExePath.c_str(),
+                    nullptr, // command line options
+                    nullptr, // process attributes
+                    nullptr, // thread attributes
+                    FALSE,   // inherit handles
+                    NORMAL_PRIORITY_CLASS, // creation flags
+                    nullptr, // lpEnvironment
+                    nullptr, // current directory for the process
+                    &startupInfo,
+                    &processInfo)));
+
+                const DWORD waitResult{ WaitForSingleObject(processInfo.hProcess, c_startupTaskTimeoutInMilliseconds) };
+                if (WaitForLRP_IsRunning(c_lrpStartTimeoutInMilliseconds))
+                {
+                    break;
+                }
+
+                DWORD exitCode{ STILL_ACTIVE };
+                (void)GetExitCodeProcess(processInfo.hProcess, &exitCode);
+                WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                    L"%s not running after startup task launch %d/%d (wait=0x%X exitCode=0x%08X)",
+                    c_lrpExeName, launch, c_maxLaunches, waitResult, exitCode));
+                if (waitResult != WAIT_OBJECT_0)
+                {
+                    // The startup task is still stuck activating the LRP so launching more won't help
+                    break;
+                }
+            }
             VerifyLRP_IsRunning(true);
+        }
+
+        static bool IsLRP_Running()
+        {
+            wil::unique_hfile processesSnapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
+            if (!processesSnapshot)
+            {
+                return false;
+            }
+
+            PROCESSENTRY32 processEntry{};
+            processEntry.dwSize = sizeof(processEntry);
+            for (BOOL result{ Process32First(processesSnapshot.get(), &processEntry) }; result != FALSE; result = Process32Next(processesSnapshot.get(), &processEntry))
+            {
+                if (_wcsicmp(c_lrpExeName, processEntry.szExeFile) == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static bool WaitForLRP_IsRunning(ULONGLONG timeoutInMilliseconds)
+        {
+            const ULONGLONG start{ GetTickCount64() };
+            for (;;)
+            {
+                if (IsLRP_Running())
+                {
+                    return true;
+                }
+                if ((GetTickCount64() - start) >= timeoutInMilliseconds)
+                {
+                    return false;
+                }
+                Sleep(250);
+            }
         }
 
         void VerifyLRP_IsRunning(bool isRunning)
@@ -144,7 +208,7 @@ namespace Test::LRP
             BOOL result{ Process32First(processesSnapshot.get(), &processEntry) };
             while (result != FALSE)
             {
-                if (_wcsicmp(L"PushNotificationsLongRunningTask.exe", processEntry.szExeFile) == 0)
+                if (_wcsicmp(c_lrpExeName, processEntry.szExeFile) == 0)
                 {
                     VERIFY_IS_TRUE(isRunning);
                     DWORD processId{ processEntry.th32ProcessID };

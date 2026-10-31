@@ -9,14 +9,6 @@
       "longName": "target-platform-min-version",
       "shortName": "tpmv"
     },
-    "publisherDn": {
-      "longName": "publisher-dn",
-      "shortName": "publisher"
-    },
-    "publisherDisplay": {
-      "longName": "publisher-display",
-      "shortName": "publisherName"
-    },
     "windowsAppSdkVersion": {
       "longName": "wasdk-version",
       "shortName": "wasdkv"
@@ -28,6 +20,19 @@
     "windowsSdkBuildToolsWinAppVersion": {
       "longName": "winapp-version",
       "shortName": "wav"
+    },
+    "Packaging": {
+      "longName": "packaging",
+      "shortName": "",
+      "description": "Choose a packaged MSIX app or an unpackaged desktop app."
+    },
+    "publisherDn": {
+      "longName": "publisher-dn",
+      "shortName": "publisher"
+    },
+    "publisherDisplay": {
+      "longName": "publisher-display",
+      "shortName": "publisherName"
     }
   }
 }
