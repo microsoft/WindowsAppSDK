@@ -12,14 +12,14 @@ namespace appmodel
 static bool IsPathSupported_Mutable()
 {
     // Cache the answer on first query
-    static bool s_isSupported{ !!::IsPackageFeatureSupported(PackageFeature_PackagePath_Mutable) };
+    static bool s_isSupported{ !!::IsPackageRuntimeFeatureSupported(PackageRuntimeFeature_PackagePath_Mutable) };
     return s_isSupported;
 }
 
 static bool IsPathSupported_ExternalLocation()
 {
     // Cache the answer on first query
-    static bool s_isSupported{ !!::IsPackageFeatureSupported(PackageFeature_PackagePath_ExternalLocation) };
+    static bool s_isSupported{ !!::IsPackageRuntimeFeatureSupported(PackageRuntimeFeature_PackagePath_ExternalLocation) };
     return s_isSupported;
 }
 
@@ -322,24 +322,24 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
 }
 }
 
-STDAPI_(BOOL) IsPackageFeatureSupported(
-    PackageFeature feature) noexcept
+STDAPI_(BOOL) IsPackageRuntimeFeatureSupported(
+    PackageRuntimeFeature feature) noexcept
 {
     switch (feature)
     {
-        case PackageFeature_PackagePath_Mutable:
+        case PackageRuntimeFeature_PackagePath_Mutable:
         {
             // Supported on Windows >= 19H1
             return ::WindowsVersion::IsWindows10_19H1OrGreater() ? TRUE : FALSE;
         }
-        case PackageFeature_PackagePath_ExternalLocation:
+        case PackageRuntimeFeature_PackagePath_ExternalLocation:
         {
             // Supported on Windows >= VB (20H1)
             return ::WindowsVersion::IsWindows10_20H1OrGreater() ? TRUE : FALSE;
         }
     }
 
-    std::ignore = LOG_HR_MSG(E_INVALIDARG, "PackageFeature:%d", static_cast<int>(feature));
+    std::ignore = LOG_HR_MSG(E_INVALIDARG, "PackageRuntimeFeature:%d", static_cast<int>(feature));
     return FALSE;
 }
 

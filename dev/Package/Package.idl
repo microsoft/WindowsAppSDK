@@ -9,7 +9,7 @@ namespace Microsoft.Windows.ApplicationModel
     apicontract PackageRuntimeContract{};
 
     /// Features can be queried if currently available/enabled.
-    /// @see Package.IsPackageFeatureSupported()
+    /// @see Package.IsPackageRuntimeFeatureSupported()
     [contract(PackageRuntimeContract, 1)]
     enum PackageFeature
     {

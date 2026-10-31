@@ -50,12 +50,12 @@ namespace Test::Package::Tests
 
     inline bool IsMutableLocationSupported()
     {
-        return !!::IsPackageFeatureSupported(PackageFeature_PackagePath_Mutable);
+        return !!::IsPackageRuntimeFeatureSupported(PackageRuntimeFeature_PackagePath_Mutable);
     }
 
     inline bool IsExternalLocationSupported()
     {
-        return !!::IsPackageFeatureSupported(PackageFeature_PackagePath_ExternalLocation);
+        return !!::IsPackageRuntimeFeatureSupported(PackageRuntimeFeature_PackagePath_ExternalLocation);
     }
 
 
