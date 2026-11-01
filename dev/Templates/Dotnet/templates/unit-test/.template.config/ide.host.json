@@ -10,6 +10,8 @@
   "symbolInfo": [
     {
       "id": "dotnetVersion",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.dotnetVersion",
       "name": {
         "text": "Framework"
       },
@@ -17,6 +19,8 @@
     },
     {
       "id": "targetPlatformMinVersion",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.targetPlatformMinVersion",
       "name": {
         "text": "Target Platform Minimum Version"
       },
@@ -24,6 +28,8 @@
     },
     {
       "id": "publisherDn",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.publisherDn",
       "name": {
         "text": "Publisher Distinguished Name"
       },
@@ -31,6 +37,8 @@
     },
     {
       "id": "publisherDisplay",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.publisherDisplay",
       "name": {
         "text": "Publisher Display Name"
       },

@@ -10,6 +10,8 @@
   "symbolInfo": [
     {
       "id": "dotnetVersion",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.dotnetVersion",
       "name": {
         "text": "Framework"
       },

@@ -11,6 +11,8 @@
   "symbolInfo": [
     {
       "id": "dotnetVersion",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.dotnetVersion",
       "name": {
         "text": "Framework"
       },
@@ -18,6 +20,8 @@
     },
     {
       "id": "reactorVersion",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.reactorVersion",
       "name": {
         "text": "Microsoft.UI.Reactor version"
       },
@@ -32,6 +36,8 @@
     },
     {
       "id": "Packaging",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.Packaging",
       "name": {
         "text": "Packaging"
       },
@@ -39,6 +45,8 @@
     },
     {
       "id": "publisherDn",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.publisherDn",
       "name": {
         "text": "Publisher Distinguished Name"
       },
@@ -46,6 +54,8 @@
     },
     {
       "id": "publisherDisplay",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.publisherDisplay",
       "name": {
         "text": "Publisher Display Name"
       },
