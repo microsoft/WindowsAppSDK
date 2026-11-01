@@ -83,11 +83,6 @@ namespace MrtCoreCsWinRTTests
         }
 
         [TestMethod]
-#if NET10_0_OR_GREATER
-        // CsWinRT 3.0 (3.0.0-preview.261029.1) doesn't generate the event source for IMemoryBufferReference.Closed,
-        // so subscribing throws TypeLoadException. Re-enable once fixed in CsWinRT.
-        [TestProperty("Ignore", "True")]
-#endif
         public void ReferenceCloseRaisesClosedBeforeInvalidatingData()
         {
             var resourceManager = new ResourceManager("resources.pri.standalone");
