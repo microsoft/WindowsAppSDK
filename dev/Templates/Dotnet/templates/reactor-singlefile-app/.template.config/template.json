@@ -36,7 +36,8 @@
       "datatype": "choice",
       "description": "Base target framework moniker (TFM). File-based apps and Microsoft.UI.Reactor require .NET 10 or later.",
       "choices": [
-        { "choice": "net10.0", "description": "Target .NET 10" }
+        { "choice": "net10.0", "description": "Target .NET 10" },
+        { "choice": "net11.0", "description": "Target .NET 11" }
       ],
       "defaultValue": "net10.0",
       "replaces": "$DotNetVersion$"
