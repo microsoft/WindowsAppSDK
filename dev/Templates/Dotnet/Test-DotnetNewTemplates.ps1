@@ -9,9 +9,10 @@ Validates the WinUI 3 dotnet new template pack end-to-end.
 Builds (or consumes) the template NuGet package, reinstalls it locally, and
 scaffolds every WinUI 3 project and item template. Each generated project is
 built; app templates build with -p:WindowsPackageType=None, so the packaged
-(single-project MSIX) path is not exercised. When launching is enabled, app
-templates are started directly from the built executable rather than via
-dotnet run, so they run without MSIX package identity.
+(single-project MSIX) path is not exercised for those apps. Unit test templates
+build all runner/packaging combinations without overriding their packaging.
+When launching is enabled, app templates are started directly from the built
+executable rather than via dotnet run, so they run without MSIX package identity.
 
 .PARAMETER PackagePath
 Path to an existing Microsoft.WindowsAppSDK.WinUI.CSharp.Templates .nupkg. When
@@ -302,7 +303,8 @@ function New-ProjectFromTemplate {
         [string]$ProjectName,
         [string]$OutputPath,
         [string]$WorkingDirectory,
-        [string]$WindowsAppSdkVersion
+        [string]$WindowsAppSdkVersion,
+        [string[]]$AdditionalArguments = @()
     )
 
     if (-not (Test-Path -Path $OutputPath)) {
@@ -313,6 +315,7 @@ function New-ProjectFromTemplate {
     if (-not [string]::IsNullOrWhiteSpace($WindowsAppSdkVersion)) {
         $createArgs += @('--wasdk-version', $WindowsAppSdkVersion)
     }
+    $createArgs += $AdditionalArguments
     Invoke-DotnetCommand -Arguments $createArgs -WorkingDirectory $WorkingDirectory -Description "create $TemplateShortName template"
 }
 
@@ -355,13 +358,23 @@ function Test-WinUiProjectTemplate {
         [ValidateSet('App', 'FileBasedApp', 'Library', 'Test')]
         [string]$Kind,
         [string]$Platform,
-        [string]$WorkingRoot
+        [string]$WorkingRoot,
+        [ValidateSet('VSTest', 'Microsoft.Testing.Platform')]
+        [string]$TestRunner = 'VSTest',
+        [ValidateSet('Packaged', 'Unpackaged')]
+        [string]$Packaging = 'Packaged'
     )
 
     $projectName = '{0}_{1}_{2}' -f $TemplateShortName, $Platform, ([Guid]::NewGuid().ToString('N').Substring(0, 8))
     $projectPath = Join-Path -Path $WorkingRoot -ChildPath $projectName
-    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
-    Add-Result -Template $TemplateShortName -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
+    $createArguments = @()
+    $resultTemplate = $TemplateShortName
+    if ($Kind -eq 'Test') {
+        $createArguments = @('--test-runner', $TestRunner, '--packaging', $Packaging)
+        $resultTemplate = "$TemplateShortName ($TestRunner, $Packaging)"
+    }
+    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion -AdditionalArguments $createArguments
+    Add-Result -Template $resultTemplate -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
     # A file-based app template scaffolds a single <name>.cs whose #: directives replace the .csproj.
     $projectFileExtension = if ($Kind -eq 'FileBasedApp') { '.cs' } else { '.csproj' }
@@ -405,8 +418,10 @@ function Test-WinUiProjectTemplate {
             Add-Result -Template $TemplateShortName -Platform 'AnyCPU' -Step 'build' -Status 'Succeeded' -Path $projectFile
         }
         'Test' {
-            Invoke-DotnetCommand -Arguments @('test', $projectFile, '-p:Configuration=Debug', "-p:Platform=$Platform") -WorkingDirectory $projectPath -Description 'test packaged test template'
-            Add-Result -Template $TemplateShortName -Platform $Platform -Step 'test' -Status 'Succeeded' -Path $projectFile
+            # MTP and unpackaged VSTest support dotnet test; packaged VSTest needs
+            # vstest.console.exe or Test Explorer. This matrix checks builds only.
+            Invoke-DotnetCommand -Arguments @('build', $projectFile, '-p:Configuration=Debug', "-p:Platform=$Platform", '-p:WarningsAsErrors=MSTEST0032') -WorkingDirectory $projectPath -Description "build $resultTemplate"
+            Add-Result -Template $resultTemplate -Platform $Platform -Step 'build' -Status 'Succeeded' -Path $projectFile
         }
     }
 }
@@ -696,12 +711,6 @@ try {
         @{ ShortName = 'winui-mvvm'; Kind = 'App' },
         @{ ShortName = 'winui-tabview'; Kind = 'App' },
         @{ ShortName = 'winui-lib'; Kind = 'Library' },
-        # winui-unittest is a self-hosted packaged test runner: tests run
-        # from inside UnitTestApp.OnLaunched (which sets DispatcherQueue and
-        # acquires package identity) via UnitTestClient.Run(), not via
-        # `dotnet test`. Validate it as an App so we still confirm the
-        # template builds cleanly.
-        @{ ShortName = 'winui-unittest'; Kind = 'App' },
         # Reactor (Microsoft.UI.Reactor) app templates: pure C#, dotnet-new-only.
         # Like the other app templates they are packaged (single-project MSIX),
         # and they build through the same App path below, which passes
@@ -718,6 +727,14 @@ try {
     foreach ($template in $projectTemplates) {
         foreach ($platform in $Platforms) {
             Test-WinUiProjectTemplate -TemplateShortName $template.ShortName -Kind $template.Kind -Platform $platform -WorkingRoot $workingRoot
+        }
+    }
+
+    foreach ($testRunner in @('VSTest', 'Microsoft.Testing.Platform')) {
+        foreach ($packaging in @('Packaged', 'Unpackaged')) {
+            foreach ($platform in $Platforms) {
+                Test-WinUiProjectTemplate -TemplateShortName 'winui-unittest' -Kind 'Test' -Platform $platform -WorkingRoot $workingRoot -TestRunner $testRunner -Packaging $packaging
+            }
         }
     }
 

@@ -12,7 +12,7 @@
   "shortName": ["winui-unittest", "winui3-unittest", "wasdk-unittest"],
   "sourceName": "ProjectTemplate",
   "defaultName": "WinUITests",
-  "description": "Creates a WinUI 3 packaged test app that is pre-wired for MSTest.",
+  "description": "Creates a WinUI 3 test app that is pre-wired for MSTest.",
   "preferNameDirectory": true,
   "constraints": {
     "windows-only": {

@@ -30,7 +30,7 @@ Get below list via `dotnet new list winui`
 | `winui-navview`   | WinUI 3 NavigationView starter app with MSIX packaging    |
 | `winui-tabview`   | WinUI 3 TabView starter app with MSIX packaging           |
 | `winui-lib`       | WinUI 3 class library for sharing UI components                          |
-| `winui-unittest`  | WinUI 3 packaged test app configured for MSTest                          |
+| `winui-unittest`  | WinUI 3 test app configured for MSTest            |
 
 Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 
