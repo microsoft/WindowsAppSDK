@@ -29,6 +29,27 @@
         "text": "Windows App SDK version"
       },
       "isVisible": "false"
+    },
+    {
+      "id": "Packaging",
+      "name": {
+        "text": "Packaging"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDn",
+      "name": {
+        "text": "Publisher Distinguished Name"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDisplay",
+      "name": {
+        "text": "Publisher Display Name"
+      },
+      "isVisible": "true"
     }
   ]
 }

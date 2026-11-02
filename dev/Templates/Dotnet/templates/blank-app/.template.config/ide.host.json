@@ -23,20 +23,6 @@
       "isVisible": "true"
     },
     {
-      "id": "publisherDn",
-      "name": {
-        "text": "Publisher Distinguished Name"
-      },
-      "isVisible": "true"
-    },
-    {
-      "id": "publisherDisplay",
-      "name": {
-        "text": "Publisher Display Name"
-      },
-      "isVisible": "true"
-    },
-    {
       "id": "windowsAppSdkVersion",
       "name": {
         "text": "Windows App SDK version (* = latest)"
@@ -56,6 +42,27 @@
         "text": "Windows SDK BuildTools WinApp version (* = latest)"
       },
       "isVisible": "false"
+    },
+    {
+      "id": "Packaging",
+      "name": {
+        "text": "Packaging"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDn",
+      "name": {
+        "text": "Publisher Distinguished Name"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDisplay",
+      "name": {
+        "text": "Publisher Display Name"
+      },
+      "isVisible": "true"
     }
   ]
 }
