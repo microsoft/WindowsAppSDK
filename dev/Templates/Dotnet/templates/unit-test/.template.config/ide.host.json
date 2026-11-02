@@ -28,8 +28,6 @@
     },
     {
       "id": "publisherDn",
-      "persistenceScope": "shared",
-      "persistenceScopeName": "Microsoft.WindowsAppSDK.publisherDn",
       "name": {
         "text": "Publisher Distinguished Name"
       },
@@ -37,8 +35,6 @@
     },
     {
       "id": "publisherDisplay",
-      "persistenceScope": "shared",
-      "persistenceScopeName": "Microsoft.WindowsAppSDK.publisherDisplay",
       "name": {
         "text": "Publisher Display Name"
       },
