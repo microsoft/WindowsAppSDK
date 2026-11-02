@@ -19,7 +19,6 @@ namespace Test::Deployment
     public:
         BEGIN_TEST_CLASS(LicensingTests)
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"Parallel", L"false") // The methods share the module's MSIX directory.
         END_TEST_CLASS()
 
