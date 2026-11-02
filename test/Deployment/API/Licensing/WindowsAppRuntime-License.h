@@ -5,6 +5,7 @@
 #define __WINDOWSAPPRUNTIME_LICENSE_H
 
 #include "pch.h"
+#include <functional>
 
 // Keep the test copy distinct from the runtime DLL linked by DeploymentTests.
 #define MsixInstallLicenses TestMsixInstallLicenses
@@ -15,12 +16,11 @@ namespace Test::Deployment
 class LicenseInstaller
 {
 public:
-    inline static std::vector<std::filesystem::path> InstalledFiles;
+    inline static std::function<HRESULT(PCWSTR)> InstallCallback;
 
     HRESULT InstallLicenseFile(PCWSTR filename)
     {
-        InstalledFiles.emplace_back(filename);
-        return S_OK;
+        return InstallCallback ? InstallCallback(filename) : E_UNEXPECTED;
     }
 };
 }
