@@ -12,7 +12,7 @@
   "shortName": ["winui", "winui3", "wasdk-single"],
   "sourceName": "ProjectTemplate",
   "defaultName": "WinUIApp",
-  "description": "Creates a blank WinUI 3 desktop app with MSIX packaging.",
+  "description": "Creates a blank WinUI 3 desktop app with optional MSIX packaging.",
   "preferNameDirectory": true,
   "constraints": {
     "windows-only": {
@@ -21,7 +21,7 @@
     },
     "sdk-version": {
       "type": "sdk-version",
-      "args": [ "[8.0,)" ]
+      "args": [ "[10.0,)" ]
     }
   },
   "symbols": {
@@ -116,20 +116,6 @@
       ],
       "description": "Minimum supported Windows version."
     },
-    "publisherDn": {
-      "type": "parameter",
-      "datatype": "text",
-      "replaces": "$XmlEscapedPublisherDistinguishedName$",
-      "defaultValue": "CN=AppPublisher",
-      "description": "Publisher distinguished name used inside Package.appxmanifest."
-    },
-    "publisherDisplay": {
-      "type": "parameter",
-      "datatype": "text",
-      "replaces": "$XmlEscapedPublisher$",
-      "defaultValue": "AppPublisher",
-      "description": "Publisher display name shown in the manifest and Settings page."
-    },
     "guid9": {
       "type": "generated",
       "generator": "guid",
@@ -158,6 +144,45 @@
       "defaultValue": "*",
       "replaces": "$WindowsSdkBuildToolsWinAppVersion$",
       "description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet version. Use * for the latest stable."
+    },
+    "unpackaged": {
+      "type": "computed",
+      "value": "(Packaging == \"Unpackaged\")"
+    },
+    "Packaging": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "Packaged",
+      "displayName": "Packaging",
+      "description": "Choose a packaged MSIX app or an unpackaged desktop app.",
+      "choices": [
+        {
+          "choice": "Packaged",
+          "description": "Packaged app with MSIX identity and package assets.",
+          "displayName": "Packaged"
+        },
+        {
+          "choice": "Unpackaged",
+          "description": "Unpackaged app without an MSIX manifest or package assets.",
+          "displayName": "Unpackaged"
+        }
+      ]
+    },
+    "publisherDn": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisherDistinguishedName$",
+      "defaultValue": "CN=AppPublisher",
+      "description": "Publisher distinguished name used inside Package.appxmanifest.",
+      "isEnabled": "(Packaging == \"Packaged\")"
+    },
+    "publisherDisplay": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisher$",
+      "defaultValue": "AppPublisher",
+      "description": "Publisher display name shown in the manifest and Settings page.",
+      "isEnabled": "(Packaging == \"Packaged\")"
     }
   },
   "sources": [
@@ -173,6 +198,18 @@
               "before": "$targetentrypoint$",
               "after": "{{safeProjectName}}.App"
             }
+          ]
+        },
+        {
+          "condition": "unpackaged",
+          "exclude": [
+            "Package.appxmanifest",
+            "Assets/SplashScreen.*.png",
+            "Assets/LockScreenLogo.*.png",
+            "Assets/Square150x150Logo.*.png",
+            "Assets/Square44x44Logo.*.png",
+            "Assets/StoreLogo.png",
+            "Assets/Wide310x150Logo.*.png"
           ]
         }
       ],
@@ -218,7 +255,7 @@
       }
     },
     {
-      "condition": "(windowsSdkBuildToolsWinAppVersion == \"*\")",
+      "condition": "(windowsSdkBuildToolsWinAppVersion == \"*\" && !unpackaged)",
       "description": "Pin Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
@@ -226,6 +263,18 @@
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Windows.SDK.BuildTools.WinApp",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "unpackaged",
+      "description": "Pin Microsoft.Windows.SDK.BuildTools.MSIX to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.MSIX'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools.MSIX",
         "projectFileExtensions": ".csproj"
       }
     },

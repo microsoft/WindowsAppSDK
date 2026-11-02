@@ -11,16 +11,6 @@
       "shortName": "tpmv",
       "description": "Minimum supported Windows version."
     },
-    "publisherDn": {
-      "longName": "publisher-dn",
-      "shortName": "publisher",
-      "description": "Publisher distinguished name stored in Package.appxmanifest."
-    },
-    "publisherDisplay": {
-      "longName": "publisher-display",
-      "shortName": "publisherName",
-      "description": "Publisher display name stored in Package.appxmanifest."
-    },
     "windowsAppSdkVersion": {
       "longName": "wasdk-version",
       "shortName": "wasdkv",
@@ -40,6 +30,21 @@
       "longName": "mvvm-toolkit-version",
       "shortName": "mtv",
       "description": "Pin to a specific CommunityToolkit.Mvvm NuGet version. Leave empty for latest."
+    },
+    "Packaging": {
+      "longName": "packaging",
+      "shortName": "",
+      "description": "Choose a packaged MSIX app or an unpackaged desktop app."
+    },
+    "publisherDn": {
+      "longName": "publisher-dn",
+      "shortName": "publisher",
+      "description": "Publisher distinguished name stored in Package.appxmanifest."
+    },
+    "publisherDisplay": {
+      "longName": "publisher-display",
+      "shortName": "publisherName",
+      "description": "Publisher display name stored in Package.appxmanifest."
     }
   }
 }

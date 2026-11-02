@@ -11,11 +11,18 @@
     <PublishProfile Condition="Exists('Properties\PublishProfiles\win-$(Platform).pubxml')">win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <WinUISDKReferences>false</WinUISDKReferences>
+<!--#if (unpackaged) -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <EnableMsixTooling>false</EnableMsixTooling>
+<!--#else -->
     <EnableMsixTooling>true</EnableMsixTooling>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+<!--#endif -->
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+<!--#if (!unpackaged) -->
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
@@ -24,14 +31,16 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-48_altform-lightunplated.png" />
     <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\AppIcon.ico" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
+<!--#endif -->
 
   <ItemGroup>
+    <Content Include="Assets\AppIcon.ico" CopyToPublishDirectory="PreserveNewest" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
+<!--#if (!unpackaged) -->
   <!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -40,7 +49,9 @@
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix"/>
   </ItemGroup>
+<!--#endif -->
 
+<!--#if (!unpackaged) -->
   <!--
     Microsoft.Windows.SDK.BuildTools.WinApp adds first-class support for
     `dotnet run` on packaged WinUI apps: it hooks the .NET CLI Run target to
@@ -49,6 +60,7 @@
     Set <EnableWinAppRunSupport>false</EnableWinAppRunSupport> in a
     <PropertyGroup> above to opt out.
   -->
+<!--#endif -->
   <!--#if (windowsSdkBuildToolsVersion != "*" || windowsAppSdkVersion != "*" || communityToolkitMvvmVersion != "*" || windowsSdkBuildToolsWinAppVersion != "*" || HostIdentifier == "dotnetcli") -->
   <ItemGroup>
     <!--#if (windowsSdkBuildToolsVersion != "*" || HostIdentifier == "dotnetcli") -->
@@ -60,12 +72,15 @@
     <!--#if (communityToolkitMvvmVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="$CommunityToolkitMvvmVersion$" />
     <!--#endif -->
+    <!--#if (!unpackaged) -->
     <!--#if (windowsSdkBuildToolsWinAppVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="$WindowsSdkBuildToolsWinAppVersion$" />
+    <!--#endif -->
     <!--#endif -->
   </ItemGroup>
   <!--#endif -->
 
+<!--#if (!unpackaged) -->
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
     Explorer "Package and Publish" context menu entry to be enabled for this project even if
@@ -74,6 +89,7 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+<!--#endif -->
 
   <!-- Publish Properties -->
   <PropertyGroup>

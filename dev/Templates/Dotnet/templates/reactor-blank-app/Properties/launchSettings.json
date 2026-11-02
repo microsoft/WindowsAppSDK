@@ -1,8 +1,10 @@
 {
   "profiles": {
+//#if (!unpackaged)
     "$projectname$ (Package)": {
       "commandName": "MsixPackage"
-    },
+    }
+//#else
     "$projectname$ (Unpackaged)": {
       "commandName": "Project"
     },
@@ -10,5 +12,6 @@
       "commandName": "Project",
       "commandLineArgs": "--devtools"
     }
+//#endif
   }
 }
