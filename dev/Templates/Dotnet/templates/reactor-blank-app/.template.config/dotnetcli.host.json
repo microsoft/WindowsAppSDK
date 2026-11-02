@@ -19,6 +19,21 @@
     "skipRestore": {
       "longName": "no-restore",
       "shortName": ""
+    },
+    "Packaging": {
+      "longName": "packaging",
+      "shortName": "",
+      "description": "Choose a packaged MSIX app or an unpackaged desktop app."
+    },
+    "publisherDn": {
+      "longName": "publisher-dn",
+      "shortName": "publisher",
+      "description": "Publisher distinguished name stored in Package.appxmanifest."
+    },
+    "publisherDisplay": {
+      "longName": "publisher-display",
+      "shortName": "publisherName",
+      "description": "Publisher display name stored in Package.appxmanifest."
     }
   }
 }

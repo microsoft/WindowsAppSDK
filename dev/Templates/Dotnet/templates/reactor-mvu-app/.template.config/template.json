@@ -46,7 +46,8 @@
       "datatype": "choice",
       "description": "Base target framework moniker (TFM). Microsoft.UI.Reactor requires .NET 10 or later.",
       "choices": [
-        { "choice": "net10.0", "description": "Target .NET 10" }
+        { "choice": "net10.0", "description": "Target .NET 10" },
+        { "choice": "net11.0", "description": "Target .NET 11" }
       ],
       "defaultValue": "net10.0",
       "replaces": "$DotNetVersion$"
@@ -79,20 +80,6 @@
       "replaces": "$WindowsSdkBuildToolsWinAppVersion$",
       "description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet version. Use * for the latest stable."
     },
-    "publisherDn": {
-      "type": "parameter",
-      "datatype": "text",
-      "replaces": "$XmlEscapedPublisherDistinguishedName$",
-      "defaultValue": "CN=AppPublisher",
-      "description": "Publisher distinguished name used inside Package.appxmanifest."
-    },
-    "publisherDisplay": {
-      "type": "parameter",
-      "datatype": "text",
-      "replaces": "$XmlEscapedPublisher$",
-      "defaultValue": "AppPublisher",
-      "description": "Publisher display name shown in the manifest."
-    },
     "guid9": {
       "type": "generated",
       "generator": "guid",
@@ -106,6 +93,45 @@
       "datatype": "bool",
       "defaultValue": "false",
       "description": "If specified, skips the automatic restore of the project on create."
+    },
+    "unpackaged": {
+      "type": "computed",
+      "value": "(Packaging == \"Unpackaged\")"
+    },
+    "Packaging": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "Packaged",
+      "displayName": "Packaging",
+      "description": "Choose a packaged MSIX app or an unpackaged desktop app.",
+      "choices": [
+        {
+          "choice": "Packaged",
+          "description": "Packaged app with MSIX identity and package assets.",
+          "displayName": "Packaged"
+        },
+        {
+          "choice": "Unpackaged",
+          "description": "Unpackaged app without an MSIX manifest or package assets.",
+          "displayName": "Unpackaged"
+        }
+      ]
+    },
+    "publisherDn": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisherDistinguishedName$",
+      "defaultValue": "CN=AppPublisher",
+      "description": "Publisher distinguished name used inside Package.appxmanifest.",
+      "isEnabled": "(Packaging == \"Packaged\")"
+    },
+    "publisherDisplay": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "$XmlEscapedPublisher$",
+      "defaultValue": "AppPublisher",
+      "description": "Publisher display name shown in the manifest.",
+      "isEnabled": "(Packaging == \"Packaged\")"
     }
   },
   "sources": [
@@ -117,6 +143,18 @@
               "before": "$targetnametoken$",
               "after": "{{safeProjectName}}"
             }
+          ]
+        },
+        {
+          "condition": "unpackaged",
+          "exclude": [
+            "Package.appxmanifest",
+            "Assets/SplashScreen.*.png",
+            "Assets/LockScreenLogo.*.png",
+            "Assets/Square150x150Logo.*.png",
+            "Assets/Square44x44Logo.*.png",
+            "Assets/StoreLogo.png",
+            "Assets/Wide310x150Logo.*.png"
           ]
         }
       ],
@@ -162,7 +200,7 @@
       }
     },
     {
-      "condition": "(!skipRestore && windowsSdkBuildToolsWinAppVersion == \"*\")",
+      "condition": "(!skipRestore && windowsSdkBuildToolsWinAppVersion == \"*\" && !unpackaged)",
       "description": "Pin Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
@@ -170,6 +208,18 @@
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Windows.SDK.BuildTools.WinApp",
+        "projectFileExtensions": ".csproj"
+      }
+    },
+    {
+      "condition": "(!skipRestore && unpackaged)",
+      "description": "Pin Microsoft.Windows.SDK.BuildTools.MSIX to the latest stable version.",
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "continueOnError": true,
+      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.MSIX'" } ],
+      "args": {
+        "referenceType": "package",
+        "reference": "Microsoft.Windows.SDK.BuildTools.MSIX",
         "projectFileExtensions": ".csproj"
       }
     },
