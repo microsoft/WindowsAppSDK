@@ -53,7 +53,8 @@ jobs:
   steps:
     - checkout: self
       path: s
-    - checkout: WindowsAppSDKConfig
+    - checkout: WinAppSDK
+      fetchDepth: 1
 
     - template: WindowsAppSDK-RunTests-Steps.yml
       parameters:

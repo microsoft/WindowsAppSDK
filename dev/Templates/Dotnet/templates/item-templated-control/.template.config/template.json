@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": ["Windows", "WinUI", "Item", "Control"],
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.TemplatedControl",
+  "name": "WinUI Templated Control (Item)",
+  "shortName": ["winui-templatedcontrol", "winui3-templatedcontrol"],
+  "sourceName": "CustomControl",
+  "defaultName": "CustomControl",
+  "description": "Adds a WinUI 3 templated control. By default also creates Themes\\Generic.xaml with a minimal default style. If your project already has a Themes\\Generic.xaml, pass --IncludeDefaultStyle false and manually add a <Style TargetType=\"local:<Name>\"> block to it; otherwise the new control will render blank at runtime.",
+  "preferNameDirectory": false,
+  "symbols": {
+    "rootNamespace": {
+      "type": "bind",
+      "binding": "msbuild:RootNamespace",
+      "replaces": "$rootnamespace$",
+      "defaultValue": "AppNamespace",
+      "description": "Namespace for the generated item."
+    },
+    "safeItemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "safe_name",
+      "replaces": "$safeitemname$"
+    },
+    "itemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$itemname$"
+    },
+    "fileInputName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$fileinputname$"
+    },
+    "IncludeDefaultStyle": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Set to false when the project already has a Themes\\Generic.xaml; you must then manually add a <Style TargetType=\"local:<Name>\"> for the new control."
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!IncludeDefaultStyle)",
+          "exclude": [ "Themes/**/*" ]
+        }
+      ]
+    }
+  ],
+  "constraints": {
+    "winuiProject": {
+      "type": "project-capability",
+      "args": "CSharp & Msix"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "CustomControl.cs" },
+    { "condition": "(IncludeDefaultStyle)", "path": "Themes/Generic.xaml" }
+  ],
+  "forms": {
+    "safe_name": {
+      "identifier": "safe_name"
+    },
+    "identity": {
+      "identifier": "identity"
+    }
+  }
+}

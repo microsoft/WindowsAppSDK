@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 
+# Backup files
+*.[Bb][Aa][Kk]
+
 # full nuget directory
 [Bb]uild/FullNuget
 
@@ -204,6 +207,8 @@ PublishScripts/
 *.nupkg
 # NuGet Symbol Packages
 *.snupkg
+# Visual Studio Extension build output (source files are *.vsixmanifest, not affected)
+*.vsix
 # The packages folder can be ignored because of Package Restore
 **/[Pp]ackages/*
 # except build/, which is used as an MSBuild target.
@@ -398,3 +403,6 @@ build/override/
 # WindowsAppSDK specific files
 Microsoft.WinUI.AppX.targets
 !dev/vsix/**/*.pubxml
+# Project templates ship publish profiles as template content, so they must be
+# committed despite the blanket *.pubxml rule above.
+!dev/Templates/**/*.pubxml

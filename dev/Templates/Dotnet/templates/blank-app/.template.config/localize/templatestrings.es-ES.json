@@ -1,0 +1,4 @@
+{
+  "name": "Aplicación en blanco de WinUI (empaquetada)",
+  "description": "Una plantilla de proyecto para crear una aplicación de WinUI junto con un paquete MSIX para la transferencia local o la distribución a través de Microsoft Store."
+}

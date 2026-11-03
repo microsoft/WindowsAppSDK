@@ -1,4 +1,4 @@
-# Copyright (c) Microsoft Corporation.
+﻿# Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
 <#
@@ -12,115 +12,174 @@
 function Get-ScoringConfig {
     <#
     .SYNOPSIS
-        Loads the scoring configuration from JSON file or returns defaults.
+        Loads the scoring configuration from ScoringConfig.json (failfast, no defaults).
+
+    .DESCRIPTION
+        All required fields must be present in the JSON file. Throws if any
+        required section or field is missing.
     #>
     param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$ConfigPath
     )
 
-    $defaultConfig = @{
+    # Validate config file exists
+    if (-not (Test-Path -LiteralPath $ConfigPath -PathType Leaf)) {
+        throw "Scoring config file not found: $ConfigPath"
+    }
+
+    # Validate JSON structure and correct filename
+    if ([System.IO.Path]::GetFileName($ConfigPath) -cne "ScoringConfig.json") {
+        throw "ConfigPath must point to ScoringConfig.json. Got: $ConfigPath"
+    }
+
+    $loaded = Get-Content $ConfigPath -Raw | ConvertFrom-Json
+
+    # --- Validate required top-level sections ---
+    foreach ($section in @("weights", "thresholds", "maxLabelsPerIssue", "rankingCeilings", "recommendationBands", "severityMultipliers")) {
+        if ($null -eq $loaded.$section) {
+            throw "ScoringConfig.json missing required section: '$section'"
+        }
+    }
+
+    # --- Validate required weight fields ---
+    foreach ($field in @("reactions", "age", "comments", "severity", "blockers")) {
+        if ($null -eq $loaded.weights.$field) {
+            throw "ScoringConfig.json 'weights' missing required field: '$field'"
+        }
+    }
+
+    # --- Validate required recommendationBands fields ---
+    foreach ($field in @("high", "medium", "normal")) {
+        if ($null -eq $loaded.recommendationBands.$field) {
+            throw "ScoringConfig.json 'recommendationBands' missing required field: '$field'"
+        }
+    }
+
+    # --- Validate required rankingCeilings fields ---
+    foreach ($field in @("reactions", "ageDays", "comments")) {
+        if ($null -eq $loaded.rankingCeilings.$field) {
+            throw "ScoringConfig.json 'rankingCeilings' missing required field: '$field'"
+        }
+    }
+
+    # --- Validate required threshold fields ---
+    foreach ($field in @("aging_days", "trending_comments", "trending_days", "popular_reactions")) {
+        if ($null -eq $loaded.thresholds.$field) {
+            throw "ScoringConfig.json 'thresholds' missing required field: '$field'"
+        }
+    }
+
+    # --- Validate required severity multiplier levels ---
+    foreach ($level in @("critical", "high", "medium", "low", "none")) {
+        if ($null -eq $loaded.severityMultipliers.$level) {
+            throw "ScoringConfig.json 'severityMultipliers' missing required level: '$level'"
+        }
+    }
+
+    $weightSum = [double]$loaded.weights.reactions +
+                 [double]$loaded.weights.age +
+                 [double]$loaded.weights.comments +
+                 [double]$loaded.weights.severity +
+                 [double]$loaded.weights.blockers
+
+    if ([math]::Abs($weightSum - 1.0) -gt 0.0001) {
+        throw "ScoringConfig.json 'weights' must sum to 1.0. Actual sum: $weightSum"
+    }
+
+    # --- Build config hashtable entirely from loaded values (no defaults) ---
+    $config = @{
         weights = @{
-            reactions = 30
-            age = 25
-            comments = 20
-            severity = 15
-            blockers = 10
+            reactions = [double]$loaded.weights.reactions
+            age       = [double]$loaded.weights.age
+            comments  = [double]$loaded.weights.comments
+            severity  = [double]$loaded.weights.severity
+            blockers  = [double]$loaded.weights.blockers
         }
         thresholds = @{
-            hot_reactions = 10
-            aging_days = 90
-            trending_comments = 5
-            trending_days = 14
-            popular_reactions = 5
+            aging_days        = [int]$loaded.thresholds.aging_days
+            trending_comments = [int]$loaded.thresholds.trending_comments
+            trending_days     = [int]$loaded.thresholds.trending_days
+            popular_reactions = [int]$loaded.thresholds.popular_reactions
         }
-        labelPriority = @(
-            "regression"
-            "blocker"
-            "hot"
-            "aging"
-            "trending"
-            "popular"
-        )
-        maxLabelsPerIssue = 2
-    }
-
-    if ($ConfigPath -and (Test-Path $ConfigPath)) {
-        try {
-            $loaded = Get-Content $ConfigPath -Raw | ConvertFrom-Json
-            # Merge weights
-            if ($loaded.weights) {
-                $defaultConfig.weights.reactions = [int]$loaded.weights.reactions
-                $defaultConfig.weights.age = [int]$loaded.weights.age
-                $defaultConfig.weights.comments = [int]$loaded.weights.comments
-                $defaultConfig.weights.severity = [int]$loaded.weights.severity
-                $defaultConfig.weights.blockers = [int]$loaded.weights.blockers
-            }
-            # Merge thresholds
-            if ($loaded.thresholds) {
-                $defaultConfig.thresholds.hot_reactions = [int]$loaded.thresholds.hot_reactions
-                $defaultConfig.thresholds.aging_days = [int]$loaded.thresholds.aging_days
-                $defaultConfig.thresholds.trending_comments = [int]$loaded.thresholds.trending_comments
-                $defaultConfig.thresholds.trending_days = [int]$loaded.thresholds.trending_days
-                $defaultConfig.thresholds.popular_reactions = [int]$loaded.thresholds.popular_reactions
-            }
-            if ($loaded.maxLabelsPerIssue) {
-                $defaultConfig.maxLabelsPerIssue = [int]$loaded.maxLabelsPerIssue
-            }
+        maxLabelsPerIssue = [int]$loaded.maxLabelsPerIssue
+        rankingCeilings = @{
+            reactions = [double]$loaded.rankingCeilings.reactions
+            ageDays   = [double]$loaded.rankingCeilings.ageDays
+            comments  = [double]$loaded.rankingCeilings.comments
         }
-        catch {
-            Write-Warning "Failed to load config from $ConfigPath, using defaults: $_"
+        recommendationBands = @{
+            high   = [double]$loaded.recommendationBands.high
+            medium = [double]$loaded.recommendationBands.medium
+            normal = [double]$loaded.recommendationBands.normal
+        }
+        severityMultipliers = @{
+            critical = [double]$loaded.severityMultipliers.critical
+            high     = [double]$loaded.severityMultipliers.high
+            medium   = [double]$loaded.severityMultipliers.medium
+            low      = [double]$loaded.severityMultipliers.low
+            none     = [double]$loaded.severityMultipliers.none
         }
     }
 
-    return $defaultConfig
+    return $config
 }
+
 
 function Get-AreaContacts {
     <#
     .SYNOPSIS
-        Loads the area-to-contact mapping from JSON file.
+        Loads the area-to-contact mapping from JSON file (failfast, no defaults).
 
     .DESCRIPTION
-        Loads contacts from the specified path. If no contacts file is found,
-        returns an empty hashtable and writes a warning.
+        Loads contacts from the specified path. Throws if the file is missing,
+        malformed, or if any area entry lacks a required 'contact' field.
 
         Users should create their own area-contacts.json file at:
         <repo-root>/.user/issue-triage-report/area-contacts.json
 
         See the template at:
         .github/skills/issue-triage-report/references/area-contacts.json
+
+        Schema uses a single "contact" field per area.
     #>
     param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$ContactsPath
     )
 
-    if ($ContactsPath -and (Test-Path $ContactsPath)) {
-        try {
-            $loaded = Get-Content $ContactsPath -Raw | ConvertFrom-Json
-            if ($loaded.areaContacts) {
-                # Convert PSObject to hashtable for PS 5.1 compatibility
-                # (ConvertFrom-Json -AsHashtable is only available in PS 6.0+)
-                $hashtable = @{}
-                foreach ($prop in $loaded.areaContacts.PSObject.Properties) {
-                    $hashtable[$prop.Name] = @{
-                        primary = $prop.Value.primary
-                        secondary = $prop.Value.secondary
-                    }
-                }
-                return $hashtable
-            }
-        }
-        catch {
-            Write-Warning "Failed to load contacts from $ContactsPath`: $_"
-        }
-    }
-    else {
-        Write-Warning "Area contacts file not found at: $ContactsPath"
-        Write-Warning "Please create your contacts file at: <repo-root>/.user/issue-triage-report/area-contacts.json"
-        Write-Warning "See template at: .github/skills/issue-triage-report/references/area-contacts.json"
+    # Validate contacts file exists
+    if (-not (Test-Path -LiteralPath $ContactsPath -PathType Leaf)) {
+        throw "Area contacts file not found: $ContactsPath. Please create your contacts file at: <repo-root>/.user/issue-triage-report/area-contacts.json. See template at: .github/skills/issue-triage-report/references/area-contacts.json"
     }
 
-    return @{}
+    $loaded = Get-Content $ContactsPath -Raw | ConvertFrom-Json
+
+    if (-not $loaded.areaContacts) {
+        throw "Area contacts file missing required 'areaContacts' section: $ContactsPath"
+    }
+
+    # Convert PSObject to hashtable for PS 5.1 compatibility
+    # (ConvertFrom-Json -AsHashtable is only available in PS 6.0+)
+    $hashtable = @{}
+    foreach ($prop in $loaded.areaContacts.PSObject.Properties) {
+        if (-not $prop.Value.contact) {
+            throw "Area '$($prop.Name)' missing required 'contact' field in: $ContactsPath"
+        }
+
+        $notes = $null
+        if ($prop.Value.PSObject.Properties.Name -contains "notes") {
+            $notes = $prop.Value.notes
+        }
+
+        $hashtable[$prop.Name] = @{
+            contact = $prop.Value.contact
+            notes = $notes
+        }
+    }
+    return $hashtable
 }
 
 function Get-TotalReactions {
@@ -165,6 +224,23 @@ function Get-IssueAgeInDays {
     }
 }
 
+function Get-NormalizedRatio {
+    <#
+    .SYNOPSIS
+        Normalizes a raw metric against a configured ceiling.
+    #>
+    param(
+        [double]$RawValue,
+        [double]$Ceiling
+    )
+
+    if ($Ceiling -le 0) {
+        return 0.0
+    }
+
+    return [math]::Min(1.0, [math]::Max(0.0, ($RawValue / $Ceiling)))
+}
+
 function Test-HasLabel {
     <#
     .SYNOPSIS
@@ -179,26 +255,6 @@ function Test-HasLabel {
 
     foreach ($label in $Labels) {
         if ($label.name -eq $LabelName) {
-            return $true
-        }
-    }
-    return $false
-}
-
-function Test-HasLabelMatching {
-    <#
-    .SYNOPSIS
-        Checks if an issue has a label matching a pattern.
-    #>
-    param(
-        [array]$Labels,
-        [string]$Pattern
-    )
-
-    if (-not $Labels) { return $false }
-
-    foreach ($label in $Labels) {
-        if ($label.name -match $Pattern) {
             return $true
         }
     }
@@ -239,6 +295,134 @@ function Write-ColoredStatus {
     Write-Host $Message -ForegroundColor $color
 }
 
+function Get-AssessmentsPath {
+    <#
+    .SYNOPSIS
+        Returns the fixed assessments file path for this skill.
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$ScriptDirectory,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateSet("Issue", "Agent")]
+        [string]$AssessmentType
+    )
+
+    $skillDir = Split-Path $ScriptDirectory -Parent
+    $fileName = if ($AssessmentType -eq "Issue") {
+        "IssueAssessments.json"
+    }
+    else {
+        "AgentAssessments.json"
+    }
+
+    return (Join-Path $skillDir (Join-Path "references" $fileName))
+}
+
+function Read-Assessments {
+    <#
+    .SYNOPSIS
+        Loads assessment data from the fixed skill path.
+
+    .DESCRIPTION
+        Returns an issue-number keyed hashtable. Missing file or malformed data
+        does not terminate execution; the caller can safely fall back.
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$ScriptDirectory,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateSet("Issue", "Agent")]
+        [string]$AssessmentType,
+
+        [switch]$EmitStatus
+    )
+
+    $assessmentsPath = Get-AssessmentsPath -ScriptDirectory $ScriptDirectory -AssessmentType $AssessmentType
+
+    $missingFileMessage = if ($AssessmentType -eq "Issue") {
+        "IssueAssessments.json not found at $assessmentsPath. Using fallback severity/blocker behavior."
+    }
+    else {
+        "AgentAssessments.json not found at $assessmentsPath. Continuing without runtime agent overrides."
+    }
+
+    $foundFileMessage = if ($AssessmentType -eq "Issue") {
+        "IssueAssessments.json found at $assessmentsPath"
+    }
+    else {
+        "AgentAssessments.json found at $assessmentsPath"
+    }
+
+    $missingAssessmentsPropertyMessage = if ($AssessmentType -eq "Issue") {
+        "IssueAssessments.json has no 'assessments' object at $assessmentsPath. Using fallback severity/blocker behavior."
+    }
+    else {
+        "AgentAssessments.json has no 'assessments' object at $assessmentsPath. Continuing without runtime agent overrides."
+    }
+
+    if (-not (Test-Path -LiteralPath $assessmentsPath -PathType Leaf)) {
+        if ($EmitStatus) {
+            Write-ColoredStatus -Level "Warning" -Message $missingFileMessage
+        }
+        return @{}
+    }
+
+    if ($EmitStatus) {
+        Write-ColoredStatus -Level "Info" -Message $foundFileMessage
+    }
+
+    try {
+        $loaded = Get-Content -LiteralPath $assessmentsPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        $parseFailureMessage = if ($AssessmentType -eq "Issue") {
+            "IssueAssessments.json could not be parsed at $assessmentsPath. Using fallback severity/blocker behavior. Error: $_"
+        }
+        else {
+            "AgentAssessments.json could not be parsed at $assessmentsPath. Continuing without runtime agent overrides. Error: $_"
+        }
+
+        Write-Warning $parseFailureMessage
+        return @{}
+    }
+
+    if (-not $loaded) {
+        return @{}
+    }
+
+    $hasAssessmentsProperty = $loaded.PSObject.Properties.Name -contains "assessments"
+    if (-not $hasAssessmentsProperty -or -not $loaded.assessments) {
+        Write-Warning $missingAssessmentsPropertyMessage
+        return @{}
+    }
+
+    $result = @{}
+    foreach ($issueProp in $loaded.assessments.PSObject.Properties) {
+        $entry = @{}
+
+        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "severityTier") {
+            $entry.severityTier = $issueProp.Value.severityTier
+        }
+
+        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "isBlocker") {
+            $entry.isBlocker = $issueProp.Value.isBlocker
+        }
+
+        if ($issueProp.Value -and $issueProp.Value.PSObject.Properties.Name -contains "reasoning") {
+            $entry.reasoning = $issueProp.Value.reasoning
+        }
+
+        $result[[string]$issueProp.Name] = $entry
+    }
+
+    return $result
+}
+
 function Get-IssueScore {
     <#
     .SYNOPSIS
@@ -259,11 +443,12 @@ function Get-IssueScore {
     #>
     param(
         [object]$Issue,
-        [hashtable]$Config
+        [hashtable]$Config,
+        [hashtable]$IssueAssessments,
+        [hashtable]$AgentAssessments
     )
 
     $weights = $Config.weights
-    $thresholds = $Config.thresholds
 
     $score = @{
         Reactions = 0
@@ -276,34 +461,44 @@ function Get-IssueScore {
         RawReactions = 0
         RawAge = 0
         RawComments = 0
+        RawUpdateAgeDays = 0
+        ReactionsRank = 0
+        AgeRank = 0
+        CommentsRank = 0
         SeverityLabel = ""
         IsBlocker = $false
     }
 
+    # Normalization ceilings are config-driven reference points for the 0..100 scoring scale.
+    # At or above these raw values a factor earns its full weight × 100 points.
+    $reactionsCeiling = [double]$Config.rankingCeilings.reactions
+    $ageCeilingDays   = [double]$Config.rankingCeilings.ageDays
+    $commentsCeiling  = [double]$Config.rankingCeilings.comments
+
     # 1. Reactions score
     $totalReactions = Get-TotalReactions -ReactionGroups $Issue.reactionGroups
     $score.RawReactions = $totalReactions
-
-    $score.Reactions = switch ([int]$totalReactions) {
-        { $_ -ge 50 } { $weights.reactions; break }
-        { $_ -ge 20 } { [math]::Floor($weights.reactions * 0.8); break }
-        { $_ -ge 10 } { [math]::Floor($weights.reactions * 0.6); break }
-        { $_ -ge 5 }  { [math]::Floor($weights.reactions * 0.4); break }
-        { $_ -ge 1 }  { [math]::Floor($weights.reactions * 0.2); break }
-        default { 0 }
-    }
+    $score.ReactionsRank = Get-NormalizedRatio -RawValue $totalReactions -Ceiling $reactionsCeiling
+    $score.Reactions = [math]::Round(($score.ReactionsRank * $weights.reactions * 100), 1)
 
     # 2. Age score (use UTC for consistency)
     $ageInDays = Get-IssueAgeInDays -CreatedAt $Issue.createdAt
     $score.RawAge = $ageInDays
 
-    $score.Age = switch ($ageInDays) {
-        { $_ -ge 181 } { $weights.age; break }
-        { $_ -ge 91 }  { [math]::Floor($weights.age * 0.75); break }
-        { $_ -ge 61 }  { [math]::Floor($weights.age * 0.5); break }
-        { $_ -ge 31 }  { [math]::Floor($weights.age * 0.25); break }
-        default { 0 }
+    # Days since last update (for trending recency check)
+    if ($Issue.updatedAt) {
+        try {
+            $updated = [datetime]$Issue.updatedAt
+            $score.RawUpdateAgeDays = ([datetime]::UtcNow - $updated).Days
+        } catch {
+            $score.RawUpdateAgeDays = [int]::MaxValue
+        }
+    } else {
+        $score.RawUpdateAgeDays = [int]::MaxValue
     }
+
+    $score.AgeRank = Get-NormalizedRatio -RawValue $ageInDays -Ceiling $ageCeilingDays
+    $score.Age = [math]::Round(($score.AgeRank * $weights.age * 100), 1)
 
     # 3. Comments score
     $commentCount = 0
@@ -315,53 +510,169 @@ function Get-IssueScore {
         }
     }
     $score.RawComments = $commentCount
+    $score.CommentsRank = Get-NormalizedRatio -RawValue $commentCount -Ceiling $commentsCeiling
+    $score.Comments = [math]::Round(($score.CommentsRank * $weights.comments * 100), 1)
 
-    $score.Comments = switch ($commentCount) {
-        { $_ -ge 11 } { $weights.comments; break }
-        { $_ -ge 6 }  { [math]::Floor($weights.comments * 0.67); break }
-        { $_ -ge 3 }  { [math]::Floor($weights.comments * 0.4); break }
-        { $_ -ge 1 }  { [math]::Floor($weights.comments * 0.2); break }
-        default { 0 }
+    # 4-5. Severity and blocker score from assessments only (file and/or agent).
+    $score.Severity = 0
+    $score.SeverityLabel = ""
+    $score.IsBlocker = $false
+    $score.Blockers = 0
+
+    $issueKey = $null
+    if ($Issue -and $Issue.PSObject.Properties.Name -contains "number" -and $Issue.number) {
+        $issueKey = [string]$Issue.number
     }
 
-    # 4. Severity score
-    $labelNames = @()
-    if ($Issue.labels) {
-        $labelNames = @($Issue.labels | ForEach-Object { $_.name })
+    $selectedAssessment = $null
+    # Human-edited IssueAssessments are authoritative when both sources exist.
+    if ($issueKey -and $IssueAssessments -and $IssueAssessments.ContainsKey($issueKey)) {
+        $selectedAssessment = $IssueAssessments[$issueKey]
+    }
+    elseif ($issueKey -and $AgentAssessments -and $AgentAssessments.ContainsKey($issueKey)) {
+        $selectedAssessment = $AgentAssessments[$issueKey]
     }
 
-    if ($labelNames -contains "regression") {
-        $score.Severity = $weights.severity
-        $score.SeverityLabel = "regression"
-    }
-    else {
-        $hasCrash = @($labelNames | Where-Object { $_ -match "crash|hang|data-loss" }).Count -gt 0
-        if ($hasCrash) {
-            $score.Severity = [math]::Floor($weights.severity * 0.8)
-            $score.SeverityLabel = "crash/hang"
+    if ($selectedAssessment) {
+        $hasSeverityTier = $false
+        $severityTier = $null
+        if ($selectedAssessment -is [hashtable]) {
+            if ($selectedAssessment.ContainsKey("severityTier")) {
+                $severityTier = $selectedAssessment["severityTier"]
+                $hasSeverityTier = $true
+            }
         }
-        elseif ($labelNames -contains "bug") {
-            $score.Severity = [math]::Floor($weights.severity * 0.53)
-            $score.SeverityLabel = "bug"
+        elseif ($selectedAssessment.PSObject.Properties.Name -contains "severityTier") {
+            $severityTier = $selectedAssessment.severityTier
+            $hasSeverityTier = $true
         }
-        elseif ($labelNames -contains "performance") {
-            $score.Severity = [math]::Floor($weights.severity * 0.4)
-            $score.SeverityLabel = "performance"
+
+        if ($hasSeverityTier -and -not [string]::IsNullOrWhiteSpace([string]$severityTier)) {
+            $normalizedTier = ([string]$severityTier).ToLowerInvariant()
+            $severityMultipliers = $Config.severityMultipliers
+            if ($severityMultipliers.ContainsKey($normalizedTier)) {
+                $score.Severity = [math]::Round(($weights.severity * $severityMultipliers[$normalizedTier] * 100), 1)
+                $score.SeverityLabel = $normalizedTier
+            } else {
+                Write-Warning "Issue #$issueKey has invalid severityTier '$severityTier' in assessments. Using fallback severity behavior."
+            }
+        }
+
+        $hasIsBlocker = $false
+        $isBlockerValue = $null
+        if ($selectedAssessment -is [hashtable]) {
+            if ($selectedAssessment.ContainsKey("isBlocker")) {
+                $isBlockerValue = $selectedAssessment["isBlocker"]
+                $hasIsBlocker = $true
+            }
+        }
+        elseif ($selectedAssessment.PSObject.Properties.Name -contains "isBlocker") {
+            $isBlockerValue = $selectedAssessment.isBlocker
+            $hasIsBlocker = $true
+        }
+
+        if ($hasIsBlocker) {
+            if ($isBlockerValue -is [bool]) {
+                $score.IsBlocker = [bool]$isBlockerValue
+            }
+            elseif ($null -eq $isBlockerValue -or [string]::IsNullOrWhiteSpace([string]$isBlockerValue)) {
+                # Empty field: keep fallback value ($false)
+            }
+            else {
+                Write-Warning "Issue #$issueKey has non-boolean isBlocker value '$isBlockerValue' in assessments. Using fallback blocker behavior."
+            }
+        }
+
+        if ($score.IsBlocker -and $weights.blockers -gt 0) {
+            $score.Blockers = [math]::Round(($weights.blockers * 100), 1)
         }
     }
 
-    # 5. Blocker score
-    $hasBlocker = @($labelNames | Where-Object { $_ -match "block|blocker|blocking" }).Count -gt 0
-    $score.IsBlocker = $hasBlocker
-    if ($hasBlocker) {
-        $score.Blockers = $weights.blockers
-    }
-
-    # Calculate total
-    $score.Total = [int]$score.Reactions + [int]$score.Age + [int]$score.Comments +
-                   [int]$score.Severity + [int]$score.Blockers
+    # Calculate total (0..100 normalized composite)
+    $score.Total = [math]::Min(100.0, [math]::Round(($score.Reactions + $score.Age + $score.Comments +
+                   $score.Severity + $score.Blockers), 1))
 
     return $score
+}
+
+function Get-DetailedIssueScore {
+    <#
+    .SYNOPSIS
+        Wraps Get-IssueScore with a detailed breakdown for diagnostic display.
+
+    .DESCRIPTION
+        Delegates all scoring math to Get-IssueScore (ReportLib.ps1) and adds
+        presentation metadata (Reason strings, MaxScore) for the formatted output.
+    #>
+    param(
+        [object]$Issue,
+        [hashtable]$Config,
+        [hashtable]$IssueAssessments,
+        [hashtable]$AgentAssessments
+    )
+
+    $score = Get-IssueScore -Issue $issue -Config $Config -IssueAssessments $IssueAssessments -AgentAssessments $AgentAssessments
+    $weights = $Config.weights
+    $thresholds = $Config.thresholds
+
+    # Build breakdown with presentation metadata on top of canonical scores.
+    $breakdown = @{
+        Reactions = @{ Raw = $score.RawReactions; Score = $score.Reactions; MaxScore = ([math]::Round($weights.reactions * 100, 1)); Rank = $score.ReactionsRank; Reason = "" }
+        Age       = @{ Raw = $score.RawAge;       Score = $score.Age;       MaxScore = ([math]::Round($weights.age       * 100, 1)); Rank = $score.AgeRank;       Reason = "" }
+        Comments  = @{ Raw = $score.RawComments;  Score = $score.Comments;  MaxScore = ([math]::Round($weights.comments  * 100, 1)); Rank = $score.CommentsRank;  Reason = "" }
+        Severity  = @{ Raw = $score.SeverityLabel; Score = $score.Severity; MaxScore = ([math]::Round($weights.severity  * 100, 1)); Rank = 0;                    Reason = "" }
+        Blockers  = @{ Raw = $score.IsBlocker;    Score = $score.Blockers;  MaxScore = ([math]::Round($weights.blockers  * 100, 1)); Rank = 0;                    Reason = "" }
+    }
+
+    # Reason strings (presentation only — scoring math lives in Get-IssueScore)
+    if ($score.RawReactions -ge $thresholds.popular_reactions) {
+        $reactionPercent = [math]::Round(($score.ReactionsRank * 100), 0)
+        $breakdown.Reactions.Reason = "🌟 Popular ($($score.RawReactions) reactions, $reactionPercent% of scoring ceiling)"
+    }
+
+    $hasNeedsTriage = Test-HasLabel -Labels $Issue.labels -LabelName "needs-triage"
+    if ($score.RawAge -gt $thresholds.aging_days -and $hasNeedsTriage) {
+        $agePercent = [math]::Round(($score.AgeRank * 100), 0)
+        $breakdown.Age.Reason = "⏰ Aging (needs triage for $($score.RawAge) days, $agePercent% of scoring ceiling)"
+    }
+    elseif ($score.RawAge -gt 0) {
+        $breakdown.Age.Reason = "Open for $($score.RawAge) days"
+    }
+
+    if ($score.RawComments -ge $thresholds.trending_comments -and $score.RawUpdateAgeDays -le $thresholds.trending_days) {
+        $commentPercent = [math]::Round(($score.CommentsRank * 100), 0)
+        $breakdown.Comments.Reason = "📈 Trending ($($score.RawComments) comments, $commentPercent% of scoring ceiling; updated within $($thresholds.trending_days) days)"
+    }
+
+    if ($score.SeverityLabel) {
+        switch ($score.SeverityLabel) {
+            "critical" { $breakdown.Severity.Reason = "🔴 Critical (assessment)" }
+            "high"     { $breakdown.Severity.Reason = "🟠 High (assessment)" }
+            "medium"   { $breakdown.Severity.Reason = "🟡 Medium (assessment)" }
+            "low"      { $breakdown.Severity.Reason = "🟢 Low (assessment)" }
+            "none"     { $breakdown.Severity.Reason = "⚪ None (assessment)" }
+        }
+    }
+
+    if ($score.IsBlocker -and $weights.blockers -gt 0) {
+        $breakdown.Blockers.Reason = "🚧 Blocker issue"
+    }
+
+    $maxPossible = [math]::Round((
+        $weights.reactions + $weights.age + $weights.comments +
+        $weights.severity + $weights.blockers) * 100, 1)
+    $bands = $Config.recommendationBands
+
+    return @{
+        Breakdown = $breakdown
+        TotalScore = $score.Total
+        MaxPossible = $maxPossible
+        RecommendationThresholds = @{
+            High   = [math]::Round($maxPossible * $bands.high, 1)
+            Medium = [math]::Round($maxPossible * $bands.medium, 1)
+            Normal = [math]::Round($maxPossible * $bands.normal, 1)
+        }
+    }
 }
 
 function Get-HighlightLabels {
@@ -382,7 +693,7 @@ function Get-HighlightLabels {
         The scoring configuration hashtable.
 
     .OUTPUTS
-        [array] Array of highlight label strings (e.g., "🔥 Hot", "⏰ Aging").
+        [array] Array of highlight label strings (e.g., "🌟 Popular", "⏰ Aging").
     #>
     param(
         [object]$Issue,
@@ -400,27 +711,17 @@ function Get-HighlightLabels {
     }
 
     # Check conditions in priority order
-    if ($labelNames -contains "regression") {
-        $labels += "🐛 Regression"
-    }
-    if ($Score.IsBlocker) {
-        $labels += "🚧 Blocker"
-    }
-    if ($Score.RawReactions -ge $thresholds.hot_reactions) {
-        $labels += "🔥 Hot"
+    if ($Score.RawReactions -ge $thresholds.popular_reactions) {
+        $labels += "🌟 Popular"
     }
     if ($Score.RawAge -gt $thresholds.aging_days -and $labelNames -contains "needs-triage") {
         $labels += "⏰ Aging"
     }
-    if ($Score.RawComments -ge $thresholds.trending_comments) {
+    if ($Score.RawComments -ge $thresholds.trending_comments -and $Score.RawUpdateAgeDays -le $thresholds.trending_days) {
         $labels += "📈 Trending"
-    }
-
-    $hasFeatureProposal = $labelNames -contains "feature proposal" -or $labelNames -contains "feature-proposal"
-    if ($hasFeatureProposal -and $Score.RawReactions -ge $thresholds.popular_reactions) {
-        $labels += "📢 Popular"
     }
 
     # Return only top N labels
     return $labels | Select-Object -First $maxLabels
 }
+

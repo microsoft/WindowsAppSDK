@@ -137,7 +137,7 @@ namespace Test::Decimal::Tests
         TEST_CLASS_SETUP(ClassSetup)
         {
             ::TD::DumpExecutionContext();
-            ::TB::Setup(TB::Packages::Framework);
+            ::TB::Setup();
             return true;
         }
 

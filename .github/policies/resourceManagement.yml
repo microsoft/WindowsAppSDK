@@ -57,6 +57,39 @@ configuration:
           reply: This issue has been marked as duplicate and has not had any activity for **3 days**. It will be closed for housekeeping purposes.
       - closeIssue
 
+    - description: Close pull requests after 365 days of inactivity
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isPullRequest
+      - isOpen
+      - noActivitySince:
+          days: 365
+      actions:
+      - addReply:
+          reply: This PR hasn't seen any activity for **365 days**, so we're closing it due to inactivity. If you still want to merge this into WindowsAppSDK, you can reopen it. When reopening, please merge `main` into your PR branch or rebase your branch onto `main`.
+      - closeIssue
+
+    - description: Request author feedback on inactive pull requests open for over 30 days
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isPullRequest
+      - isOpen
+      - created:
+          before: 30
+      - noActivitySince:
+          days: 14
+      - isNotLabeledWith:
+          label: needs-author-feedback
+      actions:
+      - addReply:
+          reply: This PR has been open for 30 days. Are you still interested in merging this PR? If so, please make sure your branch is up to date with the latest `main` by merging `main` into your branch or rebasing onto `main`.
+      - addLabel:
+          label: needs-author-feedback
+
 
     eventResponderTasks:
 
@@ -81,7 +114,7 @@ configuration:
           label: needs-triage
 
 
-    - description: Remove needs-triage from Closed items
+    - description: Remove attention labels from Closed items
       if:
       - payloadType: Issues
       - isAction:
@@ -89,6 +122,8 @@ configuration:
       then:
       - removeLabel:
           label: needs-triage
+      - removeLabel:
+          label: needs-area-owner-attention
 
 
     - description: Add needs-triage to closed item if commented on by external user

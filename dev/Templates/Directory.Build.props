@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        Shared MSBuild properties for the Templates feature area.
+
+        NOTE: This file intentionally does NOT chain to the repo-root
+        Directory.Build.props, which requires a test certificate that is
+        irrelevant to template packaging.
+    -->
+
+    <!-- Default package versions for developer builds -->
+    <PropertyGroup>
+        <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.230706.1</CppWinRTVersion>
+        <WindowsSDKBuildToolsVersion Condition="'$(WindowsSDKBuildToolsVersion)' == ''">10.0.26100.4654</WindowsSDKBuildToolsVersion>
+        <WILVersion Condition="'$(WILVersion)' == ''">1.0.220914.1</WILVersion>
+        <!-- Provides a default package version in order to simplify dev inner loop testing -->
+        <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">1.0.0-preview1</WindowsAppSdkVersion>
+        <Deployment Condition="'$(Deployment)' == '' ">Standalone</Deployment>
+
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+        <!--
+            Template-content and template-pack projects manage their own item
+            includes explicitly; suppress the SDK's default None globbing to
+            avoid duplicate-item errors.
+        -->
+        <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+    </PropertyGroup>
+
+    <!-- Shared folder paths (resolved relative to dev\Templates\) -->
+    <PropertyGroup>
+        <RepoRoot>$(MSBuildThisFileDirectory)..\..\</RepoRoot>
+        <TemplateSourceDir>$(MSBuildThisFileDirectory)Source\</TemplateSourceDir>
+        <ItemTemplatesDir>$(TemplateSourceDir)ItemTemplates\</ItemTemplatesDir>
+        <ProjectTemplatesDir>$(TemplateSourceDir)ProjectTemplates\</ProjectTemplatesDir>
+    </PropertyGroup>
+</Project>

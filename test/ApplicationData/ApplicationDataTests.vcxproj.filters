@@ -24,7 +24,7 @@
     <ClCompile Include="ApplicationDataTests_Elevated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ApplicationDataTests_Module.cpp">
+    <ClCompile Include="UnpackagedApplicationDataTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

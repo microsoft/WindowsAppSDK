@@ -86,7 +86,8 @@ namespace Microsoft.Windows.Storage
         static ApplicationData GetForPackageFamily(String packageFamilyName);
 
         /// Get an instance of ApplicationData for the specified unpackaged app for the current user.
-        [feature(Feature_ApplicationData)]
+        /// @note This method respects impersonation.
+        /// @warning The returned instance of ApplicationData does not support LocalCache, PublisherCache or SharedLocal features.
         [contract(ApplicationDataContract, 2)]
         static ApplicationData GetForUnpackaged(String publisher, String product);
 
@@ -95,6 +96,7 @@ namespace Microsoft.Windows.Storage
 
         /// Return the path for the local cache data store not included in backup and restore operations.
         /// @note This is equivalent to Windows.Storage.ApplicationData.LocalCacheFolder().Path()
+        /// @warning This method is not supported if the ApplicationData instance was acquired via GetForUnpackaged().
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localcachefolder
         String LocalCachePath { get; };
 
@@ -111,6 +113,7 @@ namespace Microsoft.Windows.Storage
 
         /// Return the path for the shared data store.
         /// @note This is equivalent to Windows.Storage.ApplicationData.SharedLocalFolder().Path()
+        /// @warning This method is not supported if the ApplicationData instance was acquired via GetForUnpackaged().
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
         String SharedLocalPath { get; };
 
@@ -120,6 +123,7 @@ namespace Microsoft.Windows.Storage
         String TemporaryPath { get; };
 
         /// Return a StorageFolder for the local cache data store not included in backup and restore operations.
+        /// @warning This method is not supported if the ApplicationData instance was acquired via GetForUnpackaged().
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.localcachefolder
         Windows.Storage.StorageFolder LocalCacheFolder { get; };
 
@@ -134,6 +138,7 @@ namespace Microsoft.Windows.Storage
         Windows.Storage.StorageFolder MachineFolder { get; };
 
         /// Return a StorageFolder for the shared data store.
+        /// @warning This method is not supported if the ApplicationData instance was acquired via GetForUnpackaged().
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.sharedlocalfolder
         Windows.Storage.StorageFolder SharedLocalFolder { get; };
 
@@ -157,10 +162,12 @@ namespace Microsoft.Windows.Storage
 
         /// Return the specified path of the shared data store for the publisher of the app.
         /// @note This is equivalent to Windows.Storage.ApplicationData.GetPublisherCacheFolder(folderName).Path()
+        /// @warning This method is not supported if the ApplicationData instance was acquired via GetForUnpackaged().
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getpublishercachefolder
         String GetPublisherCachePath(String folderName);
 
         /// Return the specified subfolder of the shared data store for the publisher of the app.
+        /// @warning This method is not supported if the ApplicationData instance was acquired via GetForUnpackaged().
         /// @see https://learn.microsoft.com/uwp/api/windows.storage.applicationdata.getpublishercachefolder
         Windows.Storage.StorageFolder GetPublisherCacheFolder(String folderName);
     }

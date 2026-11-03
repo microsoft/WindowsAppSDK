@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": ["Windows", "WinUI", "Item", "Resource"],
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "identity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ResourceDictionary",
+  "groupIdentity": "Microsoft.WindowsAppSDK.WinUI.CSharp.Item.ResourceDictionary",
+  "name": "WinUI Resource Dictionary (Item)",
+  "shortName": ["winui-resourcedictionary", "winui3-resourcedictionary"],
+  "sourceName": "ResourceDictionary",
+  "defaultName": "ResourceDictionary",
+  "description": "Adds a WinUI 3 ResourceDictionary for sharing styles and resources.",
+  "preferNameDirectory": false,
+  "symbols": {
+    "rootNamespace": {
+      "type": "bind",
+      "binding": "msbuild:RootNamespace",
+      "replaces": "$rootnamespace$",
+      "defaultValue": "AppNamespace",
+      "description": "Namespace for the generated item."
+    },
+    "safeItemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "safe_name",
+      "replaces": "$safeitemname$"
+    },
+    "itemName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$itemname$"
+    },
+    "fileInputName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "$fileinputname$"
+    },
+    "resourceDictionaryType": {
+      "type": "generated",
+      "generator": "constant",
+      "parameters": {
+        "value": "ResourceDictionary"
+      },
+      "replaces": "__WINUI_RESOURCE_DICTIONARY__"
+    }
+  },
+  "constraints": {
+    "winuiProject": {
+      "type": "project-capability",
+      "args": "CSharp & Msix"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "ResourceDictionary.xaml" }
+  ],
+  "forms": {
+    "safe_name": {
+      "identifier": "safe_name"
+    },
+    "identity": {
+      "identifier": "identity"
+    }
+  }
+}

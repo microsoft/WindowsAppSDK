@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "rootNamespace": {
+      "longName": "root-namespace",
+      "shortName": "ns",
+      "description": "Namespace for the generated item."
+    }
+  }
+}

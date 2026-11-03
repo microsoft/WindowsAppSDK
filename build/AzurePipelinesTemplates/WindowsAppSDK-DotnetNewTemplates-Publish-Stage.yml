@@ -1,0 +1,53 @@
+parameters:
+- name: pool
+  type: object
+  default:
+    vmImage: 'windows-latest'
+- name: dependsOnStage
+  type: string
+  default: 'DotnetNewTemplates_Build'
+
+stages:
+- stage: DotnetNewTemplates_Publish
+  displayName: 'Publish dotnet new templates to NuGet.org'
+  dependsOn:
+  - ${{ parameters.dependsOnStage }}
+  jobs:
+  - job: PublishNuGetOrg
+    displayName: 'Publish dotnet new template pack to NuGet.org'
+    pool: ${{ parameters.pool }}
+    variables:
+      ob_outputDirectory: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+      ob_artifactBaseName: 'dotnet-new-template-pack'
+      dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+    steps:
+    - checkout: self
+
+    - download: current
+      displayName: 'Download dotnet new template pack artifact'
+      artifact: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
+
+    - task: PowerShell@2
+      displayName: 'Verify dotnet new template pack artifact exists'
+      inputs:
+        targetType: inline
+        script: |
+          $artifactPath = '$(dotnetTemplatesArtifactPath)'
+          if (-not (Test-Path $artifactPath)) {
+            throw "Expected artifact directory '$artifactPath' was not found in the downloaded drop artifact."
+          }
+          $packages = Get-ChildItem -Path $artifactPath -Filter *.nupkg -File -Recurse
+          if (-not $packages) {
+            throw "No .nupkg files were found under '$artifactPath'."
+          }
+          Write-Host "Found the following packages ready for publish:"
+          $packages | ForEach-Object { Write-Host " - $($_.FullName)" }
+
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: 'Publish dotnet new templates to NuGet.org'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(dotnetTemplatesArtifactPath)\*.nupkg'
+        verbosityPush: 'Detailed'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'NugetOrg'

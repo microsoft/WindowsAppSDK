@@ -25,7 +25,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     }
     hstring ReleaseInfo::VersionTag()
     {
-        return GetVersionInfo().Release.VersionTag;
+        PCWSTR versionTag{ GetVersionInfo().Release.VersionTag };
+        return versionTag ? winrt::hstring{ versionTag } : winrt::hstring{};
     }
     hstring ReleaseInfo::AsString()
     {

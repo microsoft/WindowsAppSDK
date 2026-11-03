@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "frameworkudk\ResourceManager.h"
+#include <AppModel.Identity.IsPackagedProcess.h>
 
 bool IsResourceNotFound(HRESULT hr)
 {
@@ -83,6 +84,26 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
 
     // GetDefaultPriFileForCurrentPackage will not handle the new case where
     // resources.pri is in the parent folder. 
-    bool isPackaged = (hr != HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    return GetDefaultPriFileForCurentModule(isPackaged, filePath);
+    bool isPackaged = AppModel::Identity::IsPackagedProcess();
+    hr = GetDefaultPriFileForCurentModule(isPackaged, filePath);
+
+    // Sparse-packaged apps have identity but deploy PRI files as loose files; fall back to
+    // unpackaged discovery which also searches for "[modulename].pri". MrmGetFilePathFromName now
+    // returns S_OK with a best-effort (possibly non-existent) path, so gate the fallback on whether
+    // the packaged lookup actually resolved to an existing file rather than on IsResourceNotFound(hr).
+    if (isPackaged && (IsResourceNotFound(hr) || (SUCCEEDED(hr) && FAILED(CheckFile(filePath.c_str())))))
+    {
+        winrt::hstring fallbackPath;
+        HRESULT hrFallback = GetDefaultPriFileForCurentModule(false, fallbackPath);
+        // Only adopt the unpackaged result if it resolves to an existing file; otherwise keep the
+        // packaged best-effort path so ResourceManager still receives a path (and handles the
+        // not-found case gracefully).
+        if (SUCCEEDED(hrFallback) && SUCCEEDED(CheckFile(fallbackPath.c_str())))
+        {
+            filePath = fallbackPath;
+            hr = hrFallback;
+        }
+    }
+
+    return hr;
 }

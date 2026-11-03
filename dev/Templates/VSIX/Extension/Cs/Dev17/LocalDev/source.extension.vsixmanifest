@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    LocalDev flavor of the Standalone manifest.
+
+    TWO DIFFERENCES FROM Standalone\source.extension.vsixmanifest:
+
+        1. <Identity Id="...Dev17.LocalDev">  (Standalone uses "...Dev17")
+        2. <Installation AllUsers="false">     (Standalone uses "true")
+
+    Why the Id is different
+    =======================
+    On a machine that already has the WinUI workload installed, the
+    per-machine Microsoft.WindowsAppSDK.Cs.Dev17 extension is owned by 5+
+    workload components. VSIXInstaller, when installing a VSIX with the
+    same Id, tries to UNINSTALL the existing one first as part of its
+    upgrade path - and fails because workload-managed extensions cannot be
+    uninstalled by VSIXInstaller. By giving the LocalDev VSIX a distinct
+    Id, VSIXInstaller treats it as a brand-new extension and never
+    attempts to touch the workload copy. The two extensions coexist on
+    disk without interfering.
+
+    Template discovery
+    ==================
+    Visual Studio discovers the embedded dotnet-new template package
+    through Templates.pkgdef. The separate-packaging project template is
+    also registered through its existing .vstemplate.
+
+    Why per-user (AllUsers="false")
+    ===============================
+    No admin required. Installs to
+        %LOCALAPPDATA%\Microsoft\VisualStudio\<edhive>\Extensions\<guid>\
+    Trivial to uninstall (delete folder or VSIXInstaller /uninstall).
+
+    Also note: this manifest does NOT reference ExtensionPack.vsext (see
+    the csproj condition '$(Deployment)'=='Standalone'), so the bundled
+    Microsoft.SingleProjectMSIXPackagingTools.Dev17 dependency is NOT
+    pulled in. That sidesteps the ".NET WinUI app development tools / .NET
+    MAUI for Windows / C++ WinUI app development tools" prerequisite
+    cascade on machines that don't have those workloads.
+-->
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="Microsoft.WindowsAppSDK.Cs.Dev17.LocalDev" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
+        <DisplayName>Windows App SDK C# VS Templates (LocalDev)</DisplayName>
+        <Description xml:space="preserve">[LocalDev build] The Microsoft Windows App SDK Visual Studio extension adds C# project and item templates to support building Windows apps and components in VS 2022-2026. This is a per-user dev-loop build that coexists with any workload-shipped copy on the same machine.</Description>
+        <MoreInfo>https://github.com/microsoft/WindowsAppSDK/</MoreInfo>
+        <License>LICENSE</License>
+        <GettingStartedGuide>https://github.com/microsoft/WindowsAppSDK/</GettingStartedGuide>
+        <ReleaseNotes>https://github.com/microsoft/WindowsAppSDK/releases</ReleaseNotes>
+        <Icon>WindowsAppSDK.png</Icon>
+        <PreviewImage>WindowsAppSDK.png</PreviewImage>
+        <Tags>WindowsAppSDK, WinAppSDK, WinUI, XAML, C#, Managed</Tags>
+    </Metadata>
+    <Installation AllUsers="false">
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 19.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0, 19.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 19.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 19.0)">
+            <ProductArchitecture>arm64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0, 19.0)">
+            <ProductArchitecture>arm64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 19.0)">
+            <ProductArchitecture>arm64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+    </Dependencies>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,19.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.ComponentGroup.UWP.Support" Version="[16.2.29003.222,19.0)" DisplayName="Universal Windows Platform tools" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="File" Path="Templates.pkgdef" />
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.Cs.PackagedApp" d:TargetPath="|WinUI.Desktop.Cs.PackagedApp;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    </Assets>
+</PackageManifest>

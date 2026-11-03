@@ -37,16 +37,16 @@ extern "C" HRESULT WINAPI GetCurrentPackageInfo3(
 // Modern variants of appmodel.h
 namespace appmodel
 {
-inline std::wstring GetPackagePath(PCWSTR packageFullName)
+inline std::wstring GetPackagePath(PCWSTR packageFullName, PackagePathType packagePathType)
 {
     // Paths can be long but typically short(ish). We can use a quick fixed buffer
     // as an optimization and fallback to dynamic allocation if need be
-    WCHAR path[MAX_PATH];
+    WCHAR path[MAX_PATH]{};
     UINT32 pathLength{ ARRAYSIZE(path) };
-    const auto rc{ ::GetPackagePathByFullName(packageFullName, &pathLength, path) };
+    const auto rc{ ::GetPackagePathByFullName2(packageFullName, packagePathType, &pathLength, path) };
     if (rc == ERROR_SUCCESS)
     {
-        return std::wstring(path);
+        return std::wstring{ path };
     }
     else if (rc != ERROR_INSUFFICIENT_BUFFER)
     {
@@ -56,7 +56,12 @@ inline std::wstring GetPackagePath(PCWSTR packageFullName)
     // It's bigger than a breadbox. Allocate memory
     std::unique_ptr<WCHAR[]> pathBuffer{ std::make_unique<WCHAR[]>(pathLength) };
     THROW_IF_NULL_ALLOC(pathBuffer);
-    THROW_IF_WIN32_ERROR(::GetPackagePathByFullName(packageFullName, &pathLength, pathBuffer.get()));
+    THROW_IF_WIN32_ERROR(::GetPackagePathByFullName2(packageFullName, packagePathType, &pathLength, pathBuffer.get()));
     return std::wstring(pathBuffer.get());
+}
+
+inline std::wstring GetPackagePath(PCWSTR packageFullName)
+{
+    return GetPackagePath(packageFullName, PackagePathType_Install);
 }
 }

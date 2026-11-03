@@ -25,6 +25,14 @@ A new `RuntimeCompatibilityOptions` class has APIs to control the behavior of se
 There are also properties which can be set in the app's project file to automatically use the new
 APIs with the specified values.
 
+> **Authoring model (Containment v2).** Change IDs are registered in a WASDK-owned
+> catalog and pre-pruned by `RuntimeCompatibilityOptions::Apply()`, so servicing
+> engineers no longer need to name a target release branch at the callsite. See
+> [WASDK-ContainmentV2-Plan.md](./WASDK-ContainmentV2-Plan.md) for the role
+> boundaries (servicing engineer vs release engineer) and the staged rollout, and
+> [RuntimeCompatibilityContainmentV2.md](../design/RuntimeCompatibilityContainmentV2.md)
+> for the underlying design.
+
 # API Pages
 
 ## RuntimeCompatibilityOptions class

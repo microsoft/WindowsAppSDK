@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <PackageType>Template</PackageType>
+    <PackageId>Microsoft.WindowsAppSDK.WinUI.CSharp.Templates</PackageId>
+    <Version>0.0.7-alpha</Version>
+    <Title>WinUI 3 C# Templates</Title>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+    <Description>Official WinUI 3 project and item templates. Install this pack to use dotnet new for different types of apps, class libraries, unit tests and common WinUI controls.</Description>
+    <PackageTags>windows;winappsdk;winui;winui3;desktop;dotnet-new;templates;csharp</PackageTags>
+    <PackageProjectUrl>https://learn.microsoft.com/windows/apps/windows-app-sdk/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/microsoft/WindowsAppSDK</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>See https://github.com/microsoft/WindowsAppSDK/releases for release notes.</PackageReleaseNotes>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
+    <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\localpackages'))</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" />
+    <None Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\gitignore.txt"
+          Pack="true" PackagePath="content\%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- Shared .gitignore for csproj-based project templates (not item or single-file templates). -->
+    <None Include="templates\gitignore.txt" Pack="true"
+          PackagePath="content\blank-app\gitignore.txt;content\class-library\gitignore.txt;content\mvvm-app\gitignore.txt;content\navigation-app\gitignore.txt;content\reactor-blank-app\gitignore.txt;content\reactor-mvu-app\gitignore.txt;content\reactor-navigation-app\gitignore.txt;content\reactor-tabview-app\gitignore.txt;content\tabview-app\gitignore.txt;content\unit-test\gitignore.txt" />
+  </ItemGroup>
+
+  <!-- Return the exact package path so VSIX builds never pick up stale versions. -->
+  <Target Name="GetTemplatePackage" DependsOnTargets="Pack"
+          Returns="$(PackageOutputPath)\$(PackageId).$(PackageVersion).nupkg" />
+</Project>

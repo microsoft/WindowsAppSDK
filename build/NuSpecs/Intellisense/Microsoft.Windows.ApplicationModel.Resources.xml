@@ -102,6 +102,10 @@
       <summary>Gets the value of the ResourceCandidate represented in bytes.</summary>
       <returns>The value of the ResourceCandidate represented in bytes.</returns>
     </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.ValueAsMemoryBuffer">
+      <summary>Gets a read-only view of the embedded data without copying it.</summary>
+      <returns>A memory buffer that provides access to the embedded data.</returns>
+    </member>
     <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.ValueAsString">
       <summary>Gets the value of the ResourceCandidate represented as a string.</summary>
       <returns>The value of the ResourceCandidate represented as a string.</returns>

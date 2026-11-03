@@ -16,12 +16,8 @@ Use whatever GitHub MCP/API tools are available to fetch PR details. Common tool
 
 **Just try calling one of these tools** to get PR info for PR #6130 (or the PR from context). The call will either succeed or fail - that tells you which tools work.
 
-## Issue/PR artifacts (github-artifacts MCP)
-If the MCP "github-artifacts" tools are available in the environment, use them to pull supporting evidence linked from the PR or linked issues:
-- `github_issue_images`: use when linked issues or PR discussion include screenshots (UI bugs, layout, design).
-- `github_issue_attachments`: use when linked issues mention attached ZIPs or diagnostic bundles. Always provide `extractFolder` as `Generated Files/prReview/{{pr_number}}/issue-artifacts/<issue_number>`.
-
-If these tools are not available, ensure the `github-artifacts` MCP server is started and available, then retry.
+## Issue/PR artifacts
+Use Copilot's standard web, file, and execution tools to review screenshots or ZIP attachments linked from the PR or related issues when relevant. Store extracted issue artifacts under `Generated Files/prReview/{{pr_number}}/issue-artifacts/<issue_number>`.
 
 ## PR selection
 Resolve the target PR using these fallbacks in order:

@@ -1,0 +1,89 @@
+<Project ToolsVersion="Current">
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{E700DF09-42A9-4AC7-9855-400029FBFDBE}</ProjectGuid>
+    <BaseAssemblyName>WindowsAppSDK.Cs.Extension.Dev17</BaseAssemblyName>
+    <!-- Directory.Build.targets renames this VSSDK output to $(AssemblyName).$(Deployment).json for VS insertion. -->
+    <JsonName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">Microsoft.WindowsAppSDK.Cs.Dev17.json</JsonName>
+    <JsonName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">Microsoft.WindowsAppSDK.Cs.Dev17.Experimental.json</JsonName>
+    <AssemblyName>$(BaseAssemblyName)</AssemblyName>
+    <RootNamespace>WindowsAppSDK.Cs.Extension</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+    <NoWarn>$(NoWarn);CS2008</NoWarn>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+    <UseCodebase>true</UseCodebase>
+    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
+    <!-- This MUST match VSPackage.PackageGuidString. LocalDev installs side by side with the in-box
+         Microsoft.WindowsAppSDK.Cs.Dev17 extension, so it needs its own GUID: sharing one would make the
+         per-user registration override the in-box package and break the in-box .vstemplate titles and wizards. -->
+    <PackageGuidString>{B0F1BA01-DE66-4EF9-9C8B-DBB99FB4DA4B}</PackageGuidString>
+    <PackageGuidString Condition="'$(Deployment)' == 'LocalDev'">{E224F7CD-68B5-402E-9AA1-2FAE1B8023F1}</PackageGuidString>
+    <DefineConstants Condition="'$(Deployment)' == 'LocalDev'">$(DefineConstants);LOCALDEV</DefineConstants>
+    <DotNetVersion>net10.0</DotNetVersion>
+    <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <StartAction>Program</StartAction>
+    <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
+    <VsixManifestSource>$(Deployment)\source.extension.vsixmanifest</VsixManifestSource>
+    <TargetVsixContainerName>$(AssemblyName).$(Deployment).vsix</TargetVsixContainerName>
+    <IsProductComponent Condition="'$(Deployment)' == 'Component'">true</IsProductComponent>
+    <TemplatePackageProject>$(MSBuildThisFileDirectory)..\..\..\..\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj</TemplatePackageProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(VsixManifestSource)" SubType="Designer" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK" ExcludeAssets="runtime" />
+    <ProjectReference Include="$(TemplatePackageProject)" ReferenceOutputAssembly="false" Private="false"
+                      SkipGetTargetFrameworkProperties="true" />
+    <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\PackagedApp\WinUI.Desktop.Cs.PackagedApp.csproj"
+                      Name="WinUI.Desktop.Cs.PackagedApp" ReferenceOutputAssembly="false" VSIXSubPath="ProjectTemplates"
+                      IncludeOutputGroupsInVSIX="TemplateProjectOutputGroup%3b" />
+    <Compile Include="..\Common\VSPackage.Designer.cs" />
+    <EmbeddedResource Include="..\Common\**\*.resx">
+      <Link>Resources\%(Filename)%(Extension)</Link>
+    </EmbeddedResource>
+    <Content Include="$(ExtensionDir)WindowsAppSDK.png" IncludeInVSIX="true" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(ExtensionDir)LICENSE" IncludeInVSIX="true" />
+    <Content Condition="'$(Deployment)' == 'Standalone'" Include="ExtensionPack.vsext" IncludeInVSIX="true" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
+
+  <Target Name="IncludeTemplatePackage" BeforeTargets="GetVsixSourceItems"
+          DependsOnTargets="ResolveProjectReferences">
+    <MSBuild Projects="$(TemplatePackageProject)" Targets="GetTemplatePackage"
+             Properties="Configuration=$(Configuration)" RemoveProperties="TargetFramework;RuntimeIdentifier;RuntimeIdentifiers">
+      <Output TaskParameter="TargetOutputs" ItemName="_TemplatePackage" />
+    </MSBuild>
+    <Error Condition="'@(_TemplatePackage)' == ''" Text="The C# template package was not produced." />
+    <Error Condition="!Exists('%(_TemplatePackage.Identity)')" Text="C# template package not found: %(_TemplatePackage.Identity)" />
+
+    <!--
+      Visual Studio only rescans a TemplateEngine registration when its version key changes,
+      so key it to the VSIX version instead of a fixed value.
+    -->
+    <Error Condition="'$(VSIXVersion)' == ''" Text="VSIXVersion is required to register the C# template package." />
+    <PropertyGroup>
+      <_TemplatesPkgdef>$(IntermediateOutputPath)Templates.pkgdef</_TemplatesPkgdef>
+    </PropertyGroup>
+    <ItemGroup>
+      <_TemplatesPkgdefLine Include="[$RootKey$\TemplateEngine\Templates\Microsoft.WindowsAppSDK.WinUI.CSharp.Templates\$(VSIXVersion)]" />
+      <_TemplatesPkgdefLine Include="&quot;InstalledPath&quot;=&quot;$PackageFolder$\ProjectTemplates&quot;" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(_TemplatesPkgdef)" Lines="@(_TemplatesPkgdefLine)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <FileWrites Include="$(_TemplatesPkgdef)" />
+      <VSIXSourceItem Include="@(_TemplatePackage)" VSIXSubPath="ProjectTemplates" />
+      <VSIXSourceItem Include="$(_TemplatesPkgdef)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="IncludeSatelliteAssembliesInVSIX" AfterTargets="Build">
+    <ItemGroup>
+      <VSIXSourceItem Include="$(OutDir)**\*.resources.dll" VSIXSubPath="%(RecursiveDir)" />
+    </ItemGroup>
+  </Target>
+</Project>

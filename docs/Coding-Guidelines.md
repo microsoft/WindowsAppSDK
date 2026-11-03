@@ -9,6 +9,7 @@ languages used in implementation or testing.
 
 # Coding Guidelines and Policies
 
+- [Component Versioning Across Channels](Coding-Guidelines/ComponentVersioning.md) (interim policy until monobuild)
 - Git
   - [Checkin-to-main/develop Policy](Coding-Guidelines/GitCheckinToMainPolicy.md)
   - [Branches: main vs develop](Coding-Guidelines/develop-branch.md)
