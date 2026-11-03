@@ -247,29 +247,16 @@ steps:
         }
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
-# Extract Microsoft.WindowsAppSDK Nuget package artifact published by BuildWindowsAppSDKPackages job of Aggregate stage,
-# that runs before the current CreateInstaller stage in the same build pipeline, to the installer's packages folder.
-# And copy WindowsAppSDK-VersionInfo.h from the extracted nuget package to installer's project folder
+# Read only the installer's version header from the Aggregate package; do not unpack its MSIX payloads again.
 - task: powershell@2
   name: ExtractWinAppSDKNugetPackage
+  displayName: 'Stage installer version header from runtime package'
   inputs:
-    targetType: "inline"
-    script: |
-      $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Runtime*'
-      if ($srcWinAppSDKNupkgPath -eq $null)
-      {
-        $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK.Packages*'
-      }
-      if ($srcWinAppSDKNupkgPath -eq $null)
-      {
-        $srcWinAppSDKNupkgPath = Get-Childitem -Path '$(System.ArtifactsDirectory)\NugetPackages' -File '*Microsoft.WindowsAppSDK*'
-      }
-      Copy-Item -Force $srcWinAppSDKNupkgPath.FullName '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\'
-      $destWinAppSDKNupkgPath = Get-Childitem -Path '$(Build.SourcesDirectory)\$(foundationRepoPath)packages\' -File '*Microsoft.WindowsAppSDK*'
-      $winAppSDKZip = $destWinAppSDKNupkgPath.FullName -replace '.nupkg','.zip'
-      Rename-Item -Path $destWinAppSDKNupkgPath.FullName -NewName $winAppSDKZip
-      Expand-Archive $winAppSDKZip -DestinationPath ($destWinAppSDKNupkgPath.Directory.FullName + '\' + $destWinAppSDKNupkgPath.BaseName)
-      Copy-Item -Force ($destWinAppSDKNupkgPath.Directory.FullName + '\' + $destWinAppSDKNupkgPath.BaseName + "\include\WindowsAppSDK-VersionInfo.h") '$(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev\'
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\scripts\Export-InstallerVersionHeader.ps1'
+    arguments: >
+      -SourceDirectory '$(System.ArtifactsDirectory)\NugetPackages'
+      -DestinationDirectory '$(Build.SourcesDirectory)\$(foundationRepoPath)installer\dev'
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
 - task: WinUndockNativeCompiler@1
@@ -354,4 +341,3 @@ steps:
     arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
     workingDirectory: '$(Build.SourcesDirectory)'
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
-
