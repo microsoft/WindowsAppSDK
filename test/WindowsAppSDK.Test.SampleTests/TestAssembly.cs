@@ -15,7 +15,7 @@ namespace WindowsAppSDK.Test.SampleTests
     class TestAssembly
     {
         [AssemblyInitialize]
-        [TestProperty("CoreClrProfile", "net6")]
+        [TestProperty("CoreClrProfile", "net10")]
         [TestProperty("IsolationLevel", "Class")]
         public static void AssemblyInitialize(TestContext testContext)
         {

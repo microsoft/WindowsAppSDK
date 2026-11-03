@@ -14,8 +14,8 @@ $filename = "$PSScriptRoot\..\..\..\Directory.Packages.props"
 $xml = [xml](Get-Content $filename -EA:Stop)
 $ns = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
 $ns.AddNamespace("ms", "http://schemas.microsoft.com/developer/msbuild/2003")
-$dotNotSdkVersion = $xml.SelectSingleNode("//ms:CsWinRTDependencyDotNetCoreSdkPackageVersion", $ns).InnerText
-$dotNotSdkVersionLkg = if (-not $skipLKG) { $dotNotSdkVersion }
+$dotNetSdkVersion = $xml.SelectSingleNode("//ms:CsWinRTDependencyDotNetCoreSdkPackageVersion", $ns).InnerText
+$dotNetSdkVersionLkg = if (-not $skipLKG) { $dotNetSdkVersion }
 
 if ($version -ne "")
 {
@@ -142,11 +142,11 @@ if (-not $env:AGENT_BUILDDIRECTORY)
 }
 function Install-SDK
 {
-    param ([string]$version, [string]$channel)
-    . $dotnetInstallScript -Channel $channel -Version $version -InstallDir $x64InstallDir -Architecture x64
-    Write-Host "Installed SDK (x64) version $version from channel $channel to $x64InstallDir."
+    param ([string]$version)
+    . $dotnetInstallScript -Version $version -InstallDir $x64InstallDir -Architecture x64
+    Write-Host "Installed SDK (x64) version $version to $x64InstallDir."
 
-    . $dotnetInstallScript -Channel $channel -Version $version -InstallDir $x86InstallDir -Architecture x86
+    . $dotnetInstallScript -Version $version -InstallDir $x86InstallDir -Architecture x86
     Write-Host "Installed SDK (x86) version $version to $x86InstallDir."
 
     Write-Host -ForegroundColor Green Done.
@@ -154,16 +154,16 @@ function Install-SDK
 
 Write-Host "Installing .NET SDK..."
 
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 
 Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile $dotnetInstallScript -UseBasicParsing
 
 if (-not $latestAlreadyInstalled)
 {
-    Install-SDK -version $dotNetSdkVersion -channel "release\5.0.1xx"
+    Install-SDK -version $dotNetSdkVersion
 }
 
 if (-not $lkgAlreadyInstalled)
 {
-    Install-SDK -version $dotNetSdkVersionLkg -channel "master"
+    Install-SDK -version $dotNetSdkVersionLkg
 }

@@ -20,6 +20,19 @@
 
 Open Visual Studio with `MrtCore.sln` and build the solution.
 
+The managed test projects use .NET 10 LTS. Use Visual Studio 2026 for IDE builds
+targeting .NET 10. The shared Foundation pipeline installs SDK 10.0.114 from the
+10.0.1xx band, which can load in MSBuild 17.14; later SDK feature bands require
+MSBuild 18. The standalone MRT SDK installer reads
+`CsWinRTDependencyDotNetCoreSdkPackageVersion` from the root
+`Directory.Packages.props`, not the MRT `global.json` MSBuild SDK declaration.
+
+The test runtime packs are pinned to 10.0.14 in `Directory.Packages.props`.
+TAEF uses the self-contained `net10` CoreCLR profile on x86, x64, and ARM64.
+The minimum test OS remains Windows 10 version 1809; .NET 10 support on that
+version is limited to supported Enterprise LTSC editions. Production projection
+target frameworks and package layouts are unchanged.
+
 The source code consists of three parts:
 - [The core runtime](mrt/mrm)
   - [PRI builder](mrt/mrm/include/mrm/build)
