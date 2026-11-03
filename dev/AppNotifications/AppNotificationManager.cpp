@@ -104,8 +104,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     bool AppNotificationManager::IsSupported()
     {
-        static bool isSupported{ !Security::IntegrityLevel::IsElevated() };
-        return isSupported;
+        // Elevation alone does not determine notification-platform availability.
+        // Let registration and notification operations report platform failures.
+        return true;
     }
 
     void AppNotificationManager::Register()
@@ -423,13 +424,22 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     HRESULT AppNotificationManager::ShowImpl(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification) noexcept try
     {
+        // This capability is recorded for telemetry only. A failed optional probe must
+        // not prevent an ordinary notification from reaching the notification platform.
+        bool isCallingPreviewSupported{};
+        try
+        {
+            isCallingPreviewSupported = winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported();
+        }
+        CATCH_LOG()
+
         auto logTelemetry{ AppNotificationTelemetry::Show::Start(
             g_telemetryHelper,
             m_appId,
             notification.Payload(),
             notification.Tag(),
             notification.Group(),
-            winrt::AppNotificationConferencingConfig::IsCallingPreviewSupported()) };
+            isCallingPreviewSupported) };
 
         RETURN_HR_IF(WPN_E_NOTIFICATION_POSTED, notification.Id() != 0);
 
