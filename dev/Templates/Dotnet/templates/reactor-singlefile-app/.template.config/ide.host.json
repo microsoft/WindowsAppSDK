@@ -1,6 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/ide.host",
   "icon": "icon.png",
+  "unsupportedHosts": [
+    { "id": "vs" }
+  ],
   "requiredComponents": [
     {
       "id": "Microsoft.VisualStudio.Workload.ManagedDesktop",
