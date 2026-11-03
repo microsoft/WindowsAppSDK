@@ -235,8 +235,9 @@ This template pack is built from the
 `dev\Templates\Dotnet\`. Each directory under `templates` contains both
 the sources and `.template.config` metadata. The C# VSIX embeds this same
 NuGet pack and registers it with Visual Studio's template engine; there is no
-separate Visual Studio build for these templates. Experimental Reactor templates
-remain CLI-only. The two-project `.csproj` + `.wapproj` template is a VSIX-only
+separate Visual Studio build for these templates. Experimental Reactor project
+templates appear in Visual Studio; `reactor-singlefile` remains CLI-only.
+The two-project `.csproj` + `.wapproj` template is a VSIX-only
 exception that retains its existing `.vstemplate` implementation; it is not part
 of this NuGet pack.
 
