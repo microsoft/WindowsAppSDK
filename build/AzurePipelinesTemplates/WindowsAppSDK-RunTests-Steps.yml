@@ -100,6 +100,9 @@ steps:
 
   - task: powershell@2
     displayName: 'Run TE.Service'
+    # This normally takes seconds, and DevCheck bounds its wait for the service to start. Don't let any other hang
+    # here use up the job's timeout.
+    timeoutInMinutes: 10
     inputs:
       targetType: filePath
       filePath: tools\DevCheck\DevCheck.ps1
