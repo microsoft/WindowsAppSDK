@@ -147,36 +147,77 @@ namespace DeploymentWindowsAppRuntimeSingletonLowerVersion
     constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_4.1.1966.333_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
+namespace Details
+{
+    // Get*PackagePathByFullName() is a two-call API (query the length, then fetch the path), and tests
+    // routinely query packages that a previous test (often a separate TAEF process, e.g. with
+    // IsolationLevel=Method) just removed. RemovePackageAsync() completes before the OS finishes tearing
+    // down the package's machine-wide state, so the package can vanish between the two calls
+    // (ERROR_NOT_FOUND from the 2nd call) or report ERROR_KEY_DELETED while its registration is being
+    // deleted. Either way the package is going away, which is the same answer the 1st call would have
+    // given a moment later, so report it as not found instead of failing the caller's VERIFY (this
+    // intermittently failed e.g. Test::Deployment::APITests::ClassInit). Transient in-flux results are
+    // retried briefly; anything else still fails.
+    inline std::wstring GetPackagePathWithRetry(
+        PCWSTR packageFullName,
+        decltype(&::GetPackagePathByFullName) getPackagePathByFullName,
+        PCWSTR apiName)
+    {
+        constexpr int c_maxAttempts{ 10 };
+        DWORD retryDelayInMilliseconds{ 100 };
+        LONG rc{};
+        for (int attempt{ 1 }; attempt <= c_maxAttempts; ++attempt)
+        {
+            UINT32 pathLength{};
+            rc = getPackagePathByFullName(packageFullName, &pathLength, nullptr);
+            if (rc == ERROR_INSUFFICIENT_BUFFER)
+            {
+                auto path{ wil::make_process_heap_string(nullptr, pathLength) };
+                rc = getPackagePathByFullName(packageFullName, &pathLength, path.get());
+                if (rc == ERROR_SUCCESS)
+                {
+                    return std::wstring{ path.get() };
+                }
+                if (rc == ERROR_NOT_FOUND)
+                {
+                    WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                        L"%s('%s'): package removed between the length query and the path fetch; treating as not found",
+                        apiName, packageFullName));
+                }
+            }
+            if (rc == ERROR_NOT_FOUND)
+            {
+                return std::wstring{};
+            }
+
+            // ERROR_KEY_DELETED = The package's registration is being deleted
+            // ERROR_INSUFFICIENT_BUFFER (from the 2nd call) = The path changed between the calls
+            const bool isTransient{ (rc == ERROR_KEY_DELETED) || (rc == ERROR_INSUFFICIENT_BUFFER) };
+            if (!isTransient || (attempt == c_maxAttempts))
+            {
+                break;
+            }
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(
+                L"%s('%s') attempt %d/%d returned transient error %ld; retrying in %u ms",
+                apiName, packageFullName, attempt, c_maxAttempts, rc, retryDelayInMilliseconds));
+            Sleep(retryDelayInMilliseconds);
+            retryDelayInMilliseconds = (std::min<DWORD>)(retryDelayInMilliseconds * 2, 1000);
+        }
+        VERIFY_ARE_EQUAL(ERROR_SUCCESS, rc, WEX::Common::String().Format(L"%s('%s')", apiName, packageFullName));
+        return std::wstring{};
+    }
+}
+
 template <typename T=std::wstring>
 inline T GetPackagePath(PCWSTR packageFullName)
 {
-    UINT32 pathLength{};
-    const auto rc{ ::GetPackagePathByFullName(packageFullName, &pathLength, nullptr) };
-    if (rc == ERROR_NOT_FOUND)
-    {
-        return T{};
-    }
-
-    VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
-    auto path{ wil::make_process_heap_string(nullptr, pathLength) };
-    VERIFY_ARE_EQUAL(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
-    return T{ path.get() };
+    return T{ Details::GetPackagePathWithRetry(packageFullName, ::GetPackagePathByFullName, L"GetPackagePathByFullName") };
 }
 
 template <typename T=std::wstring>
 inline T GetStagedPackagePath(PCWSTR packageFullName)
 {
-    UINT32 pathLength{};
-    const auto rc{ ::GetStagedPackagePathByFullName(packageFullName, &pathLength, nullptr) };
-    if (rc == ERROR_NOT_FOUND)
-    {
-        return T{};
-    }
-
-    VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
-    auto path{ wil::make_process_heap_string(nullptr, pathLength) };
-    VERIFY_ARE_EQUAL(ERROR_SUCCESS, ::GetStagedPackagePathByFullName(packageFullName, &pathLength, path.get()));
-    return T{ path.get() };
+    return T{ Details::GetPackagePathWithRetry(packageFullName, ::GetStagedPackagePathByFullName, L"GetStagedPackagePathByFullName") };
 }
 
 #if defined(__APPMODEL_IDENTITY_H)

@@ -48,7 +48,9 @@ public sealed partial class MainWindow : Window
             scale = 1.0;
         }
 
-        CustomDragRegion.MinWidth = AppWindow.TitleBar.RightInset / scale;
+        // RightInset can be transiently negative while a minimized window is restored,
+        // and MinWidth rejects negative values.
+        CustomDragRegion.MinWidth = System.Math.Max(0, AppWindow.TitleBar.RightInset) / scale;
     }
 
     /// <summary>
