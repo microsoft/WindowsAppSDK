@@ -50,6 +50,23 @@ foreach ($major in @(17, 18)) {
     Assert ($global:issues -eq 0) "VS $major incorrectly reported issues"
 }
 
+Set-Instance 17
+$null = Test-VisualStudioInstall
+foreach ($component in @(
+    'Microsoft.NetCore.Component.Runtime.6.0',
+    'Microsoft.NetCore.Component.Runtime.7.0',
+    'Microsoft.VisualStudio.Component.LiveUnitTesting',
+    'Component.Microsoft.VisualStudio.LiveShare.2022',
+    'Microsoft.VisualStudio.Component.IntelliCode'
+)) {
+    $script:overrides[$component] = ''
+}
+Assert (Test-VisualStudioComponents) 'Build-ready VS2022 was rejected without obsolete runtimes or optional IDE features'
+Assert ($global:issues -eq 0) 'Optional VS2022 components incorrectly reported issues'
+$script:overrides['Microsoft.Component.MSBuild'] = ''
+Assert (-not (Test-VisualStudioComponents)) 'VS2022 without MSBuild was accepted'
+Assert ($global:issues -eq 1) 'Missing VS2022 build prerequisite was not counted'
+
 Set-Instance 18
 $null = Test-VisualStudioInstall
 $script:overrides['Microsoft.Component.MSBuild'] = ''
@@ -68,5 +85,5 @@ Assert (-not (Test-VisualStudioInstall)) 'No-installation case was accepted'
 Assert ($global:issues -eq 1) 'No-installation failure was not counted'
 Assert ([string]::IsNullOrEmpty($global:vspath)) 'Stale installation path survived'
 
-Write-Output 'PASS: VS2022, VS2026, missing component, split installations, and no installation'
+Write-Output 'PASS: VS2022, VS2026, VS2022 pipeline image, missing component, split installations, and no installation'
 exit 0
