@@ -1228,7 +1228,7 @@ function Get-TAEFServiceImagePath
     }
 
     $path = Get-ItemProperty -Path $regkey | Select-Object 'ImagePath'
-    $path.ImagePath
+    ([string]$path.ImagePath).Trim('"')
 }
 
 function Test-TAEFServiceVersion
@@ -1282,6 +1282,13 @@ function Test-TAEFService
         return 'NotFound'
     }
 
+    $imagePath = Get-TAEFServiceImagePath
+    if (-not(Test-Path -LiteralPath $imagePath -PathType Leaf))
+    {
+        Write-Warning "TAEF service executable not found: $imagePath"
+        return 'ImageMissing'
+    }
+
     if ($service.Status -ne "Running")
     {
         Write-Host "TAEF service...Not running ($service.Status)"
@@ -1308,6 +1315,66 @@ function Test-TAEFService
     }
 }
 
+function Get-TAEFServiceInstaller
+{
+    # TAEF is located in the NuGet on dev machines vs ...root...\redist\... on build machines
+    $root = Get-ProjectRoot
+    $cpu = Get-CpuArchitecture
+    $taef_version = Get-TAEFPackageVersion
+    $taef = "Microsoft.Taef.$($taef_version)"
+    foreach ($location in @("$root\packages\$taef", "$root\redist\$taef"))
+    {
+        $path = "$location\build\Binaries\$cpu\Wex.Services.exe"
+        if (Test-Path -LiteralPath $path -PathType Leaf)
+        {
+            return $path
+        }
+    }
+
+    if ($Offline -eq $true)
+    {
+        Write-Host "Install TAEF service...Microsoft.Taef $taef_version is not available locally. Restore it before using -Offline."
+        $global:issues++
+        return $null
+    }
+
+    $nugetexe = [IO.Path]::GetFullPath($NugetExe)
+    if (-not(Test-Path -LiteralPath $nugetexe -PathType Leaf))
+    {
+        Write-Host "Install TAEF service...Nuget.exe not found ($nugetexe). Run DevCheck with -CheckNugetExe first."
+        $global:issues++
+        return $null
+    }
+
+    $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
+    $nuget_args = @('install', 'Microsoft.Taef', '-Version', $taef_version,
+        '-OutputDirectory', "$root\packages", '-ConfigFile', "$root\NuGet.config")
+    if ($NoInteractive -eq $true)
+    {
+        $nuget_args += '-NonInteractive'
+    }
+    Write-Host "Restoring Microsoft.Taef $taef_version for the TAEF service..."
+    try
+    {
+        & $nugetexe @nuget_args | Write-Host
+        if ($LASTEXITCODE -ne 0)
+        {
+            throw "Nuget.exe exited with code $LASTEXITCODE."
+        }
+        if (-not(Test-Path -LiteralPath $path -PathType Leaf))
+        {
+            throw "TAEF service installer not found ($path)."
+        }
+    }
+    catch
+    {
+        Write-Host "Install TAEF service...Unable to restore Microsoft.Taef $taef_version. Check $root\NuGet.config and feed access. $($_.Exception.Message)"
+        $global:issues++
+        return $null
+    }
+    return $path
+}
+
 function Install-TAEFService
 {
     $isadmin = Get-IsAdmin
@@ -1318,30 +1385,12 @@ function Install-TAEFService
         return
     }
 
-    # TAEF is located in the NuGet on dev machines vs ...root...\redist\... on build machines
-    $root = Get-ProjectRoot
-    $cpu = Get-CpuArchitecture
-    $taef_version = Get-TAEFPackageVersion
-    $taef = "Microsoft.Taef.$($taef_version)"
-    $path = "$root\packages\$taef\build\Binaries\$cpu\Wex.Services.exe"
-    if (Test-Path -Path $path -PathType Leaf)
+    $path = Get-TAEFServiceInstaller
+    if ([string]::IsNullOrEmpty($path))
     {
-        Write-Host "TAEF installer found...$path"
+        return 'TAEFNotFound'
     }
-    else
-    {
-        $path = "$root\redist\$taef\build\Binaries\$cpu\Wex.Services.exe"
-        if (Test-Path -Path $path -PathType Leaf)
-        {
-            Write-Host "TAEF installer found...$path"
-        }
-        else
-        {
-            Write-Host "Install TAEF service...Not Found ($path)"
-            $global:issues++
-            return 'TAEFNotFound'
-        }
-    }
+    Write-Host "TAEF installer found...$path"
 
     $args = '/install:TE.Service'
     $output = Run-Process $path $args
@@ -1369,13 +1418,26 @@ function Uninstall-TAEFService
         return
     }
 
+    $filename = Get-TAEFServiceImagePath
+    if ([string]::IsNullOrEmpty($filename))
+    {
+        return 'NotFound'
+    }
+    if (-not(Test-Path -LiteralPath $filename -PathType Leaf))
+    {
+        $filename = Get-TAEFServiceInstaller
+        if ([string]::IsNullOrEmpty($filename))
+        {
+            return 'TAEFNotFound'
+        }
+    }
+
     $ok = Stop-TAEFService
     if ($ok -ne $true)
     {
         return $ok
     }
 
-    $filename = Get-TAEFServiceImagePath
     $args = '/remove:TE.Service'
     $output = Run-Process $filename $args
     $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
@@ -1819,30 +1881,34 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
     if ($test -eq 'NotFound')
     {
         $test = Install-TAEFService
-        $test = Start-TAEFService
+        if ($test -eq 'NotRunning')
+        {
+            $test = Start-TAEFService
+        }
     }
-    elseif ($test -eq 'NotRunning-OlderVersion')
+    elseif ($test -in @('NotRunning-OlderVersion', 'Running-OlderVersion', 'ImageMissing'))
     {
-        $test = Uninstall-TAEFService
-        $test = Install-TAEFService
-        $test = Start-TAEFService
+        if ((Get-IsAdmin) -eq $false)
+        {
+            Write-Host "Upgrade TAEF service...Access Denied. Run from an admin prompt"
+            $global:issues++
+        }
+        elseif (Get-TAEFServiceInstaller)
+        {
+            $test = Uninstall-TAEFService
+            if ($test -eq 'NotRunning')
+            {
+                $test = Install-TAEFService
+                if ($test -eq 'NotRunning')
+                {
+                    $test = Start-TAEFService
+                }
+            }
+        }
     }
     elseif ($test -eq 'NotRunning')
     {
         $test = Start-TAEFService
-    }
-    elseif ($test -eq 'Running-OlderVersion')
-    {
-        $test = Stop-TAEFService
-        if ($test -ne $false)
-        {
-            if ($test -eq $true)
-            {
-                $test = Uninstall-TAEFService
-            }
-            $test = Install-TAEFService
-            $test = Start-TAEFService
-        }
     }
 }
 
