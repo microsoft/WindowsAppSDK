@@ -30,7 +30,7 @@ Get below list via `dotnet new list winui`
 | `winui-navview`   | WinUI 3 NavigationView starter app with MSIX packaging    |
 | `winui-tabview`   | WinUI 3 TabView starter app with MSIX packaging           |
 | `winui-lib`       | WinUI 3 class library for sharing UI components                          |
-| `winui-unittest`  | WinUI 3 packaged test app configured for MSTest                          |
+| `winui-unittest`  | WinUI 3 test app configured for MSTest            |
 
 Each `winui-*` short name also has a `winui3-*` alias (e.g. `winui3-mvvm`).
 
@@ -159,6 +159,44 @@ Supported choices: `net10.0`, `net11.0`. If you omit
 You can also edit `<TargetFramework>` in the
 generated `.csproj` afterward.
 
+### Unit tests
+
+`winui-unittest` uses `Microsoft.NET.Sdk` with the `MSTest` metapackage and
+supports both VSTest and Microsoft.Testing.Platform, with packaged or unpackaged
+deployment. Defaults are VSTest, packaged, and no fixture methods.
+
+```powershell
+dotnet new winui-unittest -n MyTests
+dotnet new winui-unittest -n MyMtpTests --test-runner Microsoft.Testing.Platform
+dotnet new winui-unittest -n MyDesktopTests --packaging Unpackaged
+dotnet new winui-unittest -n MyFixtureTests --fixture AssemblyInitialize ClassInitialize TestInitialize TestCleanup ClassCleanup AssemblyCleanup
+```
+
+Unpackaged output omits the MSIX manifest and package assets, while retaining
+the native DPI/compatibility `app.manifest`. Publisher parameters are enabled
+only for packaged projects. Tests share a WinUI application
+and dispatcher, so the sample explicitly disables parallel execution.
+
+MTP generation uses the standard MSTest post-action to create or update
+`test.runner` in `global.json`, reusing an existing ancestor/repository file
+and preserving unrelated properties. VSTest generation leaves it unchanged.
+Run commands from the generated project's directory with the intended runner
+selected. Substitute `x64` or `x86` for `ARM64` to match your machine:
+
+```powershell
+# Packaged or unpackaged MTP.
+dotnet build .\MyMtpTests.csproj -p:Platform=ARM64
+dotnet test --project .\MyMtpTests.csproj --no-build -p:Platform=ARM64 --report-trx
+
+# Unpackaged VSTest.
+dotnet test .\MyDesktopTests.csproj -p:Platform=ARM64 --logger trx
+```
+
+For packaged VSTest, build the project and run its `.build.appxrecipe` with
+Visual Studio's `vstest.console.exe` or use Test Explorer; testing the DLL
+with ordinary `dotnet test` does not activate the package. Native MTP
+`dotnet test --project` integration requires .NET SDK 10 or later.
+
 ### Choosing Packaging
 
 The WinUI app templates (`winui`, `winui-navview`, `winui-mvvm`, and
@@ -235,8 +273,9 @@ This template pack is built from the
 `dev\Templates\Dotnet\`. Each directory under `templates` contains both
 the sources and `.template.config` metadata. The C# VSIX embeds this same
 NuGet pack and registers it with Visual Studio's template engine; there is no
-separate Visual Studio build for these templates. Experimental Reactor templates
-remain CLI-only. The two-project `.csproj` + `.wapproj` template is a VSIX-only
+separate Visual Studio build for these templates. Experimental Reactor project
+templates appear in Visual Studio; `reactor-singlefile` remains CLI-only.
+The two-project `.csproj` + `.wapproj` template is a VSIX-only
 exception that retains its existing `.vstemplate` implementation; it is not part
 of this NuGet pack.
 
