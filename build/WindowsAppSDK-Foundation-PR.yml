@@ -48,7 +48,9 @@ variables:
 - name: maxParallelForBuildSamplesCompatJob_arm64
   value: 20
 
-name: $(MajorVersion).$(FoundationMinorVersionResolved).$(FoundationPatchVersionResolved)-$(NugetBuildTypePrefix)$(channel)$(Revision)
+# Same parts as $(pipelineName) (WindowsAppSDK-CommonVariables.yml@WinAppSDK) but with the Foundation $(channel),
+# because that template's BuildType defaults to 'experimental' and would label stable PR runs as experimental.
+name: $(MajorVersion).$(MinorVersion).$(WindowsAppRuntimePatchVersion)-$(NugetBuildTypePrefix)$(channel)$(Revision)
 
 resources:
   repositories:
