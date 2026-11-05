@@ -15,6 +15,10 @@
       <Configuration>Release</Configuration>
       <Platform>ARM64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64EC">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64EC</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -138,9 +142,20 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="APITests.cpp" />
+    <ClCompile Include="Licensing\LicensingTests.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(RepoRoot)\dev\Licensing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="$(RepoRoot)\dev\Licensing\MsixLicensing.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)Licensing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(MSBuildThisFileDirectory)Licensing\WindowsAppRuntime-License.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Licensing\pch.h" />
+    <ClInclude Include="Licensing\WindowsAppRuntime-License.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

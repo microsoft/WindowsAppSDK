@@ -41,35 +41,35 @@
       "name": {
         "text": "Windows App SDK version (* = latest)"
       },
-      "isVisible": "true"
+      "isVisible": "false"
     },
     {
       "id": "windowsSdkBuildToolsVersion",
       "name": {
         "text": "Windows SDK BuildTools version (* = latest)"
       },
-      "isVisible": "true"
+      "isVisible": "false"
     },
     {
       "id": "windowsSdkBuildToolsWinAppVersion",
       "name": {
         "text": "Windows SDK BuildTools WinApp version (* = latest)"
       },
-      "isVisible": "true"
+      "isVisible": "false"
     },
     {
       "id": "mstestVersion",
       "name": {
         "text": "MSTest version (* = latest)"
       },
-      "isVisible": "true"
+      "isVisible": "false"
     },
     {
       "id": "microsoftNetTestSdkVersion",
       "name": {
         "text": "Microsoft.NET.Test.Sdk version (* = latest)"
       },
-      "isVisible": "true"
+      "isVisible": "false"
     }
   ]
 }

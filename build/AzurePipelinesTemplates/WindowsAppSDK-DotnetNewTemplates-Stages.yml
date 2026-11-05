@@ -6,6 +6,12 @@ parameters:
 - name: sourceSubdirectory
   type: string
   default: 'WindowsAppSDK'
+- name: checkoutRepository
+  type: string
+  default: 'self'
+- name: checkoutPath
+  type: string
+  default: 's/WindowsAppSDK'
 - name: publishToInternalFeed
   type: boolean
   default: true
@@ -41,11 +47,15 @@ stages:
     pool: ${{ parameters.pool }}
     variables:
       ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
+      ob_git_fetchDepth: 1
       templateProjectDir: '$(Build.SourcesDirectory)\${{ parameters.sourceSubdirectory }}\dev\Templates\Dotnet'
       # Set by the "Compute package version" step below.
       PackVersionFull: ''
     steps:
-    - checkout: self
+    - checkout: ${{ parameters.checkoutRepository }}
+      path: ${{ parameters.checkoutPath }}
+      fetchDepth: 1
+      fetchTags: false
 
     - task: PowerShell@2
       displayName: 'Ensure test certificate for signing'
@@ -143,7 +153,7 @@ stages:
         workingDirectory: '$(templateProjectDir)'
 
     - ${{ if eq(parameters.SignOutput, true) }}:
-      - template: AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
+      - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WindowsAppSDKConfig
         parameters:
           FolderPath: '$(ob_outputDirectory)'
           Pattern: '*.nupkg'
@@ -160,5 +170,3 @@ stages:
         nuGetFeedType: 'internal'
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
         allowPackageConflicts: true
-
-

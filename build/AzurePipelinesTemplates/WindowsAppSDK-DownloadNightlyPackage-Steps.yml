@@ -1,0 +1,159 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# Downloads the Windows App SDK NuGet + MSIX artifact from the most recent monobuild
+# nightly that actually published it.
+#
+# Why this exists instead of `runVersion: 'latestFromBranch'`:
+#   That selector picks candidates by WHOLE-BUILD result, which is not the property this
+#   download depends on. The monobuild nightly is routinely `failed` purely because of its
+#   Test Gate stage while its Aggregate stage still published a correctly named artifact.
+#   So neither setting of allowFailedBuilds is correct:
+#     * false -> rejects every Test-Gate-red nightly and walks back to the newest non-failed
+#       run, which can be weeks old and have had its artifacts purged by retention. The
+#       download then fails with "Artifact <name> was not found for build <id>" naming a
+#       build id far enough in the past to make the failure look unrelated to the PR.
+#     * true  -> takes the newest run even when its Aggregate stage never produced the
+#       artifact, or produced it under the 1ES `<name>_failed_N` rename, which 404s too.
+#   Artifact presence is what we actually need, so probe for it directly via the Build REST
+#   API and download from that specific run.
+#
+# To pin a known-good nightly, queue the build with a `NightlyBuildIdOverride` variable set
+# to its build id. When that variable is not set the resolver ignores it and auto-selects.
+
+parameters:
+# Exact pipeline artifact name to download. Must match, not prefix-match: the nightly also
+# publishes '<name>_sdl_analysis', which is not the payload.
+- name: artifactName
+  type: string
+- name: targetPath
+  type: string
+  default: '$(System.ArtifactsDirectory)'
+# Definition id of WinAppSDK-MonoBuild-Nightly.
+- name: nightlyPipelineId
+  type: string
+  default: '190463'
+- name: nightlyBranchName
+  type: string
+# Recency guard. The search stops once it reaches runs older than this, so a regression that
+# stops the nightly publishing the artifact fails fast and says so, instead of silently
+# reaching back to a build whose artifacts no longer exist.
+- name: maxNightlyAgeInDays
+  type: number
+  default: 7
+# Upper bound on REST calls. The nightly currently runs ~8 times a day, so this covers more
+# than maxNightlyAgeInDays' worth of runs and the age guard is what terminates the search.
+# Only the matching run is probed in the healthy case; the full walk happens only when the
+# nightly has genuinely stopped publishing.
+- name: maxRunsToProbe
+  type: number
+  default: 100
+
+steps:
+- task: PowerShell@2
+  displayName: 'Resolve latest nightly publishing ${{ parameters.artifactName }}'
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    WASDK_COLLECTION_URI: $(System.CollectionUri)
+    WASDK_PROJECT_ID: $(System.TeamProjectId)
+    WASDK_PIPELINE_ID: ${{ parameters.nightlyPipelineId }}
+    WASDK_BRANCH_NAME: ${{ parameters.nightlyBranchName }}
+    WASDK_ARTIFACT_NAME: ${{ parameters.artifactName }}
+    WASDK_MAX_AGE_DAYS: ${{ parameters.maxNightlyAgeInDays }}
+    WASDK_MAX_RUNS: ${{ parameters.maxRunsToProbe }}
+    # Renders as the literal '$(NightlyBuildIdOverride)' when the variable is undefined;
+    # the resolver only honours it when it is all digits.
+    WASDK_PINNED_BUILD_ID: $(NightlyBuildIdOverride)
+  inputs:
+    targetType: 'inline'
+    script: |
+      $ErrorActionPreference = 'Stop'
+      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+      $collectionUri = $env:WASDK_COLLECTION_URI.TrimEnd('/')
+      $projectId     = $env:WASDK_PROJECT_ID
+      $pipelineId    = $env:WASDK_PIPELINE_ID
+      $branchName    = $env:WASDK_BRANCH_NAME
+      $artifactName  = $env:WASDK_ARTIFACT_NAME
+      $maxAgeDays    = [int]$env:WASDK_MAX_AGE_DAYS
+      $maxRuns       = [int]$env:WASDK_MAX_RUNS
+      $pinnedBuildId = $env:WASDK_PINNED_BUILD_ID
+
+      if ([string]::IsNullOrWhiteSpace($env:SYSTEM_ACCESSTOKEN)) {
+        Write-Host '##vso[task.logissue type=error]System.AccessToken is empty, so the nightly that publishes the artifact cannot be resolved. Map it into the step env or grant the build identity access to the OAuth token.'
+        exit 1
+      }
+      $headers = @{ Authorization = 'Bearer ' + $env:SYSTEM_ACCESSTOKEN }
+
+      function Get-ArtifactNames([string] $BuildId) {
+        $uri = $collectionUri + '/' + $projectId + '/_apis/build/builds/' + $BuildId + '/artifacts?api-version=7.1'
+        $response = Invoke-RestMethod -Uri $uri -Headers $headers -Method Get
+        if ($null -eq $response -or $null -eq $response.value) { return @() }
+        return @($response.value | ForEach-Object { $_.name })
+      }
+
+      $resolvedBuildId = ''
+
+      if ($pinnedBuildId -match '^\d+$') {
+        Write-Host ('NightlyBuildIdOverride is set; using pinned nightly build ' + $pinnedBuildId)
+        $names = @(Get-ArtifactNames $pinnedBuildId)
+        if ($names -notcontains $artifactName) {
+          Write-Host ('##vso[task.logissue type=error]Pinned build ' + $pinnedBuildId + ' does not publish an artifact named ''' + $artifactName + '''. It reports ' + $names.Count + ' artifacts; its artifacts may already have been purged by retention. Pick a newer build id or clear NightlyBuildIdOverride.')
+          exit 1
+        }
+        $resolvedBuildId = $pinnedBuildId
+      }
+      else {
+        $listUri = $collectionUri + '/' + $projectId + '/_apis/build/builds' +
+                   '?definitions=' + $pipelineId +
+                   '&branchName=' + [uri]::EscapeDataString($branchName) +
+                   '&statusFilter=completed' +
+                   '&queryOrder=finishTimeDescending' +
+                   '&$top=' + $maxRuns +
+                   '&api-version=7.1'
+        $runs = @((Invoke-RestMethod -Uri $listUri -Headers $headers -Method Get).value)
+        Write-Host ('Looking for the newest run of pipeline ' + $pipelineId + ' on ' + $branchName +
+                    ' that publishes ''' + $artifactName + ''' (' + $runs.Count + ' completed runs returned, ' +
+                    $maxAgeDays + '-day limit).')
+
+        $cutoff = (Get-Date).ToUniversalTime().AddDays(-$maxAgeDays)
+        foreach ($run in $runs) {
+          $finishTime = $null
+          if ($run.finishTime) { $finishTime = ([datetime]$run.finishTime).ToUniversalTime() }
+          if ($null -ne $finishTime -and $finishTime -lt $cutoff) {
+            Write-Host ('  build ' + $run.id + ' finished ' + $finishTime.ToString('u') + ', past the ' + $maxAgeDays + '-day limit. Stopping.')
+            break
+          }
+
+          $names = @(Get-ArtifactNames $run.id)
+          $hasArtifact = ($names -contains $artifactName)
+          Write-Host ('  build ' + $run.id + ' (' + $run.buildNumber + ') result=' + $run.result +
+                      ' artifacts=' + $names.Count + ' hasArtifact=' + $hasArtifact)
+          if ($hasArtifact) {
+            $resolvedBuildId = [string]$run.id
+            break
+          }
+        }
+      }
+
+      if ([string]::IsNullOrWhiteSpace($resolvedBuildId)) {
+        Write-Host ('##vso[task.logissue type=error]No run of pipeline ' + $pipelineId + ' on ' + $branchName +
+                    ' in the last ' + $maxAgeDays + ' days publishes an artifact named ''' + $artifactName +
+                    '''. The nightly is not producing it (check its Aggregate stage), or the artifact was renamed. ' +
+                    'Queue with NightlyBuildIdOverride=<build id> to unblock with a known-good run.')
+        exit 1
+      }
+
+      Write-Host ('Resolved nightly build id: ' + $resolvedBuildId)
+      Write-Host ('##vso[task.setvariable variable=ResolvedNightlyBuildId]' + $resolvedBuildId)
+
+- task: DownloadPipelineArtifact@2
+  displayName: 'Download WindowsAppSDK From Latest Nightly'
+  inputs:
+    artifactName: ${{ parameters.artifactName }}
+    targetPath: '${{ parameters.targetPath }}'
+    source: 'specific'
+    project: $(System.TeamProjectId)
+    pipeline: ${{ parameters.nightlyPipelineId }}
+    runVersion: 'specific'
+    runId: $(ResolvedNightlyBuildId)

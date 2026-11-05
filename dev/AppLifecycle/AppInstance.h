@@ -55,6 +55,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         void EnqueueRedirectionRequestId(GUID id);
         GUID DequeueRedirectionRequestId();
 
+        // noexcept HRESULT-returning worker for GetInstances. The public GetInstances
+        // boundary is intentionally thin so a failed HRESULT does not trigger the deep
+        // C++/WinRT projection rethrow path that exhausted the stack via WIL's
+        // FormatMessage-based exception logging (Bug 61688595).
+        static HRESULT GetInstancesImpl(winrt::Windows::Foundation::Collections::IVector<Microsoft::Windows::AppLifecycle::AppInstance>& instancesOut) noexcept;
+
         // Named object prefixes used to scope.
         std::wstring m_moduleName;
         std::wstring m_processName;

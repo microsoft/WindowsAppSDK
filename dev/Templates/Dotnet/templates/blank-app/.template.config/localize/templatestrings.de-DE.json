@@ -1,0 +1,4 @@
+{
+  "name": "Leere WinUI-App (verpackt)",
+  "description": "Eine Projektvorlage zum Erstellen einer WinUI-App zusammen mit einem MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store."
+}

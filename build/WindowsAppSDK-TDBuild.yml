@@ -8,7 +8,7 @@ parameters:
   - 'COMMIT'
 
 variables:
-- group: TouchDownBuild-Secrets
+- group: WinAppSDK-TouchDownBuild-Secrets
 
 jobs:
 - job: Localization

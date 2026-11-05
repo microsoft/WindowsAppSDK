@@ -31,6 +31,9 @@ parameters:
 - name: condition
   type: string
   default: ''
+- name: nightlyPipelineId
+  type: string
+  default: '190463'
 
 stages:
 - stage: VSIXTemplates_BuildValidation
@@ -84,7 +87,7 @@ stages:
         runStaticAnalysis: false
         PublishSymbols: false
         UseCurrentBuild: false
-        UseLatestNightlyFromBranch: true
+        nightlyPipelineId: ${{ parameters.nightlyPipelineId }}
         IsOfficial: false
         OptionalVSIXVersion: '$(OptionalVSIXVersion)'
 
