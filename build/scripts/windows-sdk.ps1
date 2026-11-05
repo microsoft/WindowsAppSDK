@@ -10,6 +10,45 @@ param(
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = "Stop"
 
+function Assert-Executable
+{
+    Param
+    (
+        [String]$FilePath,
+        $Response
+    )
+
+    # Throws, describing what was downloaded instead, unless the file starts like a Windows program.
+    $bytes = New-Object byte[] 64
+    $stream = [IO.File]::OpenRead($FilePath)
+    try
+    {
+        $count = $stream.Read($bytes, 0, $bytes.Length)
+        $length = $stream.Length
+    }
+    finally
+    {
+        $stream.Dispose()
+    }
+
+    if (($count -ge 2) -and ($bytes[0] -eq 0x4D) -and ($bytes[1] -eq 0x5A))
+    {
+        return
+    }
+
+    $start = ''
+    if ($count -gt 0)
+    {
+        $start = -join ($bytes[0..($count - 1)] | ForEach-Object { if (($_ -ge 0x20) -and ($_ -lt 0x7F)) { [char]$_ } else { '.' } })
+    }
+    $contentType = ''
+    if ($Response -and $Response.Headers.ContainsKey('Content-Type'))
+    {
+        $contentType = $Response.Headers['Content-Type']
+    }
+    throw "The download isn't a program: $length bytes, HTTP status $($Response.StatusCode), Content-Type '$contentType', starting '$start'."
+}
+
 function Install-EXE
 {
     Param
@@ -19,36 +58,49 @@ function Install-EXE
         [String[]]$ArgumentList
     )
 
-    $exitCode = -1
-
-    try
+    # A download occasionally gives a file that Windows can't start ("not a valid application for this OS platform"),
+    # so check each download, and retry the download and the launch a few times before giving up.
+    $maxAttempts = 3
+    for ($attempt = 1; $attempt -le $maxAttempts; $attempt++)
     {
-        Write-Host "Downloading $Name..."
-        $FilePath = "${env:Temp}\$Name"
-
-        Invoke-WebRequest -Uri $Url -OutFile $FilePath -UseBasicParsing
-
-        Write-Host "Starting Install $Name..."
-        $process = Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -Wait -PassThru
-        $exitCode = $process.ExitCode
-
-        if ($exitCode -eq 0 -or $exitCode -eq 3010)
+        try
         {
-            Write-Host -Object 'Installation successful'
-            return $exitCode
+            # Download into a new folder each time, so a bad file from an earlier attempt can't get in the way.
+            $folder = Join-Path $env:Temp ([Guid]::NewGuid().ToString('N'))
+            New-Item -ItemType Directory -Path $folder | Out-Null
+            $FilePath = Join-Path $folder $Name
+
+            Write-Host "Downloading $Name..."
+            $response = Invoke-WebRequest -Uri $Url -OutFile $FilePath -UseBasicParsing -PassThru
+            Assert-Executable -FilePath $FilePath -Response $response
+
+            Write-Host "Starting Install $Name..."
+            $process = Start-Process -FilePath $FilePath -ArgumentList $ArgumentList -Wait -PassThru
+            $exitCode = $process.ExitCode
+
+            if ($exitCode -eq 0 -or $exitCode -eq 3010)
+            {
+                Write-Host -Object 'Installation successful'
+                return $exitCode
+            }
+            else
+            {
+                Write-Host -Object "Non zero exit code returned by the installation process : $exitCode."
+                return $exitCode
+            }
         }
-        else
+        catch
         {
-            Write-Host -Object "Non zero exit code returned by the installation process : $exitCode."
-            return $exitCode
+            Write-Host -Object "Failed to install the Executable $Name (attempt $attempt of $maxAttempts)"
+            Write-Host -Object $_.Exception.Message
+            if ($attempt -lt $maxAttempts)
+            {
+                Start-Sleep -Seconds (15 * $attempt)
+            }
         }
     }
-    catch
-    {
-        Write-Host -Object "Failed to install the Executable $Name"
-        Write-Host -Object $_.Exception.Message
-        return -1
-    }
+
+    return -1
 }
 
 $ErrorCodes = Data {
