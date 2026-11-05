@@ -197,6 +197,103 @@ for more details.
 `GetTempPath2W()` is available on Windows version &gt;= 10.0.20348.0. `ApplicationData.TemporaryPath`
 performs the equivalent logic on older systems (aka Polyfill).
 
+### 3.5.1. Unpackaged context
+
+Unpackaged applications request an `ApplicationData` object for a specific context (publisher +
+product). This context can be specified in multiple ways:
+
+1. Explicit API Parameter - Call `ApplicationData.GetForUnpackaged(publisher, product)`.
+2. Implicit via Resource in process' Executable - Call `ApplicationData.GetForUnpackaged()` to get context compiled into the process' executable at build-time.
+3. Implicit via Set API - Call `ApplicationData.GetForUnpackaged()` to get context set via earlier call to `ApplicationData.SetContextForUnpackaged(publisher, product)`.
+
+#1 is the common case when called by the application developer who creates the executable.
+
+#2 is needed by components used in processes where the component author doesn't know the calling
+processes' context at build time, and isn't otherwise able to be handed the context at runtime. The
+application sets the context fo the process and component authors use whatever has been defined for
+the process' context.
+
+This can also be used by application developers who prefer to compile the context into their
+executable rather than specify it at runtime.
+
+#3 is needed by components in processes using 'shared' or 'hosting' executables where one executable
+is used by multiple applications. For example, `python.exe`, `pwsh.exe`, `
+
+### 3.5.2 GetForUnpackaged() context resolution
+
+The algorithm for `GetForUnpackaged()` to determine its context:
+
+```c++
+std::wstring g_unpackagedPublisher;
+std::wstring g_unpackagedProduct;
+std::mutex g_unpackagedLock;
+
+void SetContextForUnpackaged(const std::wstring& publisher, const std::wstring& product)
+{
+    auto lock{ std::unique_lock<std::mutex>(g_unpackagedLock) };
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_ASSIGNED), !g_unpackagedPublisher.empty());
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_ASSIGNED), !g_unpackagedProduct.empty());
+    g_unpackagedPublisher = publisher;
+    g_unpackagedProduct = product;
+}
+
+void GetUnpackagedContext(std::wstring& publisher, std::wstring& product)
+{
+    publisher.clear();
+    product.clear();
+
+    if (!GetUnpackagedContextFromResource(publisher, product))
+    {
+        auto lock{ std::unique_lock<std::mutex>(g_unpackagedLock) };
+        publisher = g_unpackagedPublisher;
+        product = g_unpackagedProduct;
+    }
+}
+
+bool GetUnpackagedContextFromResource(std::wstring& publisher, std::wstring& product)
+{
+    HMODULE module{ ::GetModuleHandleW(nullptr) };
+
+    std::wstring publisherFromResource{ GetStringFromResource( module.get(), L"ApplicationData.Publisher", L"ApplicationDataContext") };
+    if (!publisherFromResource.empty())
+    {
+        std::wstring productFromResource{ GetStringFromResource( module.get(), L"ApplicationData.Product", L"ApplicationDataContext") };
+        if (!productFromResource.empty())
+        {
+            publisher = publisherFromResource;
+            product = productFromResource;
+            return true;
+        }
+    }
+    return false;
+}
+
+std::wstring GetStringFromResource(HMODULE module, PCWSTR resourceName, PCSTR resourceType)
+{
+    HRSRC resourceInformationBlock{ ::FindResourceW(module, resourceName, resourceType) };
+    if (!resourceInformationBlock)
+    {
+        const auto lastError{ GetLastError() };
+        if (lastError == ERROR_RESOURCE_NAME_NOT_FOUND)
+        {
+            return false;
+        }
+        THROW_WIN32_ERROR(lastError);
+    }
+    HGLOBAL resourceValue{ ::LoadResource(module, resourceInformationBlock) };
+    if (!resourceValue)
+    {
+        const auto lastError{ GetLastError() };
+        if ((lastError == ERROR_RESOURCE_DATA_NOT_FOUND) || (lastError == ERROR_RESOURCE_TYPE_NOT_FOUND))
+        {
+            return false;
+        }
+        THROW_WIN32_ERROR(lastError);
+    }
+    return std::wstring{ reinterpret_cast<PCWSTR>(::LockResource(resourceValue)) };
+}
+```
+
 # 4. Examples
 
 ## 4.1. Packaged app using LocalPath
@@ -241,7 +338,7 @@ void SaveData(string data)
 
 ## 4.4. Unpackaged app using LocalPath
 
-An unpackaged app app creating a file its LocalPath data store.
+An unpackaged app app creating a file in its LocalPath data store.
 
 ```c#
 void SaveData(string data)
@@ -278,6 +375,54 @@ HRESULT SaveData(DWORD dataLength, void* data)
 }
 ```
 
+## 4.6. Component in Unpackaged app using LocalPath - Context defined at build-time
+
+A component in an unpackaged app app creating a file in the app's LocalPath data store when the app
+has defined the unpackaged context in resources at build-time.
+
+```rc
+// ContosoApp.rc
+
+L" ApplicationData.Publisher" L"ApplicationDataContext" L"Fabrikam"
+L" ApplicationData.Product"   L"ApplicationDataContext" L"Contoso"
+```
+
+```c#
+void SaveData(string data)
+{
+    var applicationData = ApplicationData.GetForUnpackaged();
+    var filename = Path.Combine(applicationData.LocalPath, "stuff.dat");
+    File.WriteAllText(filename, data, System.Text.UTF8Encoding);
+}
+```
+
+## 4.7. Component in Unpackaged app using LocalPath - Context defined at run-time
+
+A component in an unpackaged app app creating a file in the app's LocalPath data store after the app
+has defined the unpackaged context at run-time.
+
+```c#
+class Program
+{
+    static void Main()
+    {
+        string publisher = "Fabrikam";
+        string product = "Contoso";
+        ApplicationData.SetContextForUnpackaged(publisher, product)
+        ...
+    }
+}
+```
+
+```c#
+void SaveData(string data)
+{
+    var applicationData = ApplicationData.GetForUnpackaged();
+    var filename = Path.Combine(applicationData.LocalPath, "stuff.dat");
+    File.WriteAllText(filename, data, System.Text.UTF8Encoding);
+}
+```
+
 # 5. Remarks
 
 ## 5.1. Platform Support
@@ -307,7 +452,7 @@ If you need this functionality use the OS APIs in `Windows.Storage.ApplicationDa
 ```c# (but really MIDL3)
 namespace Microsoft.Windows.Storage
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract ApplicationDataContract{};
 
     /// Specifies the type of data store.
@@ -387,9 +532,20 @@ namespace Microsoft.Windows.Storage
         static ApplicationData GetForPackageFamily(String packageFamilyName);
 
         /// Get an instance of ApplicationData for the specified unpackaged app for the current user.
-        [feature(Feature_ApplicationData)]
+        /// @see GetForUnpackaged()
         [contract(ApplicationDataContract, 2)]
         static ApplicationData GetForUnpackaged(String publisher, String product);
+
+        /// Get an instance of ApplicationData for the current unpackaged app for the current user, per the current context.
+        /// @see GetForUnpackaged(String, String)
+        /// @see SetForUnpackaged(String, String)
+        [contract(ApplicationDataContract, 3)]
+        static ApplicationData GetForUnpackaged(String publisher, String product);
+
+        /// Set the context (product and publisher) for the current unpackaged app.
+        /// @see GetForUnpackaged()
+        [contract(ApplicationDataContract, 3)]
+        static void SetContextForUnpackaged(String publisher, String product);
 
         /// Return true if the package family supports the machine data store.
         Boolean IsMachinePathSupported { get; };
