@@ -7,11 +7,12 @@ Validates the WinUI 3 dotnet new template pack end-to-end.
 
 .DESCRIPTION
 Builds (or consumes) the template NuGet package, reinstalls it locally, and
-scaffolds every WinUI 3 project and item template. Each generated project is
-built; app templates build with -p:WindowsPackageType=None, so the packaged
-(single-project MSIX) path is not exercised. When launching is enabled, app
-templates are started directly from the built executable rather than via
-dotnet run, so they run without MSIX package identity.
+scaffolds every WinUI 3 project and item template. Apps with a Packaging option
+are built in both modes without overriding the generated package settings.
+Representative unpackaged XAML and Reactor apps are also published in Release;
+their PRI and icon output is checked, followed by a startup smoke test unless
+SkipAppLaunch is specified. Legacy app and item-host builds still override
+WindowsPackageType=None.
 
 .PARAMETER PackagePath
 Path to an existing Microsoft.WindowsAppSDK.WinUI.CSharp.Templates .nupkg. When
@@ -28,8 +29,8 @@ the .nupkg (default: localpackages).
 One or more MSBuild Platform values to validate for each template (default: x64).
 
 .PARAMETER SkipAppLaunch
-Skips launching the generated WinUI apps at the end of the run. Builds still
-occur.
+Skips published-app startup smoke tests and launching the generated WinUI apps
+at the end of the run. Builds, publishes, and publish-output checks still occur.
 
 .PARAMETER RunTimeoutSeconds
 If greater than zero, any WinUI apps launched at the end of the run are
@@ -247,10 +248,14 @@ function Remove-StaleTemplateEnginePackage {
 function Get-AppExecutablePath {
     param(
         [string]$ProjectPath,
-        [string]$ProjectName
+        [string]$ProjectName,
+        [string]$Platform
     )
 
     $binFolder = Join-Path -Path $ProjectPath -ChildPath 'bin'
+    if ($Platform) {
+        $binFolder = Join-Path -Path $binFolder -ChildPath "$Platform\Debug"
+    }
     if (-not (Test-Path -Path $binFolder -PathType Container)) {
         return $null
     }
@@ -322,8 +327,8 @@ function Write-ResolvedPackageVersions {
         [string]$ProjectPath
     )
 
-    # Templates reference WindowsAppSDK and the SDK build tools with Version="*",
-    # so each build silently picks whatever the feed serves. Log the resolved
+    # Templates pin WindowsAppSDK and the SDK build tools to whatever the feed
+    # serves as latest when scaffolded. Log the resolved
     # versions before building, so a failed build shows which ones it used.
     # Logging must never fail the run, hence Continue + try/finally.
     Write-Step "Resolving package versions for $(Split-Path -Path $ProjectFile -Leaf)"
@@ -414,6 +419,202 @@ function Test-WinUiProjectTemplate {
     }
 }
 
+function Test-PackagingParameters {
+    param([string]$TemplatesRoot)
+
+    foreach ($config in Get-ChildItem -LiteralPath $TemplatesRoot -Recurse -Force -Filter template.json) {
+        $template = Get-Content -LiteralPath $config.FullName -Raw | ConvertFrom-Json
+        if ($template.symbols.PSObject.Properties.Name -notcontains 'Packaging' -or
+            @($template.shortName) -contains 'winui-unittest') {
+            continue
+        }
+        if ($template.symbols.Packaging.defaultValue -ne 'Packaged') {
+            throw "Packaging must default to Packaged in '$($config.FullName)'."
+        }
+        if ($template.symbols.PSObject.Properties.Name -notcontains 'publisherDn') {
+            continue
+        }
+        $parameters = @($template.symbols.PSObject.Properties |
+            Where-Object { $_.Value.type -eq 'parameter' } |
+            ForEach-Object { $_.Name })
+        if (($parameters[-3..-1] -join ',') -ne 'Packaging,publisherDn,publisherDisplay') {
+            throw "Packaging and publisher parameters must be last in '$($config.FullName)'."
+        }
+        foreach ($publisher in @('publisherDn', 'publisherDisplay')) {
+            if ($template.symbols.$publisher.isEnabled -ne '(Packaging == "Packaged")') {
+                throw "Publisher fields must be disabled when unpackaged in '$($config.FullName)'."
+            }
+        }
+        $idePath = Join-Path -Path $config.DirectoryName -ChildPath 'ide.host.json'
+        $ide = Get-Content -LiteralPath $idePath -Raw | ConvertFrom-Json
+        if (($ide.symbolInfo[-3..-1].id -join ',') -ne 'Packaging,publisherDn,publisherDisplay') {
+            throw "Packaging and publisher fields must be last in '$idePath'."
+        }
+    }
+}
+
+function Test-UnpackagedPublish {
+    param(
+        [string]$TemplateShortName,
+        [string]$ProjectName,
+        [string]$ProjectPath,
+        [string]$Platform
+    )
+
+    $projectFile = Join-Path -Path $ProjectPath -ChildPath "$ProjectName.csproj"
+    $publishPath = Join-Path -Path $ProjectPath -ChildPath "publish\$Platform"
+    Invoke-DotnetCommand -Arguments @('publish', $projectFile, '-c', 'Release', "-p:Platform=$Platform", "-r", "win-$($Platform.ToLowerInvariant())", '-o', $publishPath) -WorkingDirectory $ProjectPath -Description "publish $TemplateShortName (Unpackaged)"
+    foreach ($relativePath in @("$ProjectName.exe", "$ProjectName.pri", 'Assets\AppIcon.ico')) {
+        if (-not (Test-Path -LiteralPath (Join-Path -Path $publishPath -ChildPath $relativePath) -PathType Leaf)) {
+            throw "Published '$TemplateShortName' (Unpackaged, $Platform) is missing '$relativePath'."
+        }
+    }
+    Add-Result -Template $TemplateShortName -Platform $Platform -Step 'unpackaged publish output' -Status 'Succeeded' -Path $publishPath
+
+    $hostArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString()
+    if ($SkipAppLaunch.IsPresent -or ($Platform -ieq 'ARM64' -and $hostArchitecture -ine 'ARM64')) {
+        Add-Result -Template $TemplateShortName -Platform $Platform -Step 'published startup' -Status 'Skipped' -Path $publishPath
+        return
+    }
+
+    $executable = Join-Path -Path $publishPath -ChildPath "$ProjectName.exe"
+    $process = Start-Process -FilePath $executable -WorkingDirectory $publishPath -PassThru
+    try {
+        $deadline = [DateTime]::UtcNow.AddSeconds(15)
+        do {
+            Start-Sleep -Milliseconds 250
+            $process.Refresh()
+            if ($process.HasExited) {
+                throw "Published '$TemplateShortName' exited during startup with code $($process.ExitCode)."
+            }
+        } while ($process.MainWindowHandle -eq [IntPtr]::Zero -and [DateTime]::UtcNow -lt $deadline)
+
+        if ($process.MainWindowHandle -eq [IntPtr]::Zero) {
+            throw "Published '$TemplateShortName' did not create a window within 15 seconds."
+        }
+        if ($process.WaitForExit(5000)) {
+            throw "Published '$TemplateShortName' exited after creating its window with code $($process.ExitCode)."
+        }
+        Add-Result -Template $TemplateShortName -Platform $Platform -Step 'published startup' -Status 'Succeeded' -Path $executable
+    }
+    finally {
+        if (-not $process.HasExited) {
+            Stop-Process -Id $process.Id -Force
+            $process.WaitForExit()
+        }
+        $process.Dispose()
+    }
+}
+
+function Test-PackagingOptions {
+    param(
+        [string]$TemplateShortName,
+        [string]$Kind,
+        [string]$WorkingRoot,
+        [string[]]$Platforms
+    )
+
+    foreach ($packaging in @('Default', 'Packaged', 'Unpackaged')) {
+        $projectName = 'Packaging_{0}_{1}' -f $TemplateShortName.Replace('-', '_'), $packaging
+        $projectPath = Join-Path -Path $WorkingRoot -ChildPath $projectName
+        $createArgs = @('new', $TemplateShortName, '-n', $projectName, '-o', $projectPath, '--no-update-check')
+        if ($packaging -ne 'Default') {
+            $createArgs += @('--packaging', $packaging)
+        }
+        # Reactor templates have no --wasdk-version option (Windows App SDK comes from Microsoft.UI.Reactor).
+        if ($TemplateShortName -notlike 'reactor*') {
+            $createArgs += @('--wasdk-version', $script:windowsAppSdkVersion)
+        }
+        Invoke-DotnetCommand -Arguments $createArgs -WorkingDirectory $WorkingRoot -Description "create $TemplateShortName ($packaging)"
+        $unpackaged = $packaging -eq 'Unpackaged'
+
+        if ($Kind -eq 'FileBasedApp') {
+            $files = @(Get-ChildItem -LiteralPath $projectPath -Recurse -Force -File)
+            if ($files.Count -ne 1 -or $files[0].Name -ne "$projectName.cs") {
+                throw "Template '$TemplateShortName' must remain a single-file app ($packaging)."
+            }
+            $source = Get-Content -LiteralPath $files[0].FullName -Raw
+            if (($source -match '(?m)^#:property WindowsPackageType=None\s*$') -ne $unpackaged) {
+                throw "Incorrect WindowsPackageType for '$TemplateShortName' ($packaging)."
+            }
+        }
+        else {
+            $projectFile = Join-Path -Path $projectPath -ChildPath "$projectName.csproj"
+            [xml]$project = Get-Content -LiteralPath $projectFile -Raw
+            $packageType = $project.SelectSingleNode('/Project/PropertyGroup/WindowsPackageType')
+            $msixTooling = $project.SelectSingleNode('/Project/PropertyGroup/EnableMsixTooling')
+            $msixReference = $project.SelectSingleNode('//PackageReference[@Include="Microsoft.Windows.SDK.BuildTools.MSIX"]')
+            $winappReference = $project.SelectSingleNode('//PackageReference[@Include="Microsoft.Windows.SDK.BuildTools.WinApp"]')
+            $msixCapability = $project.SelectSingleNode('//ProjectCapability[@Include="Msix"]')
+            $packageMenu = $project.SelectSingleNode('//HasPackageAndPublishMenu')
+            $manifestPath = Join-Path -Path $projectPath -ChildPath 'Package.appxmanifest'
+            $assetsPath = Join-Path -Path $projectPath -ChildPath 'Assets'
+            $iconPath = Join-Path -Path $assetsPath -ChildPath 'AppIcon.ico'
+            $applicationIcon = $project.SelectSingleNode('/Project/PropertyGroup/ApplicationIcon')
+            $iconContent = $project.SelectSingleNode('//Content[@Include="Assets\AppIcon.ico"]')
+            if (-not (Test-Path -LiteralPath $iconPath) -or -not $applicationIcon -or
+                $applicationIcon.InnerText -ne 'Assets\AppIcon.ico' -or -not $iconContent) {
+                throw "Application icon missing in '$TemplateShortName' ($packaging)."
+            }
+            $launchSettings = Get-Content -LiteralPath (Join-Path -Path $projectPath -ChildPath 'Properties\launchSettings.json') -Raw | ConvertFrom-Json
+            $commands = @($launchSettings.profiles.PSObject.Properties | ForEach-Object { $_.Value.commandName })
+
+            if ($unpackaged) {
+                if (-not $packageType -or $packageType.InnerText -ne 'None' -or
+                    -not $msixTooling -or $msixTooling.InnerText -ne 'false' -or
+                    -not $msixReference -or
+                    $winappReference -or $msixCapability -or $packageMenu -or
+                    (Test-Path -LiteralPath $manifestPath) -or
+                    $commands -contains 'MsixPackage' -or $commands -notcontains 'Project') {
+                    throw "Packaged content or settings remain in '$TemplateShortName' (Unpackaged)."
+                }
+                Assert-CsprojPackageVersionPinned -CsprojPath $projectFile -PackageName 'Microsoft.Windows.SDK.BuildTools.MSIX'
+                $assets = @(Get-ChildItem -LiteralPath $assetsPath -Recurse -File)
+                if ($assets.Count -ne 1 -or $assets[0].Name -ne 'AppIcon.ico') {
+                    throw "MSIX-only assets remain in '$TemplateShortName' (Unpackaged)."
+                }
+                $sources = Get-ChildItem -LiteralPath $projectPath -Recurse -File |
+                    Where-Object { $_.Extension -in @('.cs', '.xaml', '.csproj') }
+                foreach ($sourceFile in $sources) {
+                    if ((Get-Content -LiteralPath $sourceFile.FullName -Raw) -match 'Assets[\\/](?!AppIcon\.ico)') {
+                        throw "Reference to excluded assets in '$($sourceFile.FullName)'."
+                    }
+                }
+            }
+            elseif ($packageType -or -not $msixTooling -or $msixTooling.InnerText -ne 'true' -or
+                $msixReference -or
+                -not $winappReference -or -not $msixCapability -or -not $packageMenu -or
+                -not (Test-Path -LiteralPath $manifestPath) -or -not (Test-Path -LiteralPath $assetsPath) -or
+                $commands.Count -ne 1 -or $commands[0] -ne 'MsixPackage') {
+                throw "Packaged content or settings missing in '$TemplateShortName' ($packaging)."
+            }
+        }
+        Add-Result -Template $TemplateShortName -Platform 'N/A' -Step "packaging: $packaging" -Status 'Succeeded' -Path $projectPath
+        if ($packaging -ne 'Default') {
+            foreach ($platform in $Platforms) {
+                Invoke-DotnetCommand -Arguments @('build', $projectFile, '-c', 'Debug', "-p:Platform=$platform", '-r', "win-$($platform.ToLowerInvariant())") -WorkingDirectory $projectPath -Description "build $TemplateShortName ($packaging)"
+                Add-Result -Template $TemplateShortName -Platform $platform -Step "build: $packaging" -Status 'Succeeded' -Path $projectFile
+                if ($unpackaged) {
+                    $exePath = Get-AppExecutablePath -ProjectPath $projectPath -ProjectName $projectName -Platform $platform
+                    if ($exePath) {
+                        $appExecutables.Add([pscustomobject]@{
+                                Template = $TemplateShortName
+                                Platform = $platform
+                                Path     = $exePath
+                            }) | Out-Null
+                    }
+                    else {
+                        Write-Warning "Unable to locate executable for template '$TemplateShortName' at '$projectPath'."
+                    }
+                }
+                if ($unpackaged -and $TemplateShortName -in @('winui', 'reactor')) {
+                    Test-UnpackagedPublish -TemplateShortName $TemplateShortName -ProjectName $projectName -ProjectPath $projectPath -Platform $platform
+                }
+            }
+        }
+    }
+}
+
 function Test-ItemTemplates {
     param(
         [string]$WorkingRoot,
@@ -462,6 +663,26 @@ function Assert-CsprojPackageVersion {
     if ($ref.Version -ne $ExpectedVersion) {
         throw "PackageReference '$PackageName' has Version='$($ref.Version)' but expected '$ExpectedVersion' in '$CsprojPath'"
     }
+}
+
+function Assert-CsprojPackageVersionPinned {
+    # Asserts the template's add-package post action replaced the '*' placeholder
+    # with a concrete version.
+    param(
+        [string]$CsprojPath,
+        [string]$PackageName
+    )
+
+    [xml]$csproj = Get-Content -Path $CsprojPath
+    $ref = $csproj.SelectNodes('//PackageReference') |
+        Where-Object { $_.Include -eq $PackageName }
+    if (-not $ref) {
+        throw "PackageReference '$PackageName' not found in '$CsprojPath'"
+    }
+    if ($ref.Version -notmatch '^\d+(\.\d+){1,3}(-[0-9A-Za-z.-]+)?$') {
+        throw "PackageReference '$PackageName' has Version='$($ref.Version)' but expected a concrete pinned version in '$CsprojPath'"
+    }
+    Write-Step "$PackageName pinned to $($ref.Version)"
 }
 
 function Get-LatestOfficialWasdkVersion {
@@ -673,6 +894,8 @@ try {
     Remove-TemplatePackIfPresent -RepoRoot $repoRoot
     Install-TemplatePack -RepoRoot $repoRoot -PackageToInstall $packageToInstall
 
+    Test-PackagingParameters -TemplatesRoot (Join-Path -Path $PSScriptRoot -ChildPath 'templates')
+
     $projectTemplates = @(
         @{ ShortName = 'winui'; Kind = 'App' },
         @{ ShortName = 'winui-navview'; Kind = 'App' },
@@ -686,9 +909,7 @@ try {
         # template builds cleanly.
         @{ ShortName = 'winui-unittest'; Kind = 'App' },
         # Reactor (Microsoft.UI.Reactor) app templates: pure C#, dotnet-new-only.
-        # Like the other app templates they are packaged (single-project MSIX),
-        # and they build through the same App path below, which passes
-        # -p:WindowsPackageType=None; the .csproj itself does not set it.
+        # Build both generated packaging modes, just like the XAML apps.
         @{ ShortName = 'reactor'; Kind = 'App' },
         @{ ShortName = 'reactor-mvu'; Kind = 'App' },
         @{ ShortName = 'reactor-navview'; Kind = 'App' },
@@ -699,6 +920,10 @@ try {
     )
 
     foreach ($template in $projectTemplates) {
+        if ($template.Kind -eq 'App' -and $template.ShortName -ne 'winui-unittest') {
+            Test-PackagingOptions -TemplateShortName $template.ShortName -Kind $template.Kind -WorkingRoot $workingRoot -Platforms $Platforms
+            continue
+        }
         foreach ($platform in $Platforms) {
             Test-WinUiProjectTemplate -TemplateShortName $template.ShortName -Kind $template.Kind -Platform $platform -WorkingRoot $workingRoot
         }
@@ -709,13 +934,14 @@ try {
     # ─── Version parameter test scenarios ───
     Write-Step 'Running version parameter test scenarios...'
 
-    # Scenario 1: Default (no version passed) — verify Version="*"
+    # Scenario 1: Default (no version passed) — the '*' default makes the
+    # add-package post actions pin each package to the latest stable version.
     $defaultPath = Join-Path -Path $workingRoot -ChildPath 'VersionDefault'
     New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'VersionDefault' -OutputPath $defaultPath -WorkingDirectory $workingRoot
     $defaultCsproj = Join-Path -Path $defaultPath -ChildPath 'VersionDefault.csproj'
-    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Assert-CsprojPackageVersionPinned -CsprojPath $defaultCsproj -PackageName 'Microsoft.WindowsAppSDK'
+    Assert-CsprojPackageVersionPinned -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools'
+    Assert-CsprojPackageVersionPinned -CsprojPath $defaultCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'default version content' -Status 'Succeeded' -Path $defaultPath
 
     # Scenario 2: Pinned WindowsAppSDK version only
@@ -723,8 +949,8 @@ try {
     Invoke-DotnetCommand -Arguments @('new', 'winui', '-n', 'VersionPinned', '-o', $pinnedPath, '--wasdk-version', '1.7.250127002', '--force', '--no-update-check') -WorkingDirectory $workingRoot -Description 'create winui with pinned WASDK version'
     $pinnedCsproj = Join-Path -Path $pinnedPath -ChildPath 'VersionPinned.csproj'
     Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '1.7.250127002'
-    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp' -ExpectedVersion '*'
+    Assert-CsprojPackageVersionPinned -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools'
+    Assert-CsprojPackageVersionPinned -CsprojPath $pinnedCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools.WinApp'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'pinned version content' -Status 'Succeeded' -Path $pinnedPath
 
     # Scenario 3: All versions pinned
@@ -897,6 +1123,9 @@ try {
     if (-not (Test-Path -Path $unreachableCsproj)) {
         throw "Template scaffold did not produce a .csproj at '$unreachableCsproj'"
     }
+    # The add-package post actions can't resolve a version offline, so the
+    # references keep the '*' placeholder for a later restore.
+    Assert-CsprojPackageVersion -CsprojPath $unreachableCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'unreachable source: scaffold produces files' -Status 'Succeeded' -Path $unreachablePath
 
     # Build should fail because no packages could be restored.
@@ -931,17 +1160,17 @@ try {
 
     # Scenario 7b: Working NuGet source — restore resolves up-to-date packages
     # and the project builds successfully. Complements 7a by proving that when
-    # pointed at valid feeds the default Version="*" wildcard pulls the latest
-    # stable packages and produces a clean build.
+    # pointed at valid feeds the default pins the latest stable packages and
+    # produces a clean build.
     Write-Step 'Testing working NuGet source resolves packages and builds...'
     $workingSourcePath = Join-Path -Path $workingRoot -ChildPath 'WorkingSource'
     New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName 'WorkingSource' -OutputPath $workingSourcePath -WorkingDirectory $workingRoot
 
     $workingSourceCsproj = Join-Path -Path $workingSourcePath -ChildPath 'WorkingSource.csproj'
 
-    # Verify the csproj uses wildcard versions (the default)
-    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.WindowsAppSDK' -ExpectedVersion '*'
-    Assert-CsprojPackageVersion -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools' -ExpectedVersion '*'
+    # Verify the default pinned concrete versions
+    Assert-CsprojPackageVersionPinned -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.WindowsAppSDK'
+    Assert-CsprojPackageVersionPinned -CsprojPath $workingSourceCsproj -PackageName 'Microsoft.Windows.SDK.BuildTools'
 
     # Explicit restore to confirm packages are fetched from the working feeds
     Invoke-DotnetCommand -Arguments @('restore', $workingSourceCsproj) -WorkingDirectory $workingSourcePath -Description 'restore with working NuGet source'
@@ -961,7 +1190,7 @@ try {
     Write-Step "Resolved: $resolvedWasdk"
     Add-Result -Template 'winui' -Platform 'N/A' -Step 'working source: restore resolves packages' -Status 'Succeeded' -Path $workingSourcePath
 
-    # This is the only scenario that builds the default Version="*" wildcard, so
+    # This is the only scenario that builds the default latest versions, so
     # it is what proves the latest published packages build cleanly (an early
     # warning for a bad WindowsAppSDK release). When the pipeline pins a specific
     # version to work around a broken latest, skip this build so the pinned run

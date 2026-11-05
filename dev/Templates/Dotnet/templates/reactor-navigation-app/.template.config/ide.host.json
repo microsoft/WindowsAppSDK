@@ -1,4 +1,5 @@
 {
+  "unsupportedHosts": [ { "id": "vs" } ],
   "icon": "icon.png",
   "requiredComponents": [
     {
@@ -19,6 +20,27 @@
       "id": "reactorVersion",
       "name": {
         "text": "Microsoft.UI.Reactor version"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "Packaging",
+      "name": {
+        "text": "Packaging"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDn",
+      "name": {
+        "text": "Publisher Distinguished Name"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDisplay",
+      "name": {
+        "text": "Publisher Display Name"
       },
       "isVisible": "true"
     }

@@ -1,0 +1,4 @@
+{
+  "name": "Aplicativo WinUI em Branco (Empacotado)",
+  "description": "Um modelo de projeto para criar um aplicativo WinUI juntamente com um pacote MSIX para carregamento lateral ou distribuição por meio da Microsoft Store."
+}
