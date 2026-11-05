@@ -48,6 +48,26 @@ foreach ($major in @(17, 18)) {
     Assert (Test-VisualStudioInstall) "VS $major discovery failed"
     Assert (Test-VisualStudioComponents) "VS $major component check failed"
     Assert ($global:issues -eq 0) "VS $major incorrectly reported issues"
+
+    Set-Instance $major
+    $null = Test-VisualStudioInstall
+    $script:overrides['Microsoft.Component.MSBuild'] = ''
+    Assert (-not (Test-VisualStudioComponents)) "VS $major missing component was accepted"
+    Assert ($global:issues -eq 1) "VS $major missing component was not counted for exit status"
+
+    Set-Instance $major
+    $null = Test-VisualStudioInstall
+    $script:overrides['Microsoft.VisualStudio.Component.NuGet'] = "C:\AnotherVS`r`n"
+    Assert (-not (Test-VisualStudioComponents)) "VS $major accepted a component from a different installation"
+    Assert ($global:issues -eq 1) "VS $major split-install failure was not counted"
+
+    Set-Instance $major
+    $null = Test-VisualStudioInstall
+    $script:instanceJson = '[]'
+    Assert (-not (Test-VisualStudioInstall)) "VS $major no-installation case was accepted"
+    Assert ($global:issues -eq 1) "VS $major no-installation failure was not counted"
+    Assert ([string]::IsNullOrEmpty($global:vspath)) "VS $major stale installation path survived"
+    Assert ($null -eq $global:vsversion) "VS $major stale installation version survived"
 }
 
 Set-Instance 17
@@ -63,27 +83,6 @@ foreach ($component in @(
 }
 Assert (Test-VisualStudioComponents) 'Build-ready VS2022 was rejected without obsolete runtimes or optional IDE features'
 Assert ($global:issues -eq 0) 'Optional VS2022 components incorrectly reported issues'
-$script:overrides['Microsoft.Component.MSBuild'] = ''
-Assert (-not (Test-VisualStudioComponents)) 'VS2022 without MSBuild was accepted'
-Assert ($global:issues -eq 1) 'Missing VS2022 build prerequisite was not counted'
-
-Set-Instance 18
-$null = Test-VisualStudioInstall
-$script:overrides['Microsoft.Component.MSBuild'] = ''
-Assert (-not (Test-VisualStudioComponents)) 'Missing component was accepted'
-Assert ($global:issues -eq 1) 'Missing component was not counted for exit status'
-
-Set-Instance 18
-$null = Test-VisualStudioInstall
-$script:overrides['Microsoft.VisualStudio.Component.NuGet'] = "C:\AnotherVS`r`n"
-Assert (-not (Test-VisualStudioComponents)) 'A different installation satisfied the component check'
-Assert ($global:issues -eq 1) 'Split-install failure was not counted'
-
-Set-Instance 18
-$script:instanceJson = '[]'
-Assert (-not (Test-VisualStudioInstall)) 'No-installation case was accepted'
-Assert ($global:issues -eq 1) 'No-installation failure was not counted'
-Assert ([string]::IsNullOrEmpty($global:vspath)) 'Stale installation path survived'
 
 Write-Output 'PASS: VS2022, VS2026, VS2022 pipeline image, missing component, split installations, and no installation'
 exit 0
