@@ -29,7 +29,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::implementation
 
     bool Package::IsFeatureSupported(winrt::Microsoft::Windows::ApplicationModel::PackageFeature const& feature)
     {
-        return ::IsPackageFeatureSupported(static_cast<::PackageFeature>(feature));
+        return ::WindowsAppRuntime_IsPackageFeatureSupported(static_cast<::PackageFeature>(feature));
     }
     hstring Package::GetFilePath(hstring const& filename)
     {
