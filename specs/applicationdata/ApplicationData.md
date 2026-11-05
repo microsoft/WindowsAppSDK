@@ -219,7 +219,20 @@ executable rather than specify it at runtime.
 #3 is needed by components in processes using 'shared' or 'hosting' executables where one executable
 is used by multiple applications. For example, `python.exe`, `pwsh.exe`, `
 
-### 3.5.2 GetForUnpackaged() context resolution
+### 3.5.2 SetContextForUnpackaged()
+
+`ApplicationData.SetContextForUnpackaged()` sets the context (publisher + product) for an
+unpackaged process. These values follow the same rules as the parameters to
+`ApplicationData.GetForUnpackaged(publisher, product)` e.g. they must be strings
+with length >0.
+
+`SetContextForUnpackaged()` fails if the context has already been set i.e. calling
+`SetContextForUnpackaged()` more than once is an error.
+
+If `SetContextForUnpackaged()` is set, it uses these values regardles if resources are defined in
+the executable.
+
+### 3.5.3 GetForUnpackaged() context resolution
 
 The algorithm for `GetForUnpackaged()` to determine its context:
 
