@@ -1,5 +1,4 @@
 {
-  "unsupportedHosts": [ { "id": "vs" } ],
   "icon": "icon.png",
   "requiredComponents": [
     {
@@ -21,7 +20,19 @@
       "name": {
         "text": "Microsoft.UI.Reactor version"
       },
-      "isVisible": "true"
+      "isVisible": "false"
+    },
+    {
+      "id": "windowsSdkBuildToolsVersion",
+      "isVisible": "false"
+    },
+    {
+      "id": "windowsSdkBuildToolsWinAppVersion",
+      "isVisible": "false"
+    },
+    {
+      "id": "skipRestore",
+      "isVisible": "false"
     },
     {
       "id": "Packaging",
