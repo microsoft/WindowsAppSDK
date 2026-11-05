@@ -1402,18 +1402,51 @@ function Start-TAEFService
         return
     }
 
-    $ok = Start-Service 'TE.Service'
-    $service = Get-Service -ErrorAction SilentlyContinue |Where-Object {$_.Name -eq "TE.Service"}
-    if ($service.Status -ne "Running")
+    # Start-Service waits forever if the service hangs while starting, which once used up a whole test job. Wait a
+    # bounded time instead, and if the service still isn't running, kill its process and try once more.
+    $timeout = New-TimeSpan -Minutes 2
+    $attempts = 2
+    for ($attempt = 1; $attempt -le $attempts; $attempt++)
     {
-        Write-Host "Start TAEF service...Failed"
-        $global:issues++
+        $service = Get-Service -Name 'TE.Service'
+        try
+        {
+            if ($service.Status -eq 'Stopped')
+            {
+                $service.Start()
+            }
+            $service.WaitForStatus('Running', $timeout)
+            Write-Host "Start TAEF service...OK"
+            return $true
+        }
+        catch
+        {
+            $service.Refresh()
+            $processId = 0
+            $serviceInfo = Get-CimInstance -ClassName Win32_Service -Filter "Name='TE.Service'"
+            if ($null -ne $serviceInfo)
+            {
+                $processId = $serviceInfo.ProcessId
+            }
+            Write-Host "Start TAEF service...Not running after $($timeout.TotalMinutes) minutes (attempt $attempt of $attempts, status $($service.Status), process $processId): $($_.Exception.Message)"
+            if ($processId -gt 0)
+            {
+                Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
+                try
+                {
+                    $service.WaitForStatus('Stopped', (New-TimeSpan -Seconds 30))
+                }
+                catch
+                {
+                    $service.Refresh()
+                    Write-Host "Stop TAEF service process $processId...Status $($service.Status)"
+                }
+            }
+        }
     }
-    else
-    {
-        Write-Host "Start TAEF service...OK"
-        return $true
-    }
+
+    Write-Host "Start TAEF service...Failed"
+    $global:issues++
 }
 
 function Stop-TAEFService
