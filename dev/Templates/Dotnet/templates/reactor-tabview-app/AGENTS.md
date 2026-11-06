@@ -30,6 +30,17 @@ A sample of the commands it provides:
 
 Prefer these over hand-rolled scripts for packaging, signing, and UI verification.
 
+## Development workflow
+
+1. From the project directory, run `dotnet build` and fix any build errors.
+2. Launch with `dotnet run`. Keep the app running and use another terminal
+   for UI verification.
+3. Run `winapp ui inspect -a <app> --interactive`, replacing `<app>` with
+   the app's process name or PID. Use the reported selectors with
+   `winapp ui invoke` or `winapp ui set-value` to exercise the changed UI,
+   then inspect again to confirm the expected result. For visual changes,
+   capture a screenshot with `winapp ui screenshot -a <app> -o screenshot.png`.
+
 ## Discovering commands
 
 The list above is only a sample. Every command documents itself — check the
