@@ -1,0 +1,4 @@
+{
+  "name": "WinUI 空白应用(已打包)",
+  "description": "一个项目模板，用于创建 WinUI 应用以及 MSIX 包，以便通过 Microsoft Store 进行旁加载或分发。"
+}

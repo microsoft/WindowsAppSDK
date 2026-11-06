@@ -35,7 +35,15 @@ namespace WindowsAppSDK.Cs.Extension
         /// 
         /// NOTE: This MUST match the MSBuild property 'PackageGuidString' defined in the .csproj
         /// </summary>
+        /// <remarks>
+        /// LocalDev installs side by side with the in-box extension, so it uses a distinct GUID to avoid
+        /// overriding the in-box package registration.
+        /// </remarks>
+#if LOCALDEV
+        public const string PackageGuidString = "E224F7CD-68B5-402E-9AA1-2FAE1B8023F1";
+#else
         public const string PackageGuidString = "B0F1BA01-DE66-4EF9-9C8B-DBB99FB4DA4B";
+#endif
 
         #region Package Members
 

@@ -1,0 +1,16 @@
+{
+  "profiles": {
+//#if (!unpackaged)
+    "$projectname$ (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "$projectname$ (Unpackaged)": {
+      "commandName": "Project"
+    }
+//#else
+    "$projectname$ (Unpackaged)": {
+      "commandName": "Project"
+    }
+//#endif
+  }
+}

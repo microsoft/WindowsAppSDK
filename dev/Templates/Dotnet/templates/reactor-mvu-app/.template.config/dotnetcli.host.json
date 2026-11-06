@@ -11,14 +11,24 @@
       "shortName": "rv",
       "description": "Pin to a specific Microsoft.UI.Reactor NuGet version."
     },
-    "windowsAppSdkVersion": {
-      "longName": "wasdk-version",
-      "shortName": "wasdkv",
-      "description": "Pin to a specific Windows App SDK NuGet version."
-    },
     "skipRestore": {
       "longName": "no-restore",
       "shortName": ""
+    },
+    "Packaging": {
+      "longName": "packaging",
+      "shortName": "",
+      "description": "Choose a packaged MSIX app or an unpackaged desktop app."
+    },
+    "publisherDn": {
+      "longName": "publisher-dn",
+      "shortName": "publisher",
+      "description": "Publisher distinguished name stored in Package.appxmanifest."
+    },
+    "publisherDisplay": {
+      "longName": "publisher-display",
+      "shortName": "publisherName",
+      "description": "Publisher display name stored in Package.appxmanifest."
     }
   }
 }

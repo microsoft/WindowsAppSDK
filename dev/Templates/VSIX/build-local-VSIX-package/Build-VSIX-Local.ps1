@@ -437,6 +437,92 @@ function Test-VsixContainsTemplates {
 
     $archive = [System.IO.Compression.ZipFile]::OpenRead($Path)
     try {
+        if ([System.IO.Path]::GetFileName($Path).StartsWith("WindowsAppSDK.Cs.", [System.StringComparison]::OrdinalIgnoreCase)) {
+            $packages = @($archive.Entries | Where-Object {
+                $_.FullName -match '^ProjectTemplates/Microsoft\.WindowsAppSDK\.WinUI\.CSharp\.Templates\.[^/]+\.nupkg$'
+            })
+            $registration = $archive.GetEntry("Templates.pkgdef")
+            if ($packages.Count -ne 1 -or $null -eq $registration) {
+                throw "C# VSIX must contain exactly one template NuGet package and Templates.pkgdef: $Path"
+            }
+
+            $reader = [System.IO.StreamReader]::new($registration.Open())
+            try {
+                $pkgdef = $reader.ReadToEnd()
+            }
+            finally {
+                $reader.Dispose()
+            }
+            if (-not $pkgdef.Contains('"InstalledPath"="$PackageFolder$\ProjectTemplates"')) {
+                throw "C# VSIX template registration does not point to ProjectTemplates: $Path"
+            }
+
+            $manifest = $archive.GetEntry("extension.vsixmanifest")
+            if ($null -eq $manifest) {
+                throw "C# VSIX is missing extension.vsixmanifest: $Path"
+            }
+            $reader = [System.IO.StreamReader]::new($manifest.Open())
+            try {
+                [xml]$manifestXml = $reader.ReadToEnd()
+            }
+            finally {
+                $reader.Dispose()
+            }
+            $assets = @($manifestXml.PackageManifest.Assets.Asset | Where-Object {
+                $_.Type -eq 'Microsoft.VisualStudio.VsPackage' -and $_.Path -eq 'Templates.pkgdef'
+            })
+            if ($assets.Count -ne 1) {
+                throw "C# VSIX manifest must register Templates.pkgdef as a VsPackage asset: $Path"
+            }
+
+            # Visual Studio rescans registered templates only when the pkgdef version key changes.
+            $vsixVersion = $manifestXml.PackageManifest.Metadata.Identity.Version
+            $expectedKey = '[$RootKey$\TemplateEngine\Templates\Microsoft.WindowsAppSDK.WinUI.CSharp.Templates\' + $vsixVersion + ']'
+            if (-not $pkgdef.Contains($expectedKey)) {
+                throw "C# VSIX template registration must be keyed to VSIX version ${vsixVersion}: $Path"
+            }
+
+            $legacyTemplates = @($archive.Entries | Where-Object {
+                $_.FullName -match '^ProjectTemplates/(?:[^/]+/)*WinUI\.Desktop\.Cs\.PackagedApp/.*\.vstemplate$'
+            })
+            $legacyAssets = @($manifestXml.PackageManifest.Assets.Asset | Where-Object {
+                $_.Type -eq 'Microsoft.VisualStudio.ProjectTemplate' -and $_.Path -eq 'ProjectTemplates'
+            })
+            if ($legacyTemplates.Count -ne 3 -or $legacyAssets.Count -ne 1) {
+                throw "C# VSIX must contain and register the separate-packaging template and its two subtemplates: $Path"
+            }
+
+            $stream = $packages[0].Open()
+            $package = [System.IO.Compression.ZipArchive]::new($stream, [System.IO.Compression.ZipArchiveMode]::Read)
+            try {
+                $projectCount = 0
+                $itemCount = 0
+                foreach ($entry in $package.Entries) {
+                    if ($entry.FullName -notmatch '^content/[^/]+/\.template\.config/template\.json$') {
+                        continue
+                    }
+                    $reader = [System.IO.StreamReader]::new($entry.Open())
+                    try {
+                        $config = $reader.ReadToEnd() | ConvertFrom-Json
+                    }
+                    finally {
+                        $reader.Dispose()
+                    }
+                    if ($config.tags.type -eq 'project') { $projectCount++ }
+                    if ($config.tags.type -eq 'item') { $itemCount++ }
+                }
+                if ($projectCount -eq 0 -or $itemCount -eq 0) {
+                    throw "C# VSIX template package is missing project or item templates: $Path"
+                }
+                Write-Step "Verified C# template NuGet in VSIX: $projectCount project, $itemCount item"
+                return $true
+            }
+            finally {
+                $package.Dispose()
+                $stream.Dispose()
+            }
+        }
+
         $projectTemplates = @(
             $archive.Entries | Where-Object {
                 $_.FullName.StartsWith("ProjectTemplates/", [System.StringComparison]::OrdinalIgnoreCase) -and

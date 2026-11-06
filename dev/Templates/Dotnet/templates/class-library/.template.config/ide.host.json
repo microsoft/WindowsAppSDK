@@ -20,14 +20,14 @@
       "name": {
         "text": "Windows App SDK version (* = latest)"
       },
-      "isVisible": "true"
+      "isVisible": "false"
     },
     {
       "id": "windowsSdkBuildToolsVersion",
       "name": {
         "text": "Windows SDK BuildTools version (* = latest)"
       },
-      "isVisible": "true"
+      "isVisible": "false"
     }
   ]
 }

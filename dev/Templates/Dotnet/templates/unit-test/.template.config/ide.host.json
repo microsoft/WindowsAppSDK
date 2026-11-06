@@ -23,6 +23,56 @@
       "isVisible": "true"
     },
     {
+      "id": "windowsAppSdkVersion",
+      "name": {
+        "text": "Windows App SDK version (* = latest)"
+      },
+      "isVisible": "false"
+    },
+    {
+      "id": "windowsSdkBuildToolsVersion",
+      "name": {
+        "text": "Windows SDK BuildTools version (* = latest)"
+      },
+      "isVisible": "false"
+    },
+    {
+      "id": "windowsSdkBuildToolsWinAppVersion",
+      "name": {
+        "text": "Windows SDK BuildTools WinApp version (* = latest)"
+      },
+      "isVisible": "false"
+    },
+    {
+      "id": "mstestVersion",
+      "name": {
+        "text": "MSTest version (* = latest)"
+      },
+      "isVisible": "false"
+    },
+    {
+      "id": "TestRunner",
+      "name": {
+        "text": "Test runner"
+      },
+      "isVisible": "true",
+      "persistenceScope": "shared"
+    },
+    {
+      "id": "Fixture",
+      "name": {
+        "text": "Fixtures"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "Packaging",
+      "name": {
+        "text": "Packaging"
+      },
+      "isVisible": "true"
+    },
+    {
       "id": "publisherDn",
       "name": {
         "text": "Publisher Distinguished Name"
@@ -33,41 +83,6 @@
       "id": "publisherDisplay",
       "name": {
         "text": "Publisher Display Name"
-      },
-      "isVisible": "true"
-    },
-    {
-      "id": "windowsAppSdkVersion",
-      "name": {
-        "text": "Windows App SDK version (* = latest)"
-      },
-      "isVisible": "true"
-    },
-    {
-      "id": "windowsSdkBuildToolsVersion",
-      "name": {
-        "text": "Windows SDK BuildTools version (* = latest)"
-      },
-      "isVisible": "true"
-    },
-    {
-      "id": "windowsSdkBuildToolsWinAppVersion",
-      "name": {
-        "text": "Windows SDK BuildTools WinApp version (* = latest)"
-      },
-      "isVisible": "true"
-    },
-    {
-      "id": "mstestVersion",
-      "name": {
-        "text": "MSTest version (* = latest)"
-      },
-      "isVisible": "true"
-    },
-    {
-      "id": "microsoftNetTestSdkVersion",
-      "name": {
-        "text": "Microsoft.NET.Test.Sdk version (* = latest)"
       },
       "isVisible": "true"
     }

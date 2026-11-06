@@ -36,7 +36,8 @@
       "datatype": "choice",
       "description": "Base target framework moniker (TFM). File-based apps and Microsoft.UI.Reactor require .NET 10 or later.",
       "choices": [
-        { "choice": "net10.0", "description": "Target .NET 10" }
+        { "choice": "net10.0", "description": "Target .NET 10" },
+        { "choice": "net11.0", "description": "Target .NET 11" }
       ],
       "defaultValue": "net10.0",
       "replaces": "$DotNetVersion$"
@@ -44,16 +45,9 @@
     "reactorVersion": {
       "type": "parameter",
       "datatype": "text",
-      "defaultValue": "0.1.0-preview.16",
+      "defaultValue": "0.1.0-preview.17",
       "replaces": "$ReactorVersion$",
       "description": "Microsoft.UI.Reactor NuGet version to reference."
-    },
-    "windowsAppSdkVersion": {
-      "type": "parameter",
-      "datatype": "text",
-      "defaultValue": "*",
-      "replaces": "$WindowsAppSdkVersion$",
-      "description": "Microsoft.WindowsAppSDK NuGet version. Requires 2.2.0 or later; use * for the latest stable."
     },
     "windowsSdkBuildToolsWinAppVersion": {
       "type": "parameter",
