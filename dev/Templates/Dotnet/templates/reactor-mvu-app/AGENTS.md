@@ -51,3 +51,7 @@ winapp --help
 winapp <command> --help
 winapp --cli-schema      # full command tree as JSON, for tooling
 ```
+
+If your agent has WinUI skills installed, use the relevant skills for design,
+development, UI testing, and packaging. Otherwise, use the WinApp CLI help above.
+Apply skill guidance without introducing XAML; keep the UI in pure C#.
