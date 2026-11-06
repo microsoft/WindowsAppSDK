@@ -101,9 +101,10 @@ void ResourceContext::Apply()
             winrt::check_hresult(MrmSetQualifier(m_resourceContext, eachValue.Key().c_str(), eachValue.Value().c_str()));
         }
     }
-    if (!ApplicationLanguages::PrimaryLanguageOverride().empty())
+    auto languageOverride{ ApplicationLanguages::PrimaryLanguageOverride() };
+    if (!languageOverride.empty())
     {
-        winrt::check_hresult(MrmSetQualifier(m_resourceContext, c_languageQualifierName, ApplicationLanguages::PrimaryLanguageOverride().c_str()));
+        winrt::check_hresult(MrmSetQualifier(m_resourceContext, c_languageQualifierName, languageOverride.c_str()));
     }
 }
 

@@ -473,6 +473,68 @@ namespace CommonTestCode
         }
     }
 
+    public class ApplicationLanguagesTest
+    {
+        public static void SetAndClearOverride()
+        {
+            string originalOverride = Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride;
+            try
+            {
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en-US";
+                Verify.AreEqual("en-US", Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+                Verify.AreEqual("fr-FR", Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = string.Empty;
+                Verify.AreEqual(string.Empty, Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            }
+            finally
+            {
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = originalOverride;
+            }
+        }
+
+        public static void InvalidTagPreservesOverride()
+        {
+            string originalOverride = Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride;
+            try
+            {
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en-US";
+                var exception = Verify.Throws<Exception>(() => Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "not_a_language_tag");
+                Verify.AreEqual(0x80070057u, (uint)exception.HResult); // E_INVALIDARG
+                Verify.AreEqual("en-US", Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            }
+            finally
+            {
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = originalOverride;
+            }
+        }
+
+        public static void OverrideAffectsResourceLookup()
+        {
+            string originalOverride = Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride;
+            try
+            {
+                var resourceManager = new ResourceManager("resources.pri.standalone");
+                var resourceContext = resourceManager.CreateResourceContext();
+                resourceContext.QualifierValues[KnownResourceQualifierName.Language] = "en-US";
+
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en-GB";
+                var candidate = resourceManager.MainResourceMap.GetValue("resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", resourceContext);
+                Verify.AreEqual("Equaliser", candidate.ValueAsString);
+
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = string.Empty;
+                candidate = resourceManager.MainResourceMap.GetValue("resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", resourceContext);
+                Verify.AreEqual("Equalizer", candidate.ValueAsString);
+            }
+            finally
+            {
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = originalOverride;
+            }
+        }
+    }
+
     public class ResourceContextTest
     {
         public static void LanguageContextTest()
