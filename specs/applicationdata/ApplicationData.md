@@ -255,12 +255,16 @@ void GetUnpackagedContext(std::wstring& publisher, std::wstring& product)
     publisher.clear();
     product.clear();
 
-    if (!GetUnpackagedContextFromResource(publisher, product))
     {
         auto lock{ std::unique_lock<std::mutex>(g_unpackagedLock) };
-        publisher = g_unpackagedPublisher;
-        product = g_unpackagedProduct;
+        if (!g_unpackagedPublisher.empty() && !g_unpackagedProduct.empty())
+        {
+            publisher = g_unpackagedPublisher;
+            product = g_unpackagedProduct;
+            return;
+        }
     }
+    THROW_WIN32_ERROR_IF(ERROR_RESOURCE_NOT_PRESENT, !GetUnpackagedContextFromResource(publisher, product));
 }
 
 bool GetUnpackagedContextFromResource(std::wstring& publisher, std::wstring& product)
@@ -553,7 +557,8 @@ namespace Microsoft.Windows.Storage
         /// @see GetForUnpackaged(String, String)
         /// @see SetForUnpackaged(String, String)
         [contract(ApplicationDataContract, 3)]
-        static ApplicationData GetForUnpackaged(String publisher, String product);
+        [method_name("GetDefaultForUnpackaged")]
+        static ApplicationData GetForUnpackaged();
 
         /// Set the context (product and publisher) for the current unpackaged app.
         /// @see GetForUnpackaged()
