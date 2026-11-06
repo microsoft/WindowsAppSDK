@@ -244,6 +244,20 @@ steps:
         TargetFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppSDK.Test.SampleTests\net6'
         Contents: '**'
   
+  # At the test user's first sign-in, App Readiness defers part of its work for about 16 minutes. On a VM that signed in
+  # just before the job, it resumes during the tests, and if it overlaps them installing and launching the DDLM, Windows
+  # can reject every later DDLM activation with E_APPLICATION_NOT_REGISTERED, failing every test that uses the
+  # Bootstrapper. Wait for App Readiness to finish first. This is instant unless the VM signed in recently.
+  - task: powershell@2
+    displayName: 'Wait for App Readiness'
+    # The script reports its own problems and never fails, and caps its wait. Don't let a hang fail the job.
+    continueOnError: true
+    timeoutInMinutes: 30
+    inputs:
+      targetType: filePath
+      filePath: build\WaitForAppReadiness.ps1
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - task: PowerShell@2
     displayName: 'Run TAEF Tests'
     inputs:
@@ -256,6 +270,18 @@ steps:
         -List
         -wprProfilePath "$(Build.SourcesDirectory)\WinAppSDK\Build\WindowsAppSDK\src\test\AppModelProviders.wprp"
         -callingStage "${{ parameters.callingStage }}"
+
+  # Shows whether App Readiness still worked on apps while the tests ran (see 'Wait for App Readiness' above).
+  - task: powershell@2
+    displayName: 'Show App Readiness activity'
+    condition: succeededOrFailed()
+    continueOnError: true
+    timeoutInMinutes: 5
+    inputs:
+      targetType: filePath
+      filePath: build\ShowAppReadinessActivity.ps1
+      arguments: -Since '$(AppReadinessWaitEndTime)'
+      workingDirectory: '$(Build.SourcesDirectory)'
 
   - template: WindowsAppSDK-ConvertWttLogToXUnit-Wrapper.yml
     parameters:
