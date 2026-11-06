@@ -24,10 +24,6 @@
       "isVisible": "false"
     },
     {
-      "id": "windowsAppSdkVersion",
-      "isVisible": "false"
-    },
-    {
       "id": "windowsSdkBuildToolsWinAppVersion",
       "isVisible": "false"
     },

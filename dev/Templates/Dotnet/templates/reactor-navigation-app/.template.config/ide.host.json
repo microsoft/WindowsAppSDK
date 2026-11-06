@@ -23,13 +23,6 @@
       "isVisible": "false"
     },
     {
-      "id": "windowsAppSdkVersion",
-      "name": {
-        "text": "Windows App SDK version"
-      },
-      "isVisible": "false"
-    },
-    {
       "id": "windowsSdkBuildToolsVersion",
       "isVisible": "false"
     },

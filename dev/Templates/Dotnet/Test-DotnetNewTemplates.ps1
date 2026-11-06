@@ -379,7 +379,10 @@ function Test-WinUiProjectTemplate {
         $createArguments = @('--test-runner', $TestRunner, '--packaging', $Packaging)
         $resultTemplate = "$TemplateShortName ($TestRunner, $Packaging)"
     }
-    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion -AdditionalArguments $createArguments
+    # Reactor templates have no --wasdk-version option: Windows App SDK comes
+    # transitively from Microsoft.UI.Reactor (WinUI + Runtime), not the metapackage.
+    $wasdkVersion = if ($TemplateShortName -like 'reactor*') { $null } else { $script:windowsAppSdkVersion }
+    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $wasdkVersion -AdditionalArguments $createArguments
     Add-Result -Template $resultTemplate -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
     # A file-based app template scaffolds a single <name>.cs whose #: directives replace the .csproj.
@@ -534,7 +537,10 @@ function Test-PackagingOptions {
         if ($packaging -ne 'Default') {
             $createArgs += @('--packaging', $packaging)
         }
-        $createArgs += @('--wasdk-version', $script:windowsAppSdkVersion)
+        # Reactor templates have no --wasdk-version option (Windows App SDK comes from Microsoft.UI.Reactor).
+        if ($TemplateShortName -notlike 'reactor*') {
+            $createArgs += @('--wasdk-version', $script:windowsAppSdkVersion)
+        }
         Invoke-DotnetCommand -Arguments $createArgs -WorkingDirectory $WorkingRoot -Description "create $TemplateShortName ($packaging)"
         $unpackaged = $packaging -eq 'Unpackaged'
 

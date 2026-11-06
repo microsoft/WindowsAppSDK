@@ -55,16 +55,9 @@
     "reactorVersion": {
       "type": "parameter",
       "datatype": "text",
-      "defaultValue": "0.1.0-preview.16",
+      "defaultValue": "0.1.0-preview.17",
       "replaces": "$ReactorVersion$",
       "description": "Microsoft.UI.Reactor (and Microsoft.UI.Reactor.Devtools) NuGet version to reference."
-    },
-    "windowsAppSdkVersion": {
-      "type": "parameter",
-      "datatype": "text",
-      "defaultValue": "*",
-      "replaces": "$WindowsAppSdkVersion$",
-      "description": "Microsoft.WindowsAppSDK NuGet version. Requires 2.2.0 or later; use * for the latest stable."
     },
     "windowsSdkBuildToolsVersion": {
       "type": "parameter",
@@ -184,18 +177,6 @@
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Windows.SDK.BuildTools",
-        "projectFileExtensions": ".csproj"
-      }
-    },
-    {
-      "condition": "(!skipRestore && windowsAppSdkVersion == \"*\")",
-      "description": "Pin Microsoft.WindowsAppSDK to the latest stable version.",
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" } ],
-      "args": {
-        "referenceType": "package",
-        "reference": "Microsoft.WindowsAppSDK",
         "projectFileExtensions": ".csproj"
       }
     },

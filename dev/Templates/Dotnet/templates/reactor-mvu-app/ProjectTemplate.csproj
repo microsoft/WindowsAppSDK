@@ -56,9 +56,6 @@
     <!--#if (windowsSdkBuildToolsVersion != "*" || HostIdentifier == "dotnetcli") -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSdkBuildToolsVersion$" />
     <!--#endif -->
-    <!--#if (windowsAppSdkVersion != "*" || HostIdentifier == "dotnetcli") -->
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSdkVersion$" />
-    <!--#endif -->
 <!--#if (!unpackaged) -->
     <!--
       Microsoft.Windows.SDK.BuildTools.WinApp adds first-class support for
