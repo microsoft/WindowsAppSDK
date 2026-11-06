@@ -19,6 +19,16 @@ name: $(pipelineName)
 # https://aka.ms/obpipelines/triggers
 trigger: none
 
+pr:
+  branches:
+    include:
+    - main
+    - release/*
+  paths:
+    exclude:
+    - docs/**
+    - specs/**
+
 parameters: # parameters are shown up in ADO UI in a build queue time
 - name: "BuildSampleApps"
   displayName: "Run Build Sample Apps Stage"
