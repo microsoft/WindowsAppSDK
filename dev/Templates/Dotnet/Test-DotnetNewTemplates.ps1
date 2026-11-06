@@ -574,7 +574,8 @@ function Test-PackagingOptions {
             }
             $launchSettings = Get-Content -LiteralPath (Join-Path -Path $projectPath -ChildPath 'Properties\launchSettings.json') -Raw | ConvertFrom-Json
             $commands = @($launchSettings.profiles.PSObject.Properties | ForEach-Object { $_.Value.commandName })
-            $profileArgs = @($launchSettings.profiles.PSObject.Properties | ForEach-Object { $_.Value.commandLineArgs } | Where-Object { $_ })
+            $profileArgs = @($launchSettings.profiles.PSObject.Properties |
+                ForEach-Object { $_.Value.PSObject.Properties['commandLineArgs'] } | Where-Object { $_ } | ForEach-Object { $_.Value })
 
             # A bare '--devtools' starts Reactor's MCP-server session; the dev menu needs '--devtools app'.
             if ($profileArgs -contains '--devtools' -or
