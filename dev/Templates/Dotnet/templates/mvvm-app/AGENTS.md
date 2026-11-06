@@ -49,5 +49,16 @@ winapp <command> --help
 winapp --cli-schema      # full command tree as JSON, for tooling
 ```
 
-If your agent has WinUI skills installed, use the relevant skills for design,
-development, UI testing, and packaging. Otherwise, use the WinApp CLI help above.
+## WinUI skills
+
+The [WinUI plugin](https://github.com/microsoft/WinAppCli/tree/main/plugins/winui)
+provides skills for design, development, UI testing, and packaging.
+Install it for GitHub Copilot CLI with:
+
+```powershell
+copilot plugin marketplace add microsoft/WinAppCli
+copilot plugin install winui@winappcli
+```
+
+For Claude Code or Codex, follow the
+[installation instructions](https://github.com/microsoft/WinAppCli#-using-with-ai-coding-agents).
