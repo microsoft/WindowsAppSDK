@@ -126,6 +126,12 @@ learn the component model, hooks, and layout system. Swap `reactor` for
 `reactor-mvu`, `reactor-navview`, or `reactor-tabview` to start from a richer
 shell.
 
+Debug builds of these projects reference `Microsoft.UI.Reactor.Devtools`, but
+devtools stay off until you launch with `--devtools app`, for example
+`dotnet run -- --devtools app`. Render `DevtoolsMenu(...)` in your UI to show
+the in-app dev menu. A bare `--devtools` starts the heavier devtools session,
+which also hosts an MCP server.
+
 ### Quickstart a single-file Reactor app
 
 ```powershell
@@ -219,9 +225,13 @@ dotnet new winui --packaging Unpackaged -n MyDesktopApp
 
 `Packaged` is the default. `Unpackaged` sets `WindowsPackageType=None` and,
 for project-based apps, omits the MSIX manifest, MSIX-only assets, MSIX tooling,
-and `Microsoft.Windows.SDK.BuildTools.WinApp`. Only the matching launch
-profile is generated; unpackaged Reactor projects also keep their devtools
-profile. The publisher fields are enabled only for packaged projects.
+and `Microsoft.Windows.SDK.BuildTools.WinApp`. Packaged projects get a
+`(Package)` launch profile, the Visual Studio F5 default, and an `(Unpackaged)`
+profile for `dotnet run`, which can't apply MSIX profiles;
+`Microsoft.Windows.SDK.BuildTools.WinApp` still launches the app with package
+identity. Unpackaged projects get only the unpackaged profiles: `(Unpackaged)`,
+plus `(Unpackaged, Devtools)` for Reactor, which passes `--devtools app`. The
+publisher fields are enabled only for packaged projects.
 Packaging and the two publisher fields are the last three options in Visual
 Studio.
 

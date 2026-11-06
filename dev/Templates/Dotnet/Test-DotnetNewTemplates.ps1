@@ -574,7 +574,16 @@ function Test-PackagingOptions {
             }
             $launchSettings = Get-Content -LiteralPath (Join-Path -Path $projectPath -ChildPath 'Properties\launchSettings.json') -Raw | ConvertFrom-Json
             $commands = @($launchSettings.profiles.PSObject.Properties | ForEach-Object { $_.Value.commandName })
+            $profileArgs = @($launchSettings.profiles.PSObject.Properties | ForEach-Object { $_.Value.commandLineArgs } | Where-Object { $_ })
 
+            # A bare '--devtools' starts Reactor's MCP-server session; the dev menu needs '--devtools app'.
+            if ($profileArgs -contains '--devtools' -or
+                ($unpackaged -and $TemplateShortName -like 'reactor*' -and $profileArgs -notcontains '--devtools app')) {
+                throw "Reactor devtools launch profile must pass '--devtools app' in '$TemplateShortName' ($packaging)."
+            }
+
+            # Packaged projects list the MsixPackage profile first, as the Visual Studio F5 default, and keep a
+            # Project profile because 'dotnet run' can only apply Project or Executable profiles.
             if ($unpackaged) {
                 if (-not $packageType -or $packageType.InnerText -ne 'None' -or
                     -not $msixTooling -or $msixTooling.InnerText -ne 'false' -or
@@ -601,7 +610,7 @@ function Test-PackagingOptions {
                 $msixReference -or
                 -not $winappReference -or -not $msixCapability -or -not $packageMenu -or
                 -not (Test-Path -LiteralPath $manifestPath) -or -not (Test-Path -LiteralPath $assetsPath) -or
-                $commands.Count -ne 1 -or $commands[0] -ne 'MsixPackage') {
+                $commands[0] -ne 'MsixPackage' -or $commands -notcontains 'Project') {
                 throw "Packaged content or settings missing in '$TemplateShortName' ($packaging)."
             }
         }

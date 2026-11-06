@@ -73,11 +73,13 @@
   </ItemGroup>
 
   <!--
-    Debug-only: enable the Reactor devtools surface so the devtools F5 profile
-    (in Properties/launchSettings.json) lights up the devtools menu. Release /
-    Publish builds drop the package and the host-config switch so the trim / AOT
-    analyzers stay happy. To enable devtools in Release too, move these into the
-    unconditioned ItemGroup above.
+    Debug-only: reference Microsoft.UI.Reactor.Devtools and turn on the
+    Reactor.DevtoolsSupport switch. Together they make the Reactor devtools
+    available without turning them on: to get the in-app dev menu, launch with
+    the devtools "app" subcommand and render DevtoolsMenu(...) in your UI.
+    Release / Publish builds drop the package and the host-config switch so the
+    trim / AOT analyzers stay happy. To enable devtools in Release too, move
+    these into the unconditioned ItemGroup above.
   -->
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <PackageReference Include="Microsoft.UI.Reactor.Devtools" Version="$ReactorVersion$" />
