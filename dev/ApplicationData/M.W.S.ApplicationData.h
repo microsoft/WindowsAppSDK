@@ -17,6 +17,8 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForUser(winrt::Windows::System::User user);
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForPackageFamily(hstring const& packageFamilyName);
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForUnpackaged(hstring const& publisher, hstring const& product);
+        static winrt::Microsoft::Windows::Storage::ApplicationData GetForUnpackaged();
+        static void SetContextForUnpackaged(hstring const& publisher, hstring const& product);
         bool IsMachinePathSupported();
         hstring LocalCachePath();
         hstring LocalPath();

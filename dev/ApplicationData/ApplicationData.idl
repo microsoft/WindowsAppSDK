@@ -5,7 +5,7 @@
 
 namespace Microsoft.Windows.Storage
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract ApplicationDataContract{};
 
     /// Specifies the type of data store.
@@ -90,6 +90,16 @@ namespace Microsoft.Windows.Storage
         /// @warning The returned instance of ApplicationData does not support LocalCache, PublisherCache or SharedLocal features.
         [contract(ApplicationDataContract, 2)]
         static ApplicationData GetForUnpackaged(String publisher, String product);
+
+        /// Get an instance for the current user using the process's unpackaged context.
+        /// @note API-set context takes precedence over resources in the process executable.
+        [contract(ApplicationDataContract, 3), feature(Feature_ApplicationDataUnpackagedContext)]
+        [method_name("GetDefaultForUnpackaged")]
+        static ApplicationData GetForUnpackaged();
+
+        /// Set the process's unpackaged publisher and product once for its lifetime.
+        [contract(ApplicationDataContract, 3), feature(Feature_ApplicationDataUnpackagedContext)]
+        static void SetContextForUnpackaged(String publisher, String product);
 
         /// Return true if the package family supports the machine data store.
         Boolean IsMachinePathSupported { get; };
