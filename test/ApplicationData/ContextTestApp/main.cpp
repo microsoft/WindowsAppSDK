@@ -182,7 +182,7 @@ namespace
     }
 }
 
-int wmain(int argc, wchar_t** argv)
+int __cdecl wmain(int argc, wchar_t** argv)
 {
     try
     {
