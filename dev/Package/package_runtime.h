@@ -5,22 +5,22 @@
 #define PACKAGE_RUNTIME_H
 
 /// Features can be queried if currently available/enabled.
-/// @see IsPackageFeatureSupported()
-typedef enum PackageFeature
+/// @see IsPackageRuntimeFeatureSupported()
+typedef enum PackageRuntimeFeature
 {
     /// Package Mutable path.
     /// @see PackagePathType_Mutable
-    PackageFeature_PackagePath_Mutable           = 1,
+    PackageRuntimeFeature_PackagePath_Mutable           = 1,
 
     /// Package External Location path (MachineExternal + UserExternal)
     /// @see PackagePathType_MachineExternal
     /// @see PackagePathType_UserExternal
-    PackageFeature_PackagePath_ExternalLocation  = 2,
-} PackageFeature;
+    PackageRuntimeFeature_PackagePath_ExternalLocation  = 2,
+} PackageRuntimeFeature;
 
 /// Return TRUE if feature is supported on the current system.
-STDAPI_(BOOL) IsPackageFeatureSupported(
-    PackageFeature feature) noexcept;
+STDAPI_(BOOL) IsPackageRuntimeFeatureSupported(
+    PackageRuntimeFeature feature) noexcept;
 
 /// Options for GetPackageFilePath*() functions
 typedef enum GetPackageFilePathOptions
