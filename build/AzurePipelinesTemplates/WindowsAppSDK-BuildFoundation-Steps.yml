@@ -30,6 +30,15 @@ steps:
   parameters:
     IsMonobuild: ${{ parameters.IsMonobuild }}
 
+# EnergySaverStatus2 requires the updated SDK metadata, not just its NuGet build tools.
+- task: PowerShell@2
+  displayName: 'Add Windows SDK 10.0.26100.8876'
+  inputs:
+    targetType: filePath
+    filePath: $(Build.SourcesDirectory)\build\scripts\windows-sdk.ps1
+    arguments: >
+      -SdkVersion "10.0.26100"
+
 - task: NuGetAuthenticate@1
 
   # Copy MSIX license installation header into the correct source location.
