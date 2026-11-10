@@ -7,8 +7,9 @@
 # Usage:
 #   1. Run the OneBranch build pipeline (WindowsAppSDK-DotnetNewTemplates.yml) first.
 #   2. Note the build ID from that run.
-#   3. Run this pipeline with that build ID and ArmPublishToNugetOrg enabled.
-#   4. Review the ReleasePackages artifact and approve publishing.
+#   3. Run unarmed with that build ID to verify and stage packages without a release stage.
+#   4. For publishing, an authorized release submitter reruns with ArmPublishToNugetOrg enabled.
+#   5. Review the ReleasePackages artifact and approve publishing.
 
 trigger: none
 pr: none
@@ -115,32 +116,32 @@ extends:
             Contents: '*.nupkg'
             TargetFolder: '$(ob_outputDirectory)'
 
-    - stage: DotnetNewTemplates_Publish
-      displayName: 'Approve and publish dotnet new templates to NuGet.org'
-      dependsOn:
-      - DotnetNewTemplates_Prepare
-      variables:
-        ob_release_environment: Production
-      jobs:
-      - job: WaitForPublishApproval
-        displayName: 'Manual Approval'
-        pool:
-          type: server
-        timeoutInMinutes: 1441
-        steps:
-        - task: ManualValidation@0
-          displayName: 'Verify artifacts before NuGet.org publish'
-          timeoutInMinutes: 1440
-          inputs:
-            notifyUsers: ''
-            onTimeout: reject
-            instructions: |
-              Please verify the .nupkg files in this run's ReleasePackages artifact before continuing the publish to NuGet.org:
-              $(System.CollectionUri)$(System.TeamProjectId)/_build/results?buildId=$(Build.BuildId)&view=artifacts&pathAsName=false&type=publishedArtifacts
-              Source build: ${{ parameters.BuildRunId }}
-              Source artifact: ${{ parameters.ArtifactName }}
+    - ${{ if eq(parameters.ArmPublishToNugetOrg, true) }}:
+      - stage: DotnetNewTemplates_Publish
+        displayName: 'Approve and publish dotnet new templates to NuGet.org'
+        dependsOn:
+        - DotnetNewTemplates_Prepare
+        variables:
+          ob_release_environment: Production
+        jobs:
+        - job: WaitForPublishApproval
+          displayName: 'Manual Approval'
+          pool:
+            type: server
+          timeoutInMinutes: 1441
+          steps:
+          - task: ManualValidation@0
+            displayName: 'Verify artifacts before NuGet.org publish'
+            timeoutInMinutes: 1440
+            inputs:
+              notifyUsers: ''
+              onTimeout: reject
+              instructions: |
+                Please verify the .nupkg files in this run's ReleasePackages artifact before continuing the publish to NuGet.org:
+                $(System.CollectionUri)$(System.TeamProjectId)/_build/results?buildId=$(Build.BuildId)&view=artifacts&pathAsName=false&type=publishedArtifacts
+                Source build: ${{ parameters.BuildRunId }}
+                Source artifact: ${{ parameters.ArtifactName }}
 
-      - ${{ if eq(parameters.ArmPublishToNugetOrg, true) }}:
         - job: PublishNuGetOrg
           displayName: 'Publish dotnet new template pack to NuGet.org'
           dependsOn: WaitForPublishApproval
