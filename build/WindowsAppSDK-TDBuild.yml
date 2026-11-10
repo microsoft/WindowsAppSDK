@@ -6,6 +6,10 @@ parameters:
   values:
   - 'None'
   - 'COMMIT'
+- name: serviceTreeId
+  displayName: Service Tree ID
+  type: string
+  default: ''
 
 variables:
 - group: WinAppSDK-TouchDownBuild-Secrets
@@ -21,6 +25,7 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-CallTouchDownBuild-Steps.yml
     parameters:
       GitAction: ${{ parameters.GitAction }}
+      serviceTreeId: ${{ parameters.serviceTreeId }}
       ResourceFilePath: |
         dev\Templates\VSIX\Extension\Cpp\Common\VSPackage.resx
         dev\Templates\VSIX\Extension\Cs\Common\VSPackage.resx

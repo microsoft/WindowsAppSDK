@@ -11,6 +11,9 @@ parameters:
 - name: TeamID
   type: string
   default: ''
+- name: serviceTreeId
+  type: string
+  default: ''
 
 steps:
 - checkout: self
@@ -25,6 +28,7 @@ steps:
   inputs:
     environment: 'PRODEXT'
     teamId: ${{ parameters.TeamID }}
+    serviceTreeId: ${{ parameters.serviceTreeId }}
     authType: 'FederatedIdentity'
     FederatedIdentityServiceConnection: "WinAppSDKAzureResourceManager"
     localizationTarget: true

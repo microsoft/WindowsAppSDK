@@ -329,7 +329,12 @@ actions and manual instructions are localization identities and must not be
 renumbered or reused.
 
 The existing upload is defined in `build\WindowsAppSDK-TDBuild.yml` and
-publishes the returned `LocalizedFiles` artifact. The supported runtime cultures
+publishes the returned `LocalizedFiles` artifact. When queuing the pipeline,
+set the **Service Tree ID** (`serviceTreeId`) parameter to the ID confirmed by
+the service owner. It is passed through the shared template to
+`TouchdownBuildTask@5`; the empty default is not a valid service ID. For Azure
+CLI runs, supply `--parameters serviceTreeId=<confirmed-service-tree-id>`.
+The supported runtime cultures
 are `cs-CZ`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `pl-PL`,
 `pt-BR`, `ru-RU`, `tr-TR`, `zh-CN`, and `zh-TW`. Review the actual artifact
 paths and approved service-to-runtime culture mapping before importing. Before
