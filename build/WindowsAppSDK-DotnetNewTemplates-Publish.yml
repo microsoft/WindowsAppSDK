@@ -2,7 +2,7 @@
 # Licensed under the MIT License.
 #
 # Standalone 1ES-governed release pipeline for publishing dotnet new templates to NuGet.org.
-# Publishing uses a 1ES Hosted Pool with the NuGet network isolation policy.
+# Publishing uses a 1ES Hosted Pool with the Preferred baseline and NuGet add-on policies.
 #
 # Usage:
 #   1. Run the OneBranch build pipeline (WindowsAppSDK-DotnetNewTemplates.yml) first.
@@ -39,7 +39,7 @@ extends:
   template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
     settings:
-      networkIsolationPolicy: 'NuGet'
+      networkIsolationPolicy: 'Preferred,NuGet'
 
     pool:
       name: 'ProjectReunionESPool-2022'
