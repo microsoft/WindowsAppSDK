@@ -316,6 +316,31 @@ The two-project `.csproj` + `.wapproj` template is a VSIX-only
 exception that retains its existing `.vstemplate` implementation; it is not part
 of this NuGet pack.
 
+### Template localization
+
+Each `.template.config\template.json` is the English source of truth. Its
+localizable metadata is mirrored in a flat
+`.template.config\localize\templatestrings.json` handoff file next to the
+culture-specific sidecars. Keep the handoff file in sync whenever localizable
+metadata changes; review its keys and values against `template.json` as part of
+the source change. The Touchdown upload submits these checked-in files; it does
+not regenerate them or verify their freshness. Stable `id` values on post
+actions and manual instructions are localization identities and must not be
+renumbered or reused.
+
+The existing upload is defined in `build\WindowsAppSDK-TDBuild.yml` and
+publishes the returned `LocalizedFiles` artifact. The supported runtime cultures
+are `cs-CZ`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `pl-PL`,
+`pt-BR`, `ru-RU`, `tr-TR`, `zh-CN`, and `zh-TW`. Review the actual artifact
+paths and approved service-to-runtime culture mapping before importing. Before
+submission, have the localization owner confirm that the Touchdown team accepts
+the flat JSON format and preserves slash-delimited keys. The pipeline's
+relative-directory setting alone does not establish the return layout. Copy
+only reviewed JSON sidecars to
+`.template.config\localize\templatestrings.<culture>.json`, preserving existing
+translations and rejecting unknown or ambiguous cultures. No automatic
+translation commit or pull request is performed.
+
 ### Local Testing
 
 1. Pack the templates:

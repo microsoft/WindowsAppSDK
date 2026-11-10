@@ -25,4 +25,22 @@ jobs:
         dev\Templates\VSIX\Extension\Cpp\Common\VSPackage.resx
         dev\Templates\VSIX\Extension\Cs\Common\VSPackage.resx
         dev\Interop\StoragePickers\Strings\StoragePickers.resw
+        dev\Templates\Dotnet\templates\blank-app\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\class-library\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\item-blank-page\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\item-blank-window\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\item-content-dialog\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\item-resource-dictionary\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\item-resw\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\item-templated-control\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\item-user-control\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\mvvm-app\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\navigation-app\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\reactor-blank-app\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\reactor-mvu-app\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\reactor-navigation-app\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\reactor-singlefile-app\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\reactor-tabview-app\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\tabview-app\.template.config\localize\templatestrings.json
+        dev\Templates\Dotnet\templates\unit-test\.template.config\localize\templatestrings.json
       teamId: $(TdBuildTeamIDVSIX)

@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="README.md" />
-    <None Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\gitignore.txt"
+    <None Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\gitignore.txt;templates\**\.template.config\localize\templatestrings.json"
           Pack="true" PackagePath="content\%(RecursiveDir)%(Filename)%(Extension)" />
     <!-- Shared .gitignore for csproj-based project templates (not item or single-file templates). -->
     <None Include="templates\gitignore.txt" Pack="true"
