@@ -135,6 +135,6 @@ extends:
         sourceSubdirectory: '.'
         dependsOnStage: 'DotnetNewTemplates_Build'
 
-    # NuGet.org publishing is handled by the separate 1ES-governed release pipeline:
+    # NuGet.org publishing is handled by the separate OneBranch release pipeline:
     # WindowsAppSDK-DotnetNewTemplates-Publish.yml
-    # Publishing uses a 1ES Hosted Pool outside this network-isolated build pipeline.
+    # Publishing uses a dedicated release job after package verification and manual approval.
