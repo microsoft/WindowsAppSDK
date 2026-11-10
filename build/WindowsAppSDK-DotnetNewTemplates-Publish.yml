@@ -68,8 +68,6 @@ extends:
           ob_artifactBaseName: 'ReleasePackages'
           dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
         steps:
-        - checkout: none
-
         - task: DownloadPipelineArtifact@2
           displayName: 'Download dotnet new template pack artifact'
           inputs:
