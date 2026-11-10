@@ -334,6 +334,11 @@ set the **Service Tree ID** (`serviceTreeId`) parameter to the ID confirmed by
 the service owner. It is passed through the shared template to
 `TouchdownBuildTask@5`; the empty default is not a valid service ID. For Azure
 CLI runs, supply `--parameters serviceTreeId=<confirmed-service-tree-id>`.
+The Touchdown task downloads LCT files into the staging directory for
+`LocStatusStaticAnalysis@1`. Review the run's **LocStatus Report** tab for
+resource and culture coverage and outstanding localization work. Static
+analysis does not enable enrichment or prove translation completeness; review
+the returned JSON separately. Keep LCT files as build artifacts, not source.
 The supported runtime cultures
 are `cs-CZ`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `pl-PL`,
 `pt-BR`, `ru-RU`, `tr-TR`, `zh-CN`, and `zh-TW`. Review the actual artifact

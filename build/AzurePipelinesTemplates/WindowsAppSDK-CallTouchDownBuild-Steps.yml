@@ -32,6 +32,7 @@ steps:
     authType: 'FederatedIdentity'
     FederatedIdentityServiceConnection: "WinAppSDKAzureResourceManager"
     localizationTarget: true
+    includeLctFiles: true
     isPreview: false
     resourceFilePath: ${{ parameters.ResourceFilePath }}
     appendRelativeDir: true

@@ -49,3 +49,9 @@ jobs:
         dev\Templates\Dotnet\templates\tabview-app\.template.config\localize\templatestrings.json
         dev\Templates\Dotnet\templates\unit-test\.template.config\localize\templatestrings.json
       teamId: $(TdBuildTeamIDVSIX)
+
+  - task: LocStatusStaticAnalysis@1
+    displayName: 'Analyze Localization Status'
+    inputs:
+      lctPathsInput: '$(Build.ArtifactStagingDirectory)'
+      enableLocalAnalysis: true
