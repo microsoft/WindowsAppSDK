@@ -13,8 +13,8 @@ Unit test templates build all runner/packaging combinations without overriding
 their packaging.
 Representative unpackaged XAML and Reactor apps are also published in Release;
 their PRI and icon output is checked, followed by a startup smoke test unless
-SkipAppLaunch is specified. Legacy app and item-host builds still override
-WindowsPackageType=None.
+SkipAppLaunch is specified. Item templates are added to and built with both
+packaged and unpackaged hosts. Legacy app builds still override WindowsPackageType=None.
 
 .PARAMETER PackagePath
 Path to an existing Microsoft.WindowsAppSDK.WinUI.CSharp.Templates .nupkg. When
@@ -647,12 +647,6 @@ function Test-ItemTemplates {
         [string]$Platform
     )
 
-    $hostName = 'ItemHost_{0}' -f ([Guid]::NewGuid().ToString('N').Substring(0, 8))
-    $hostPath = Join-Path -Path $WorkingRoot -ChildPath $hostName
-    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
-    Add-Result -Template 'winui (item host)' -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $hostPath
-
-    $projectFile = Join-Path -Path $hostPath -ChildPath "$hostName.csproj"
     $itemTemplates = @(
         @{ ShortName = 'winui-page'; Name = 'SettingsPage' },
         @{ ShortName = 'winui-window'; Name = 'SecondaryWindow' },
@@ -663,14 +657,23 @@ function Test-ItemTemplates {
         @{ ShortName = 'winui-dialog'; Name = 'ConfirmationDialog' }
     )
 
-    foreach ($item in $itemTemplates) {
-        $args = @('new', $item.ShortName, '-n', $item.Name, '--project', $projectFile, '--force', '--no-update-check')
-        Invoke-DotnetCommand -Arguments $args -WorkingDirectory $hostPath -Description "create item template $($item.ShortName)"
-        Add-Result -Template $item.ShortName -Platform $Platform -Step 'add item' -Status 'Succeeded' -Path $projectFile
-    }
+    foreach ($packaging in @('Packaged', 'Unpackaged')) {
+        $hostName = 'ItemHost_{0}_{1}' -f $packaging, ([Guid]::NewGuid().ToString('N').Substring(0, 8))
+        $hostPath = Join-Path -Path $WorkingRoot -ChildPath $hostName
+        $hostTemplate = "winui (item host, $packaging)"
+        New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion -AdditionalArguments @('--packaging', $packaging)
+        Add-Result -Template $hostTemplate -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $hostPath
 
-    Invoke-DotnetCommand -Arguments @('build', $projectFile, '-p:Configuration=Debug', "-p:Platform=$Platform", '-p:WindowsPackageType=None') -WorkingDirectory $hostPath -Description 'build item host'
-    Add-Result -Template 'winui (item host)' -Platform $Platform -Step 'build' -Status 'Succeeded' -Path $projectFile
+        $projectFile = Join-Path -Path $hostPath -ChildPath "$hostName.csproj"
+        foreach ($item in $itemTemplates) {
+            $args = @('new', $item.ShortName, '-n', $item.Name, '--project', $projectFile, '--force', '--no-update-check')
+            Invoke-DotnetCommand -Arguments $args -WorkingDirectory $hostPath -Description "create item template $($item.ShortName) ($packaging)"
+            Add-Result -Template $item.ShortName -Platform $Platform -Step "add item: $packaging" -Status 'Succeeded' -Path $projectFile
+        }
+
+        Invoke-DotnetCommand -Arguments @('build', $projectFile, '-p:Configuration=Debug', "-p:Platform=$Platform", '-r', "win-$($Platform.ToLowerInvariant())") -WorkingDirectory $hostPath -Description "build item host ($packaging)"
+        Add-Result -Template $hostTemplate -Platform $Platform -Step 'build' -Status 'Succeeded' -Path $projectFile
+    }
 }
 
 function Assert-CsprojPackageVersion {
