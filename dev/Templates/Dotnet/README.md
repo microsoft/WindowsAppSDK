@@ -323,7 +323,12 @@ localizable metadata is mirrored in a flat
 `.template.config\localize\templatestrings.json` handoff file next to the
 culture-specific sidecars. Keep the handoff file in sync whenever localizable
 metadata changes; review its keys and values against `template.json` as part of
-the source change. The Touchdown upload submits these checked-in files; it does
+the source change. Mirror only translatable metadata, not every description
+field. Exclude version-only strings and standalone product names, such as
+`10.0.26100.0`, `Microsoft.Testing.Platform`, and `VSTest`; keep their original
+values in `template.json`. Descriptions containing prose, such as
+`Target .NET 10`, still need localization, with product names and version
+numbers preserved. The Touchdown upload submits these checked-in files; it does
 not regenerate them or verify their freshness. Stable `id` values on post
 actions and manual instructions are localization identities and must not be
 renumbered or reused.
