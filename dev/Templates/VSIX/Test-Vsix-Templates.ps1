@@ -4,7 +4,8 @@ Validates the Windows App SDK C# VSIX project templates in Visual Studio.
 
 .DESCRIPTION
 Creates, builds, and, where applicable, deploys each C# VSIX project template.
-Stable Visual Studio installations use the per-user LocalDev VSIX. When the
+Stable Visual Studio installations use the per-user LocalDev VSIX, building
+and installing it automatically if it is missing. When the
 script falls back to prerelease Visual Studio, it uses the workload-installed
 C# templates component. By default, all templates are tested. Use -TemplateId
 to run a subset.
@@ -15,6 +16,10 @@ parameter is omitted, all templates are tested.
 
 .PARAMETER UiTimeout
 Timeout in milliseconds for general Visual Studio UI operations.
+
+.PARAMETER StartupTimeout
+Maximum time in milliseconds to wait for the Visual Studio start window to render.
+Continues as soon as the Create a new project button is visible and enabled.
 
 .PARAMETER LanguageFilterTimeout
 Timeout in milliseconds for the C# language filter to become available.
@@ -77,6 +82,10 @@ param(
     [Parameter()]
     [ValidateRange(1, [int]::MaxValue)]
     [int]$UiTimeout = 10000,
+
+    [Parameter()]
+    [ValidateRange(0, [int]::MaxValue)]
+    [int]$StartupTimeout = 5000,
 
     [Parameter()]
     [ValidateRange(1, [int]::MaxValue)]
@@ -731,7 +740,7 @@ function Start-UnitTestRun
                 } | Select-Object -First 1
                 if ($runAllButton)
                 {
-                    Invoke-WinAppRequired -Checkpoint 'Run all unit tests' -Arguments @('ui', 'invoke', $runAllButton.selector, '-a', 'devenv', '-w', $Window)
+                    Invoke-WinAppRequired -Checkpoint 'Run all unit tests' -Arguments @('ui', 'click', $runAllButton.selector, '-a', 'devenv', '-w', $Window)
                     return
                 }
             }
@@ -785,12 +794,30 @@ function Invoke-TemplateTest
     {
         Write-Host "`n===== Testing '$($Template.Name)' =====" -ForegroundColor Cyan
         $visualStudioProcess = Start-Process -FilePath $Devenv -PassThru
-        Wait-WinAppElement -Identifier 'TitleBar' -App 'devenv' -Timeout $uiTimeout
-        $activeHWND = Get-DevenvHWND
+        $checkpoint = 'Wait for Visual Studio start window'
+        Wait-WinAppElement -Identifier 'Get started' -App $visualStudioProcess.Id -Timeout $startupTimeout
+        $startWindowOutput = Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @(
+            'ui', 'inspect', 'Get started', '-a', $visualStudioProcess.Id, '--json'
+        ) -PassThru
+        $startWindowState = ($startWindowOutput -join [Environment]::NewLine) | ConvertFrom-Json
+        $startWindows = @($startWindowState.windows | Where-Object { $_.elementCount -gt 0 })
+        if ($startWindows.Count -ne 1)
+        {
+            throw "Expected exactly one Visual Studio Get started window, but found $($startWindows.Count)."
+        }
+        $activeHWND = [string]$startWindows[0].hwnd
 
         $checkpoint = 'Open Create a new project'
-        Wait-WinAppElement -Identifier 'Create a new project' -App 'devenv' -Window $activeHWND
-        Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @('ui', 'invoke', 'Create a new project', '-a', 'devenv', '-w', $activeHWND)
+        Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @(
+            'ui', 'wait-for', 'Create a new project', '-w', $activeHWND,
+            '--type', 'Button', '--property', 'IsOffscreen', '--value', 'false', '--timeout', $startupTimeout
+        )
+        Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @(
+            'ui', 'wait-for', 'Create a new project', '-w', $activeHWND,
+            '--type', 'Button', '--property', 'IsEnabled', '--value', 'true', '--timeout', $startupTimeout
+        )
+        Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @('ui', 'click', 'Create a new project', '-a', 'devenv', '-w', $activeHWND)
+        $checkpoint = 'Wait for project templates'
         Wait-WinAppElement -Identifier 'ListViewTemplates' -App 'devenv' -Timeout $uiTimeout
         Set-NewProjectLanguageFilter -Window $activeHWND
 
@@ -801,11 +828,11 @@ function Invoke-TemplateTest
         $rawJson = Invoke-WinAppRequired -Checkpoint "Inspect 'Next'" -Arguments @('ui', 'inspect', 'Next', '-a', 'devenv', '-w', $activeHWND, '--json') -PassThru
         $nextButton = ($rawJson -join [Environment]::NewLine) | ConvertFrom-Json
         $nextButtonSelector = $nextButton.windows[0].elements[0].selector
-        Invoke-WinAppRequired -Checkpoint 'Advance template selection' -Arguments @('ui', 'invoke', $nextButtonSelector, '-w', $activeHWND)
+        Invoke-WinAppRequired -Checkpoint 'Advance template selection' -Arguments @('ui', 'click', $nextButtonSelector, '-w', $activeHWND)
 
         $checkpoint = 'Create project'
         Wait-WinAppElement -Identifier 'Next' -App 'devenv' -Window $activeHWND -Timeout $uiTimeout
-        Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @('ui', 'invoke', 'button_Next', '-w', $activeHWND)
+        Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @('ui', 'click', 'button_Next', '-w', $activeHWND)
 
         if ($Template.ConfirmTargetVersions)
         {
@@ -813,7 +840,7 @@ function Invoke-TemplateTest
             Wait-WinAppElement -Identifier 'New Windows Project' -App 'devenv' -Timeout $uiTimeout
             $targetVersionHWND = Get-DevenvWindowByTitle -Title 'New Windows Project'
             Wait-WinAppElement -Identifier 'OK' -App 'devenv' -Window $targetVersionHWND -Timeout $uiTimeout
-            Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @('ui', 'invoke', 'OK', '-a', 'devenv', '-w', $targetVersionHWND)
+            Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @('ui', 'click', 'OK', '-a', 'devenv', '-w', $targetVersionHWND)
         }
 
         $checkpoint = 'Load project'
@@ -857,7 +884,7 @@ function Invoke-TemplateTest
             {
                 $existingAppProcessIds = @(Get-Process -Name $appName -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
                 Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Invoking Debug Target for '$appName'."
-                Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @('ui', 'invoke', $debugButtonSelector, '-w', $activeHWND)
+                Invoke-WinAppRequired -Checkpoint $checkpoint -Arguments @('ui', 'click', $debugButtonSelector, '-w', $activeHWND)
                 Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff K')] Debug Target invocation completed for '$appName'."
                 Assert-WinAppTitleBar -AppName $appName -Timeout $deploymentTimeout
                 $appProcessIds = @(Get-Process -Name $appName -ErrorAction SilentlyContinue | Where-Object { $_.Id -notin $existingAppProcessIds } | Select-Object -ExpandProperty Id)
@@ -1069,11 +1096,31 @@ try
         $templateVsixKind = 'LocalDev'
         $templateVsixRoot = $env:LocalAppData
         $expectedVsixIdentity = 'Identity Id="Microsoft.WindowsAppSDK.Cs.Dev17.LocalDev"'
-        $missingVsixMessage = "The LocalDev C# VSIX is not installed for the current user; 'WindowsAppSDK.Cs.Extension.Dev17.dll' was not found under '$templateVsixRoot'. Install it with 'dev\Templates\VSIX\build-local-VSIX-package\build-install-localdev-vsix.ps1', then rerun this script."
+        $missingVsixMessage = "The LocalDev C# VSIX is still missing after building and installing it; 'WindowsAppSDK.Cs.Extension.Dev17.dll' was not found under '$templateVsixRoot'. Check the build and installation output, then rerun this script."
     }
 
     # TODO: Add C++ VSIX DLL search.
     $templateVsixDlls = @(Get-ChildItem -Path $templateVsixRoot -Filter 'WindowsAppSDK.Cs.Extension.Dev17.dll' -File -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
+
+    if ($templateVsixDlls.Count -eq 0 -and $resolvedVsixDeploymentKind -eq 'LocalDev')
+    {
+        $buildInstallScript = Join-Path $PSScriptRoot 'build-local-VSIX-package\build-install-localdev-vsix.ps1'
+        if (-not (Test-Path $buildInstallScript -PathType Leaf))
+        {
+            throw "LocalDev build and installation script was not found at '$buildInstallScript'."
+        }
+
+        $visualStudioMajorVersion = ([version]$selectedInstance.installationVersion).Major
+        $localDevVersionRange = '[{0}.0,{1}.0)' -f $visualStudioMajorVersion, ($visualStudioMajorVersion + 1)
+        Write-Host 'LocalDev C# templates were not found. Building and installing the LocalDev VSIX...'
+        & $buildInstallScript -Language CSharp -VsVersionRange $localDevVersionRange -MsBuildVersion $visualStudioMajorVersion
+        if ($LASTEXITCODE -ne 0)
+        {
+            throw "LocalDev VSIX build and installation failed with exit code $LASTEXITCODE."
+        }
+
+        $templateVsixDlls = @(Get-ChildItem -Path $templateVsixRoot -Filter 'WindowsAppSDK.Cs.Extension.Dev17.dll' -File -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
+    }
 
     if ($templateVsixDlls.Count -eq 0)
     {
