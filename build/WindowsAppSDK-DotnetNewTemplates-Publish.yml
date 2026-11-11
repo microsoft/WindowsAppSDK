@@ -1,13 +1,14 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# Standalone 1ES-governed release pipeline for publishing dotnet new templates to NuGet.org.
-# Publishing uses a 1ES Hosted Pool outside the network-isolated OneBranch build pipeline.
+# Standalone OneBranch release pipeline for publishing dotnet new templates to NuGet.org.
+# Packages are staged in a build job, approved, then published from the governed release pool.
 #
 # Usage:
 #   1. Run the OneBranch build pipeline (WindowsAppSDK-DotnetNewTemplates.yml) first.
 #   2. Note the build ID from that run.
 #   3. Run this pipeline, providing the build ID as a parameter.
+#   4. Review the staged packages and approve the NuGet.org publish.
 
 trigger: none
 pr: none
@@ -25,31 +26,80 @@ parameters:
   type: string
   default: 'drop_DotnetNewTemplates_Build_PackDotnetNewTemplates'
 
-variables:
-- template: WindowsAppSDK-CommonVariables.yml
-
 resources:
   repositories:
-  - repository: 1ESPipelineTemplates
+  - repository: templates
     type: git
-    name: 1ESPipelineTemplates/1ESPipelineTemplates
-    ref: refs/tags/release
+    name: OneBranch.Pipelines/GovernedTemplates
+    ref: refs/heads/main
 
 extends:
-  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  template: v2/OneBranch.Official.CrossPlat.yml@templates
   parameters:
-    pool:
-      name: 'ProjectReunionESPool-2022'
-      image: 'MMS2022-1ES-GPT'
-      os: windows
+    release:
+      category: NonAzure
+    featureFlags:
+      WindowsHostVersion:
+        Version: 2022
 
     stages:
-    - stage: DotnetNewTemplates_Approval
-      displayName: 'Approve NuGet.org publish'
+    - stage: DotnetNewTemplates_Prepare
+      displayName: 'Prepare dotnet new template pack for release'
+      jobs:
+      - job: PrepareTemplatePackages
+        displayName: 'Stage dotnet new template pack'
+        pool:
+          type: windows
+        variables:
+          ob_outputDirectory: '$(Build.ArtifactStagingDirectory)\dotnet-new-template-pack'
+          ob_artifactBaseName: 'DotnetNewTemplatePackages'
+          WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download dotnet new template pack artifact'
+          inputs:
+            source: specific
+            project: '$(System.TeamProjectId)'
+            definition: ${{ parameters.BuildPipelineId }}
+            runVersion: specific
+            pipelineId: ${{ parameters.BuildRunId }}
+            artifact: '${{ parameters.ArtifactName }}'
+            path: '$(ob_outputDirectory)'
+            patterns: '*.nupkg'
+
+        - task: PowerShell@2
+          displayName: 'Verify staged dotnet new template pack'
+          inputs:
+            targetType: inline
+            script: |
+              Set-StrictMode -Version 2.0
+              $ErrorActionPreference = 'Stop'
+
+              $artifactPath = '$(ob_outputDirectory)'
+              if (-not (Test-Path -LiteralPath $artifactPath -PathType Container)) {
+                throw "Expected artifact directory '$artifactPath' was not found."
+              }
+              $packages = Get-ChildItem -LiteralPath $artifactPath -Filter *.nupkg -File
+              if (-not $packages) {
+                throw "No root-level .nupkg files were found in '$artifactPath'."
+              }
+              Write-Host "Found the following packages ready for approval:"
+              $packages | ForEach-Object {
+                $hash = Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256
+                Write-Host " - $($_.Name) SHA256: $($hash.Hash)"
+              }
+
+    - stage: DotnetNewTemplates_Publish
+      displayName: 'Approve and publish dotnet new templates to NuGet.org'
+      dependsOn:
+      - DotnetNewTemplates_Prepare
+      variables:
+        ob_release_environment: Production
       jobs:
       - job: WaitForPublishApproval
         displayName: 'Manual Approval'
-        pool: server
+        pool:
+          type: server
         timeoutInMinutes: 1441
         steps:
         - task: ManualValidation@0
@@ -61,32 +111,24 @@ extends:
             instructions: |
               Please verify the .nupkg in the ${{ parameters.ArtifactName }} folder before continuing the publish to NuGet.org:
               $(System.CollectionUri)$(System.TeamProjectId)/_build/results?buildId=${{ parameters.BuildRunId }}&view=artifacts&pathAsName=false&type=publishedArtifacts
+              The selected packages are staged in the DotnetNewTemplatePackages artifact of this release run:
+              $(System.CollectionUri)$(System.TeamProjectId)/_build/results?buildId=$(Build.BuildId)&view=artifacts&pathAsName=false&type=publishedArtifacts
 
-    - stage: DotnetNewTemplates_Publish
-      displayName: 'Publish dotnet new templates to NuGet.org'
-      dependsOn:
-      - DotnetNewTemplates_Approval
-      jobs:
       - job: PublishNuGetOrg
         displayName: 'Publish dotnet new template pack to NuGet.org'
+        dependsOn:
+        - WaitForPublishApproval
+        pool:
+          type: release
         variables:
           dotnetTemplatesArtifactPath: '$(Pipeline.Workspace)\BuildArtifact'
         templateContext:
-          type: releaseJob
-          isProduction: true
           inputs:
           - input: pipelineArtifact
-            displayName: 'Download dotnet new template pack artifact'
-            buildType: specific
-            project: '$(System.TeamProjectId)'
-            definition: ${{ parameters.BuildPipelineId }}
-            buildVersionToDownload: specific
-            pipelineId: ${{ parameters.BuildRunId }}
-            artifactName: '${{ parameters.ArtifactName }}'
+            artifactName: 'DotnetNewTemplatePackages'
             targetPath: '$(dotnetTemplatesArtifactPath)'
+            itemPattern: '*.nupkg'
         steps:
-        - checkout: none
-
         - task: PowerShell@2
           displayName: 'Verify dotnet new template pack artifact exists'
           inputs:
@@ -104,13 +146,16 @@ extends:
                 throw "No root-level .nupkg files were found in '$artifactPath'."
               }
               Write-Host "Found the following packages ready for publish:"
-              $packages | ForEach-Object { Write-Host " - $($_.FullName)" }
+              $packages | ForEach-Object {
+                $hash = Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256
+                Write-Host " - $($_.Name) SHA256: $($hash.Hash)"
+              }
 
-        - task: 1ES.PublishNuGet@1
+        - task: NuGetCommand@2
           displayName: 'Publish dotnet new templates to NuGet.org'
           inputs:
+            command: push
             packagesToPush: '$(dotnetTemplatesArtifactPath)\*.nupkg'
-            packageParentPath: '$(dotnetTemplatesArtifactPath)'
             verbosityPush: 'Detailed'
             nuGetFeedType: 'external'
             publishFeedCredentials: 'NugetOrg'
