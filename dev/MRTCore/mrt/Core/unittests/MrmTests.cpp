@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-#include <Windows.h>
+#include <windows.h>
 #include <WexTestClass.h>
 #include "..\src\MRM.h"
 
@@ -41,7 +41,7 @@ public:
         VERIFY_ARE_NOT_EQUAL(0u, GetCurrentDirectoryW(ARRAYSIZE(previousWorkingDirectory), previousWorkingDirectory));
 
         Log::Comment(String().Format(L"Test Setup: GetCurrentDirectory: %s", previousWorkingDirectory));
-        
+
         String testDeploymentDirectory;
         VERIFY_SUCCEEDED(RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDirectory));
         Log::Comment(String().Format(L"Test Setup: TestDeploymentDir: %s", testDeploymentDirectory.GetBuffer()));
