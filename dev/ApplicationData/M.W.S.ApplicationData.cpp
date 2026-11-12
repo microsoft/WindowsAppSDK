@@ -26,10 +26,6 @@ static_assert(static_cast<int32_t>(winrt::Microsoft::Windows::Storage::Applicati
 
 namespace
 {
-    std::mutex g_unpackagedContextLock;
-    winrt::hstring g_unpackagedPublisher;
-    winrt::hstring g_unpackagedProduct;
-
     winrt::hstring GetUnpackagedContextResource(HMODULE module, PCWSTR name)
     {
         const auto resource{ ::FindResourceW(module, name, L"ApplicationDataContext") };
@@ -41,28 +37,29 @@ namespace
             {
                 return {};
             }
-            THROW_WIN32(error);
+            THROW_WIN32_MSG(error, "%ls", name);
         }
 
         const auto size{ ::SizeofResource(module, resource) };
-        THROW_HR_IF_MSG(E_INVALIDARG, (size < sizeof(wchar_t)) || ((size % sizeof(wchar_t)) != 0),
-                        "Invalid unpackaged context resource size (%ls)", name);
+        THROW_HR_IF_MSG(E_UNEXPECTED, size < sizeof(wchar_t), "%ls", name);
+        THROW_HR_IF_MSG(E_UNEXPECTED, (size % sizeof(wchar_t)) != 0, "%ls", name);
         const auto loadedResource{ ::LoadResource(module, resource) };
-        THROW_LAST_ERROR_IF(!loadedResource);
+        THROW_LAST_ERROR_IF_MSG(!loadedResource, "%ls", name);
         const auto data{ static_cast<PCWSTR>(::LockResource(loadedResource)) };
-        THROW_WIN32_IF(ERROR_RESOURCE_DATA_NOT_FOUND, !data);
+        THROW_WIN32_IF_MSG(ERROR_RESOURCE_DATA_NOT_FOUND, !data, "%ls", name);
 
-        std::wstring_view value{ data, size / sizeof(wchar_t) };
-        THROW_HR_IF_MSG(E_INVALIDARG, value.back() != L'\0', "Unterminated unpackaged context resource (%ls)", name);
-        value.remove_suffix(1);
-        THROW_HR_IF_MSG(E_INVALIDARG, value.find(L'\0') != std::wstring_view::npos,
-                        "Embedded NUL in unpackaged context resource (%ls)", name);
-        return winrt::hstring{ value };
+        const std::wstring_view value{ data, size / sizeof(wchar_t) };
+        THROW_HR_IF_MSG(E_UNEXPECTED, value.back() != L'\0', "%ls", name);
+        return winrt::hstring{ data };
     }
 }
 
 namespace winrt::Microsoft::Windows::Storage::implementation
 {
+    std::mutex ApplicationData::s_unpackagedContextLock;
+    winrt::hstring ApplicationData::s_unpackagedPublisher;
+    winrt::hstring ApplicationData::s_unpackagedProduct;
+
     ApplicationData::ApplicationData(hstring const& packageFamilyName) :
         m_applicationData(nullptr),
         m_packageFamilyName(packageFamilyName)
@@ -150,39 +147,40 @@ namespace winrt::Microsoft::Windows::Storage::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::ApplicationData::Feature_ApplicationDataUnpackagedContext::IsEnabled());
 
-        hstring publisher;
-        hstring product;
+        winrt::hstring publisher;
+        winrt::hstring product;
         {
-            const auto lock{ std::unique_lock<std::mutex>(g_unpackagedContextLock) };
-            publisher = g_unpackagedPublisher;
-            product = g_unpackagedProduct;
+            const auto lock{ std::unique_lock<std::mutex>(s_unpackagedContextLock) };
+            publisher = s_unpackagedPublisher;
+            product = s_unpackagedProduct;
         }
-        if (publisher.empty())
+        if (publisher.empty() || product.empty())
         {
             const auto module{ ::GetModuleHandleW(nullptr) };
             THROW_LAST_ERROR_IF(!module);
             publisher = GetUnpackagedContextResource(module, L"ApplicationData.Publisher");
-            THROW_WIN32_IF(ERROR_RESOURCE_NOT_PRESENT, publisher.empty());
+            THROW_WIN32_IF_MSG(ERROR_RESOURCE_NOT_PRESENT, publisher.empty(), "ApplicationData.Publisher");
             product = GetUnpackagedContextResource(module, L"ApplicationData.Product");
-            THROW_WIN32_IF(ERROR_RESOURCE_NOT_PRESENT, product.empty());
+            THROW_WIN32_IF_MSG(ERROR_RESOURCE_NOT_PRESENT, product.empty(), "ApplicationData.Product");
         }
         return GetForUnpackaged(publisher, product);
     }
-    void ApplicationData::SetContextForUnpackaged(hstring const& publisher, hstring const& product)
+    void ApplicationData::SetContextForUnpackaged(winrt::hstring const& publisher, winrt::hstring const& product)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::Storage::ApplicationData::Feature_ApplicationDataUnpackagedContext::IsEnabled());
         _VerifyPublisher(publisher);
         _VerifyProduct(product);
 
-        const auto lock{ std::unique_lock<std::mutex>(g_unpackagedContextLock) };
-        THROW_WIN32_IF(ERROR_ALREADY_ASSIGNED, !g_unpackagedPublisher.empty());
-        hstring publisherCopy{ publisher };
-        hstring productCopy{ product };
+        const auto lock{ std::unique_lock<std::mutex>(s_unpackagedContextLock) };
+        THROW_WIN32_IF_MSG(ERROR_ALREADY_ASSIGNED, !s_unpackagedPublisher.empty(), "Publisher=%ls", s_unpackagedPublisher.c_str());
+        THROW_WIN32_IF_MSG(ERROR_ALREADY_ASSIGNED, !s_unpackagedProduct.empty(), "Product=%ls", s_unpackagedProduct.c_str());
 
         // Retain the module so releasing factories cannot reset the process's set-once context.
         static wil::winrt_module_reference moduleReference;
-        g_unpackagedPublisher = std::move(publisherCopy);
-        g_unpackagedProduct = std::move(productCopy);
+        auto resetPublisher{ wil::scope_exit([] { s_unpackagedPublisher.clear(); }) };
+        s_unpackagedPublisher = publisher;
+        s_unpackagedProduct = product;
+        resetPublisher.release();
     }
     bool ApplicationData::IsMachinePathSupported()
     {

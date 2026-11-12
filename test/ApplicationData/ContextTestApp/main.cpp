@@ -10,6 +10,8 @@
 #include <string>
 #include <string_view>
 #include <thread>
+#include <LogController.h>
+#include <Log.h>
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
@@ -26,6 +28,20 @@ namespace
     constexpr PCWSTR c_apiPublisher{ L"TestApplicationDataContext_ApiPublisher" };
     constexpr PCWSTR c_apiProduct{ L"ApiProduct" };
     constexpr HRESULT c_alreadyAssigned{ HRESULT_FROM_WIN32(ERROR_ALREADY_ASSIGNED) };
+
+    void __stdcall LogFailure(wil::FailureInfo const& failure) noexcept
+    {
+        wchar_t message[2048]{};
+        const auto hr{ wil::GetFailureLogString(message, ARRAYSIZE(message), failure) };
+        if (SUCCEEDED(hr))
+        {
+            WEX::Logging::Log::Comment(message);
+        }
+        else
+        {
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Error=0x%08X FormatError=0x%08X", failure.hr, hr));
+        }
+    }
 
     template <typename Callback>
     void ExpectFailure(HRESULT expected, Callback&& callback)
@@ -48,8 +64,10 @@ namespace
     {
         const auto actual{ contextStatics.GetForUnpackaged() };
         const auto expected{ explicitStatics.GetForUnpackaged(publisher, product) };
-        THROW_HR_IF_MSG(E_FAIL, actual.LocalPath() != expected.LocalPath(), "Unexpected local path");
-        THROW_HR_IF_MSG(E_FAIL, actual.TemporaryPath() != expected.TemporaryPath(), "Unexpected temporary path");
+        THROW_HR_IF_MSG(E_FAIL, actual.LocalPath() != expected.LocalPath(), "Publisher=%ls Product=%ls LocalPath=%ls Expected=%ls",
+                        publisher, product, actual.LocalPath().c_str(), expected.LocalPath().c_str());
+        THROW_HR_IF_MSG(E_FAIL, actual.TemporaryPath() != expected.TemporaryPath(), "Publisher=%ls Product=%ls TemporaryPath=%ls Expected=%ls",
+                        publisher, product, actual.TemporaryPath().c_str(), expected.TemporaryPath().c_str());
         return actual;
     }
 
@@ -178,22 +196,36 @@ namespace
                 THROW_HR_IF(E_FAIL, setterResults[i] != c_alreadyAssigned);
             }
         }
-        THROW_HR_IF_MSG(E_FAIL, winners != 1, "Exactly one setter must succeed");
+        THROW_HR_IF_MSG(E_FAIL, winners != 1, "Winners=%zu", winners);
     }
 }
 
-int __cdecl wmain(int argc, wchar_t** argv)
+int wmain(int argc, wchar_t* argv[])
 {
+    const auto loggingResult{ WEX::Logging::LogController::InitializeLogging() };
+    if (FAILED(loggingResult))
+    {
+        std::fwprintf(stderr, L"TAEF logging initialization failed: 0x%08X\n", static_cast<unsigned int>(loggingResult));
+        return static_cast<int>(loggingResult);
+    }
+    auto finalizeLogging{ wil::scope_exit([]
+    {
+        LOG_IF_FAILED(WEX::Logging::LogController::FinalizeLogging());
+        wil::SetResultLoggingCallback(nullptr);
+    }) };
+    wil::SetResultLoggingCallback(LogFailure);
+
     try
     {
-        THROW_HR_IF(E_INVALIDARG, argc != 4);
+        THROW_HR_IF_MSG(E_INVALIDARG, argc != 5, "argc=%d", argc);
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"ApplicationData context scenario: %s", argv[1]));
         winrt::init_apartment();
         auto uninitialize{ wil::scope_exit([] { winrt::uninit_apartment(); }) };
         wil::unique_hmodule module{ ::LoadLibraryExW(argv[2], nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
-        THROW_LAST_ERROR_IF(!module);
+        THROW_LAST_ERROR_IF_MSG(!module, "%ls", argv[2]);
         using GetFactory = HRESULT(__stdcall*)(HSTRING, void**);
         const auto getFactory{ reinterpret_cast<GetFactory>(::GetProcAddress(module.get(), "DllGetActivationFactory")) };
-        THROW_LAST_ERROR_IF(!getFactory);
+        THROW_LAST_ERROR_IF_MSG(!getFactory, "%ls DllGetActivationFactory", argv[2]);
         winrt::Windows::Foundation::IActivationFactory factory{ nullptr };
         const winrt::hstring className{ L"Microsoft.Windows.Storage.ApplicationData" };
         winrt::check_hresult(getFactory(static_cast<HSTRING>(winrt::get_abi(className)), winrt::put_abi(factory)));
@@ -208,10 +240,12 @@ int __cdecl wmain(int argc, wchar_t** argv)
         }
         auto contextStatics{ factory.as<Storage::IApplicationDataStatics3>() };
 
-        if (scenario == L"resources")
+        if ((scenario == L"resources") || (scenario == L"publisher-prefix") || (scenario == L"product-prefix"))
         {
             explicitStatics.GetForUnpackaged(c_apiPublisher, c_apiProduct);
-            CheckContext(explicitStatics, contextStatics, c_resourcePublisher, c_resourceProduct);
+            CheckContext(explicitStatics, contextStatics,
+                         scenario == L"publisher-prefix" ? L"Good" : c_resourcePublisher,
+                         scenario == L"product-prefix" ? L"Good" : c_resourceProduct);
         }
         else if (scenario == L"setter")
         {
@@ -248,7 +282,7 @@ int __cdecl wmain(int argc, wchar_t** argv)
             winrt::clear_factory_cache();
             using CanUnload = HRESULT(__stdcall*)();
             const auto canUnload{ reinterpret_cast<CanUnload>(::GetProcAddress(module.get(), "DllCanUnloadNow")) };
-            THROW_LAST_ERROR_IF(!canUnload);
+            THROW_LAST_ERROR_IF_MSG(!canUnload, "%ls DllCanUnloadNow", argv[2]);
             THROW_HR_IF_MSG(E_FAIL, canUnload() != S_FALSE, "Context must retain the runtime module");
             winrt::check_hresult(getFactory(static_cast<HSTRING>(winrt::get_abi(className)), winrt::put_abi(factory)));
             CheckContext(factory.as<Storage::IApplicationDataStatics2>(), factory.as<Storage::IApplicationDataStatics3>(),
@@ -256,14 +290,15 @@ int __cdecl wmain(int argc, wchar_t** argv)
         }
         else
         {
-            THROW_HR(E_INVALIDARG);
+            THROW_HR_MSG(E_INVALIDARG, "%ls", argv[1]);
         }
         return 0;
     }
     catch (...)
     {
-        const auto error{ winrt::to_hresult() };
-        std::fwprintf(stderr, L"ApplicationData context scenario failed: 0x%08X\n", static_cast<unsigned int>(error));
-        return static_cast<int>(error);
+        const winrt::hresult_error error{ winrt::to_hresult(), winrt::take_ownership_from_abi };
+        WEX::Logging::Log::Error(WEX::Common::String().Format(L"ApplicationData context scenario failed: 0x%08X %s",
+            static_cast<unsigned int>(error.code()), error.message().c_str()));
+        return static_cast<int>(error.code());
     }
 }
