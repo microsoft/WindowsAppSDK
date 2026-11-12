@@ -1,6 +1,6 @@
 {
-  "name": "WinUI Content Dialog (Item)",
+  "name": "Boîte de dialogue de contenu WinUI (élément)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 ContentDialog with markup and code-behind.",
-  "symbols/rootNamespace/description": "Namespace for the generated item."
+  "description": "Ajoute une boîte de dialogue de contenu WinUI 3 avec balisage et code associé.",
+  "symbols/rootNamespace/description": "Espace de noms pour l’élément généré."
 }

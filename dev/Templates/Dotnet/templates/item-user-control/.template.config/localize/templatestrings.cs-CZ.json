@@ -1,6 +1,6 @@
 {
   "name": "WinUI UserControl (položka)",
   "author": "Microsoft",
-  "description": "Přidá WinUI 3 UserControl s revizí a code-behind.",
+  "description": "Přidá ovládací prvek WinUI 3 UserControl se značkováním a kódem na pozadí.",
   "symbols/rootNamespace/description": "Obor názvů generované položky."
 }

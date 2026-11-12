@@ -1,16 +1,16 @@
 {
   "name": "Biblioteka klas WinUI",
   "author": "Microsoft",
-  "description": "Creates a WinUI 3 class library for sharing UI components.",
-  "symbols/dotnetVersion/description": "Base target framework moniker (TFM) for the WinUI project. Defaults to the installed SDK version.",
-  "symbols/dotnetVersion/choices/net10.0/description": "Target .NET 10",
-  "symbols/dotnetVersion/choices/net11.0/description": "Target .NET 11",
+  "description": "Tworzy bibliotekę klas WinUI 3 do udostępniania składników interfejsu użytkownika.",
+  "symbols/dotnetVersion/description": "Podstawowy moniker platformy docelowej (TFM) dla projektu WinUI. Domyślnie jest to zainstalowana wersja zestawu SDK.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Docelowa wersja platformy .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Docelowa wersja platformy .NET 11",
   "symbols/windowsAppSdkVersion/description": "Wersja NuGet Microsoft.WindowsAppSDK. Użyj * dla najnowszej stabilnej wersji.",
   "symbols/windowsSdkBuildToolsVersion/description": "Wersja NuGet Microsoft.Windows.SDK.BuildTools. Użyj * dla najnowszej stabilnej wersji.",
   "postActions/pinWindowsSdkBuildTools/description": "Przypnij Microsoft.Windows.SDK.BuildTools do najnowszej stabilnej wersji.",
   "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "Uruchom 'dotnet add package Microsoft.Windows.SDK.BuildTools'",
   "postActions/pinWindowsAppSdk/description": "Przypnij Microsoft.WindowsAppSDK do najnowszej stabilnej wersji.",
-  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Run 'dotnet add package Microsoft.WindowsAppSDK'",
-  "postActions/restore/description": "Restore NuGet packages required by this project.",
-  "postActions/restore/manualInstructions/restoreManually/text": "Run 'dotnet restore'"
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Uruchom polecenie „dotnet add package Microsoft.WindowsAppSDK”",
+  "postActions/restore/description": "Przywróć pakiety NuGet wymagane przez ten projekt.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Uruchom polecenie „dotnet restore”"
 }

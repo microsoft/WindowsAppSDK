@@ -1,6 +1,6 @@
 {
-  "name": "WinUI Blank Page (Item)",
+  "name": "Page vierge WinUI (élément)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 Page with XAML markup and code-behind.",
-  "symbols/rootNamespace/description": "Namespace for the generated item."
+  "description": "Ajoute une page WinUI 3 avec le balisage XAML et le code associé.",
+  "symbols/rootNamespace/description": "Espace de noms pour l’élément généré."
 }

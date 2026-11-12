@@ -1,6 +1,6 @@
 {
-  "name": "WinUI Blank Page (Item)",
+  "name": "WinUI 빈 페이지(항목)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 Page with XAML markup and code-behind.",
-  "symbols/rootNamespace/description": "Namespace for the generated item."
+  "description": "XAML 태그와 코드 숨김이 포함된 WinUI 3 페이지를 추가합니다.",
+  "symbols/rootNamespace/description": "생성된 항목의 네임스페이스입니다."
 }

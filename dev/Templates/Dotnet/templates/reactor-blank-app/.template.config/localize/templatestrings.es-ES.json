@@ -14,7 +14,7 @@
   "symbols/Packaging/choices/Packaged/displayName": "Empaquetado",
   "symbols/Packaging/choices/Packaged/description": "Aplicación empaquetada con identidad MSIX y recursos de paquete.",
   "symbols/Packaging/choices/Unpackaged/displayName": "Sin empaquetar",
-  "symbols/Packaging/choices/Unpackaged/description": "Aplicación desempaquetado sin un manifiesto MSIX o recursos de paquete.",
+  "symbols/Packaging/choices/Unpackaged/description": "Aplicación sin empaquetar y sin un manifiesto MSIX o recursos de paquete.",
   "symbols/publisherDn/description": "Nombre distintivo del publicador usado en Package.appxmanifest.",
   "symbols/publisherDisplay/description": "Nombre para mostrar del publicador que se muestra en el manifiesto.",
   "postActions/pinWindowsSdkBuildTools/description": "Ancle Microsoft.Windows.SDK.BuildTools a la última versión estable.",

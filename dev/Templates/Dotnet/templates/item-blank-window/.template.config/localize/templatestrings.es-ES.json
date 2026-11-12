@@ -1,6 +1,6 @@
 {
-  "name": "WinUI Blank Window (Item)",
+  "name": "Ventana en blanco de WinUI (elemento)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
-  "symbols/rootNamespace/description": "Namespace for the generated item."
+  "description": "Agrega una ventana de WinUI 3 con marcado XAML y código subyacente.",
+  "symbols/rootNamespace/description": "Espacio de nombres del elemento generado."
 }

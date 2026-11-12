@@ -2,7 +2,7 @@
   "name": "Reactor 空白應用程式（實驗性）",
   "author": "Microsoft",
   "description": "實驗性。建立空白的 Microsoft.UI.Reactor (WinUI 3) 傳統型應用程式。純 C#，不使用 XAML。如果不確定，請從這裡開始。Microsoft.UI.Reactor 是發行前版本，其 API 可能會變更。",
-  "symbols/dotnetVersion/description": "TFM) (基底目標 Framework Moniker。Microsoft.UI.Reactor 需要 .NET 10 或更新版本。",
+  "symbols/dotnetVersion/description": "基礎目標 Framework Moniker (TFM)。Microsoft.UI.Reactor 需要 .NET 10 或更新版本。",
   "symbols/dotnetVersion/choices/net10.0/description": "以 .NET 10 為目標",
   "symbols/dotnetVersion/choices/net11.0/description": "以 .NET 11 為目標",
   "symbols/reactorVersion/description": "要參考的 Microsoft.UI.Reactor (以及 Microsoft.UI.Reactor.Devtools) NuGet 版本。",

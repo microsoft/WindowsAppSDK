@@ -1,16 +1,16 @@
 {
   "name": "WinUI 클래스 라이브러리",
   "author": "Microsoft",
-  "description": "Creates a WinUI 3 class library for sharing UI components.",
+  "description": "UI 구성 요소를 공유할 수 있는 WinUI 3 클래스 라이브러리를 만듭니다.",
   "symbols/dotnetVersion/description": "WinUI 프로젝트의 기본 대상 TFM(프레임워크 모니커)입니다. 기본값은 설치된 SDK 버전입니다.",
-  "symbols/dotnetVersion/choices/net10.0/description": "Target .NET 10",
-  "symbols/dotnetVersion/choices/net11.0/description": "Target .NET 11",
+  "symbols/dotnetVersion/choices/net10.0/description": ".NET 10 대상",
+  "symbols/dotnetVersion/choices/net11.0/description": ".NET 11 대상",
   "symbols/windowsAppSdkVersion/description": "Microsoft.WindowsAppSDK NuGet 버전입니다. 안정적인 최신 버전에 *을 사용합니다.",
-  "symbols/windowsSdkBuildToolsVersion/description": "Microsoft.Windows.SDK.BuildTools NuGet version. Use * for the latest stable.",
+  "symbols/windowsSdkBuildToolsVersion/description": "Microsoft.Windows.SDK.BuildTools NuGet 버전입니다. 최신 안정 버전에는 *를 사용하세요.",
   "postActions/pinWindowsSdkBuildTools/description": "Microsoft.Windows.SDK.BuildTools를 안정적인 최신 버전에 고정합니다.",
-  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'",
+  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "'dotnet add package Microsoft.Windows.SDK.BuildTools' 실행",
   "postActions/pinWindowsAppSdk/description": "Microsoft.WindowsAppSDK를 안정적인 최신 버전에 고정합니다.",
-  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Run 'dotnet add package Microsoft.WindowsAppSDK'",
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "'dotnet add package Microsoft.WindowsAppSDK' 실행",
   "postActions/restore/description": "이 프로젝트에 필요한 NuGet 패키지를 복원합니다.",
-  "postActions/restore/manualInstructions/restoreManually/text": "Run 'dotnet restore'"
+  "postActions/restore/manualInstructions/restoreManually/text": "'dotnet restore' 실행"
 }

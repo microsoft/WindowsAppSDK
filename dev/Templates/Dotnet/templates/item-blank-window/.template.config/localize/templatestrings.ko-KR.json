@@ -1,6 +1,6 @@
 {
-  "name": "WinUI Blank Window (Item)",
+  "name": "WinUI 빈 창(항목)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
-  "symbols/rootNamespace/description": "Namespace for the generated item."
+  "description": "XAML 태그와 코드 숨김을 사용하여 WinUI 3 창을 추가합니다.",
+  "symbols/rootNamespace/description": "생성된 항목의 네임스페이스입니다."
 }

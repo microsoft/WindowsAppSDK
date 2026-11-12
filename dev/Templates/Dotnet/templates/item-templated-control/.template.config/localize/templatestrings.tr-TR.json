@@ -1,7 +1,7 @@
 {
-  "name": "WinUI Templated Control (Item)",
+  "name": "WinUI Şablonlu Denetimi (Öğe)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 templated control. By default also creates Themes\\Generic.xaml with a minimal default style. If your project already has a Themes\\Generic.xaml, pass --IncludeDefaultStyle false and manually add a <Style TargetType=\"local:<Name>\"> block to it; otherwise the new control will render blank at runtime.",
-  "symbols/rootNamespace/description": "Namespace for the generated item.",
-  "symbols/IncludeDefaultStyle/description": "Set to false when the project already has a Themes\\Generic.xaml; you must then manually add a <Style TargetType=\"local:<Name>\"> for the new control."
+  "description": "WinUI 3 şablonlu denetimi ekler. Varsayılan olarak minimal bir varsayılan stil içeren Themes\\Generic.xaml dosyasını da oluşturur. Projenizde zaten bir Themes\\Generic.xaml dosyası varsa, --IncludeDefaultStyle false değerini geçirin ve dosyaya el ile bir <Style TargetType=\"local:<Name>\"> bloğu ekleyin; aksi takdirde yeni denetim çalışma zamanında boş olarak işlenir.",
+  "symbols/rootNamespace/description": "Oluşturulan öğe için ad alanı.",
+  "symbols/IncludeDefaultStyle/description": "Projenin zaten bir Themes\\Generic.xaml dosyası varsa false olarak ayarlayın; ardından yeni denetim için el ile bir <Style TargetType=\"local:<Name>\"> eklemeniz gerekir."
 }

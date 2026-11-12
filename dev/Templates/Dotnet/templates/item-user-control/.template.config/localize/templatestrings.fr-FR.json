@@ -1,6 +1,6 @@
 {
-  "name": "WinUI User Control (Item)",
+  "name": "Contrôle utilisateur WinUI (élément)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 UserControl with markup and code-behind.",
-  "symbols/rootNamespace/description": "Namespace for the generated item."
+  "description": "Ajoute un contrôle utilisateur WinUI 3 avec balisage et code-behind.",
+  "symbols/rootNamespace/description": "Espace de noms pour l’élément généré."
 }

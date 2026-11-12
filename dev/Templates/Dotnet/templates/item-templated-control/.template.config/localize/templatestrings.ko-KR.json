@@ -1,7 +1,7 @@
 {
-  "name": "WinUI Templated Control (Item)",
+  "name": "WinUI 템플릿 컨트롤(항목)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 templated control. By default also creates Themes\\Generic.xaml with a minimal default style. If your project already has a Themes\\Generic.xaml, pass --IncludeDefaultStyle false and manually add a <Style TargetType=\"local:<Name>\"> block to it; otherwise the new control will render blank at runtime.",
-  "symbols/rootNamespace/description": "Namespace for the generated item.",
-  "symbols/IncludeDefaultStyle/description": "Set to false when the project already has a Themes\\Generic.xaml; you must then manually add a <Style TargetType=\"local:<Name>\"> for the new control."
+  "description": "WinUI 3 템플릿 컨트롤을 추가합니다. 기본적으로 최소한의 기본 스타일이 포함된 Themes\\Generic.xaml 파일도 만듭니다. 프로젝트에 이미 Themes\\Generic.xaml 파일이 있다면 --IncludeDefaultStyle false를 전달하고, 여기에 수동으로 a <Style TargetType=\"local:<Name>\"> 블록을 추가하세요. 그렇지 않으면 새 컨트롤이 런타임에 빈 상태로 표시됩니다.",
+  "symbols/rootNamespace/description": "생성된 항목의 네임스페이스입니다.",
+  "symbols/IncludeDefaultStyle/description": "프로젝트에 이미 Themes\\Generic.xaml이 있으면 false로 설정하세요. 그런 다음 새 컨트롤에 a <Style TargetType=\"local:<Name>\">를 수동으로 추가해야 합니다."
 }

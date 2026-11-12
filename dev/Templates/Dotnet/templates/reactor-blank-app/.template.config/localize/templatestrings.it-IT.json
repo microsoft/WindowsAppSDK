@@ -13,7 +13,7 @@
   "symbols/Packaging/description": "Scegli un'app MSIX impacchettata o un'app desktop non impacchettata.",
   "symbols/Packaging/choices/Packaged/displayName": "In pacchetto",
   "symbols/Packaging/choices/Packaged/description": "App in pacchetto con identità MSIX e asset del pacchetto.",
-  "symbols/Packaging/choices/Unpackaged/displayName": "Non in pacchetto",
+  "symbols/Packaging/choices/Unpackaged/displayName": "Non confezionato",
   "symbols/Packaging/choices/Unpackaged/description": "App non impacchettata senza manifesto MSIX o risorse del pacchetto.",
   "symbols/publisherDn/description": "Nome distinto dell'editore usato all'interno di Package.appxmanifest.",
   "symbols/publisherDisplay/description": "Nome visualizzato dell'editore visualizzato nel manifesto.",

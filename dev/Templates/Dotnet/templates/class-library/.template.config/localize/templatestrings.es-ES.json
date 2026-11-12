@@ -1,16 +1,16 @@
 {
-  "name": "WinUI Class Library",
+  "name": "Biblioteca de clases WinUI",
   "author": "Microsoft",
   "description": "Crea una biblioteca de clases de WinUI 3 para compartir componentes de interfaz de usuario.",
-  "symbols/dotnetVersion/description": "Base target framework moniker (TFM) for the WinUI project. Defaults to the installed SDK version.",
-  "symbols/dotnetVersion/choices/net10.0/description": "Target .NET 10",
-  "symbols/dotnetVersion/choices/net11.0/description": "Target .NET 11",
+  "symbols/dotnetVersion/description": "Moniker de la plataforma de destino base (TFM) para el proyecto de WinUI. De forma predeterminada, se usa la versión del SDK instalada.",
+  "symbols/dotnetVersion/choices/net10.0/description": ".NET 10 de destino",
+  "symbols/dotnetVersion/choices/net11.0/description": ".NET 11 de destino",
   "symbols/windowsAppSdkVersion/description": "Versión de NuGet de Microsoft.WindowsAppSDK. Use * para la versión estable más reciente.",
   "symbols/windowsSdkBuildToolsVersion/description": "Versión de NuGet de Microsoft.Windows.SDK.BuildTools. Use * para la versión estable más reciente.",
   "postActions/pinWindowsSdkBuildTools/description": "Ancle Microsoft.Windows.SDK.BuildTools a la última versión estable.",
   "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "Ejecutar \"dotnet add package Microsoft.Windows.SDK.BuildTools\"",
   "postActions/pinWindowsAppSdk/description": "Ancle Microsoft.WindowsAppSDK a la versión estable más reciente.",
-  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Run 'dotnet add package Microsoft.WindowsAppSDK'",
-  "postActions/restore/description": "Restore NuGet packages required by this project.",
-  "postActions/restore/manualInstructions/restoreManually/text": "Run 'dotnet restore'"
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Ejecutar \"dotnet add package Microsoft.WindowsAppSDK\"",
+  "postActions/restore/description": "Restaure los paquetes NuGet necesarios para este proyecto.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Ejecutar \"dotnet restore\""
 }

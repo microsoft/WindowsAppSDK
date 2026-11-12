@@ -1,13 +1,13 @@
 {
-  "name": "Reactor Single-File App (Experimental)",
+  "name": "Aplicación de un solo archivo de Reactor (experimental)",
   "author": "Microsoft",
-  "description": "Experimental. Creates a blank Microsoft.UI.Reactor (WinUI 3) desktop app as a single-file .NET 10 file-based app: one .cs file whose #:package and #:property directives replace the .csproj. Pure C#, no XAML. Run it with 'dotnet run <name>.cs'. Microsoft.UI.Reactor is prerelease and its API may change.",
+  "description": "Experimental. Crea una aplicación de escritorio en blanco de Microsoft.UI.Reactor (WinUI 3) como aplicación basada en archivos de .NET 10 de un solo archivo: un archivo .cs cuyas directivas #:package y #:property reemplazan el archivo .csproj. Solo C#, sin XAML. Ejecútela con \"dotnet run <name>.cs\". Microsoft.UI.Reactor es una versión preliminar y su API puede cambiar.",
   "symbols/dotnetVersion/description": "Moniker de la plataforma de destino base (TFM). Las aplicaciones basadas en archivos y Microsoft.UI.Reactor requieren .NET 10 o posterior.",
-  "symbols/dotnetVersion/choices/net10.0/description": "Target .NET 10",
-  "symbols/dotnetVersion/choices/net11.0/description": "Target .NET 11",
-  "symbols/reactorVersion/description": "Microsoft.UI.Reactor NuGet version to reference.",
-  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Versión de NuGet Microsoft.Windows.SDK.BuildTools.WinApp. Requiere 0.7.0 o posterior (compatibilidad con aplicaciones basadas en archivos); Use * para la versión estable más reciente.",
+  "symbols/dotnetVersion/choices/net10.0/description": ".NET 10 de destino",
+  "symbols/dotnetVersion/choices/net11.0/description": ".NET 11 de destino",
+  "symbols/reactorVersion/description": "Versión de NuGet de Microsoft.UI.Reactor a la que se hace referencia.",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Versión de NuGet de Microsoft.Windows.SDK.BuildTools.WinApp. Requiere la versión 0.7.0 o posterior (compatibilidad con aplicaciones basadas en archivos); use * para obtener la versión estable más reciente.",
   "symbols/skipRestore/description": "Si se especifica, omite la restauración automática de la aplicación al crearla.",
   "postActions/restore/description": "Restaurar los paquetes NuGet necesarios para esta aplicación.",
-  "postActions/restore/manualInstructions/restoreManually/text": "Run 'dotnet restore <name>.cs'"
+  "postActions/restore/manualInstructions/restoreManually/text": "Ejecutar 'dotnet restore <name>.cs'"
 }

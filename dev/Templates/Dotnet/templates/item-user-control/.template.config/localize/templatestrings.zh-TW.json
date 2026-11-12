@@ -1,6 +1,6 @@
 {
-  "name": "WinUI User Control (Item)",
+  "name": "WinUI 使用者控制項 (項目)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 UserControl with markup and code-behind.",
-  "symbols/rootNamespace/description": "Namespace for the generated item."
+  "description": "新增包含標記和程式碼後置的 WinUI 3 UserControl。",
+  "symbols/rootNamespace/description": "產生項目的命名空間。"
 }

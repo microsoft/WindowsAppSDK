@@ -1,13 +1,13 @@
 {
-  "name": "Reactor Single-File App (Experimental)",
+  "name": "Aplikacja z pojedynczym plikiem Reactor (eksperymentalna)",
   "author": "Microsoft",
-  "description": "Experimental. Creates a blank Microsoft.UI.Reactor (WinUI 3) desktop app as a single-file .NET 10 file-based app: one .cs file whose #:package and #:property directives replace the .csproj. Pure C#, no XAML. Run it with 'dotnet run <name>.cs'. Microsoft.UI.Reactor is prerelease and its API may change.",
+  "description": "Eksperymentalne. Tworzy pustą aplikację klasyczną Microsoft.UI.Reactor (WinUI 3) jako pojedynczą aplikację opartą na pliku platformy .NET 10: jeden plik .cs, którego dyrektywy #:package i #:property zastępują plik .csproj. Czysty język C#, bez języka XAML. Uruchom ją za pomocą polecenia „dotnet run <name>.cs”. Biblioteka Microsoft.UI.Reactor jest dostępna w wersji wstępnej, a jej interfejs API może ulec zmianie.",
   "symbols/dotnetVersion/description": "Podstawowy moniker platformy docelowej (TFM). Aplikacje oparte na plikach i element Microsoft.UI.Reactor wymagają platformy .NET 10 lub nowszej.",
-  "symbols/dotnetVersion/choices/net10.0/description": "Target .NET 10",
-  "symbols/dotnetVersion/choices/net11.0/description": "Target .NET 11",
-  "symbols/reactorVersion/description": "Microsoft.UI.Reactor NuGet version to reference.",
-  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet version. Requires 0.7.0 or later (file-based app support); use * for the latest stable.",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the app on create.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Docelowa wersja platformy .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Docelowa wersja platformy .NET 11",
+  "symbols/reactorVersion/description": "Wersja pakietu NuGet Microsoft.UI.Reactor do uwzględnienia w odwołaniu.",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Wersja pakietu NuGet Microsoft.Windows.SDK.BuildTools.WinApp. Wymaga wersji 0.7.0 lub nowszej (obsługa aplikacji opartych na plikach); użyj znaku * dla najnowszej wersji stabilnej.",
+  "symbols/skipRestore/description": "W przypadku określenia pomija automatyczne przywracanie aplikacji podczas tworzenia.",
   "postActions/restore/description": "Przywróć pakiety NuGet wymagane przez tę aplikację.",
-  "postActions/restore/manualInstructions/restoreManually/text": "Run 'dotnet restore <name>.cs'"
+  "postActions/restore/manualInstructions/restoreManually/text": "Uruchom polecenie „dotnet restore <name>.cs”"
 }

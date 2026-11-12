@@ -1,6 +1,6 @@
 {
-  "name": "WinUI Blank Page (Item)",
+  "name": "WinUI 空白頁 (項目)",
   "author": "Microsoft",
-  "description": "Adds a WinUI 3 Page with XAML markup and code-behind.",
-  "symbols/rootNamespace/description": "Namespace for the generated item."
+  "description": "新增包含 XAML 標記和程式碼後置的 WinUI 3 頁面。",
+  "symbols/rootNamespace/description": "產生項目的命名空間。"
 }
