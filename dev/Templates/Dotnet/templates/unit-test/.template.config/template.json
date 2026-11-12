@@ -294,10 +294,11 @@
   "postActions": [
     {
       "condition": "(windowsSdkBuildToolsVersion == \"*\")",
+      "id": "pinWindowsSdkBuildTools",
       "description": "Pin Microsoft.Windows.SDK.BuildTools to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" } ],
+      "manualInstructions": [ { "id": "pinWindowsSdkBuildToolsManually", "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" } ],
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Windows.SDK.BuildTools",
@@ -306,10 +307,11 @@
     },
     {
       "condition": "(windowsAppSdkVersion == \"*\")",
+      "id": "pinWindowsAppSdk",
       "description": "Pin Microsoft.WindowsAppSDK to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" } ],
+      "manualInstructions": [ { "id": "pinWindowsAppSdkManually", "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" } ],
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.WindowsAppSDK",
@@ -318,10 +320,11 @@
     },
     {
       "condition": "(windowsSdkBuildToolsWinAppVersion == \"*\" && !unpackaged)",
+      "id": "pinWindowsSdkBuildToolsWinApp",
       "description": "Pin Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinApp'" } ],
+      "manualInstructions": [ { "id": "pinWindowsSdkBuildToolsWinAppManually", "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinApp'" } ],
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Windows.SDK.BuildTools.WinApp",
@@ -330,10 +333,11 @@
     },
     {
       "condition": "(mstestVersion == \"*\")",
+      "id": "pinMSTest",
       "description": "Pin MSTest to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package MSTest'" } ],
+      "manualInstructions": [ { "id": "pinMSTestManually", "text": "Run 'dotnet add package MSTest'" } ],
       "args": {
         "referenceType": "package",
         "reference": "MSTest",
@@ -342,10 +346,11 @@
     },
     {
       "condition": "(TestRunner == \"Microsoft.Testing.Platform\" && !unpackaged)",
+      "id": "addPackagedAppTestBuildSupport",
       "description": "Add Microsoft.Testing.Extensions.PackagedApp.MSBuild at the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Testing.Extensions.PackagedApp.MSBuild'" } ],
+      "manualInstructions": [ { "id": "addPackagedAppTestBuildSupportManually", "text": "Run 'dotnet add package Microsoft.Testing.Extensions.PackagedApp.MSBuild'" } ],
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Testing.Extensions.PackagedApp.MSBuild",
@@ -355,7 +360,7 @@
     {
       "condition": "(TestRunner == \"Microsoft.Testing.Platform\")",
       "description": "Create or update global.json to select Microsoft.Testing.Platform.",
-      "manualInstructions": [{ "text": "Create or update global.json with test.runner set to Microsoft.Testing.Platform." }],
+      "manualInstructions": [{ "id": "configureTestRunnerManually", "text": "Create or update global.json with test.runner set to Microsoft.Testing.Platform." }],
       "actionId": "695A3659-EB40-4FF5-A6A6-C9C4E629FCB0",
       "id": "addJsonProperty",
       "args": {
@@ -374,8 +379,9 @@
     {
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": false,
+      "id": "restore",
       "description": "Restore NuGet packages required by this project.",
-      "manualInstructions": [{ "text": "Run 'dotnet restore'" }],
+      "manualInstructions": [{ "id": "restoreManually", "text": "Run 'dotnet restore'" }],
       "condition": "(!skipRestore)"
     },
     {

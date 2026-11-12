@@ -1,0 +1,6 @@
+{
+  "name": "WinUI Content Dialog (Item)",
+  "author": "Microsoft",
+  "description": "Adds a WinUI 3 ContentDialog with markup and code-behind.",
+  "symbols/rootNamespace/description": "Namespace for the generated item."
+}

@@ -78,7 +78,7 @@
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true,
       "description": "Restore NuGet packages required by this app.",
-      "manualInstructions": [ { "text": "Run 'dotnet restore <name>.cs'" } ]
+      "manualInstructions": [ { "id": "restoreManually", "text": "Run 'dotnet restore <name>.cs'" } ]
     }
   ]
 }

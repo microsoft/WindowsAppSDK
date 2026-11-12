@@ -232,10 +232,11 @@
   "postActions": [
     {
       "condition": "(windowsSdkBuildToolsVersion == \"*\")",
+      "id": "pinWindowsSdkBuildTools",
       "description": "Pin Microsoft.Windows.SDK.BuildTools to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" } ],
+      "manualInstructions": [ { "id": "pinWindowsSdkBuildToolsManually", "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'" } ],
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Windows.SDK.BuildTools",
@@ -244,10 +245,11 @@
     },
     {
       "condition": "(windowsAppSdkVersion == \"*\")",
+      "id": "pinWindowsAppSdk",
       "description": "Pin Microsoft.WindowsAppSDK to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" } ],
+      "manualInstructions": [ { "id": "pinWindowsAppSdkManually", "text": "Run 'dotnet add package Microsoft.WindowsAppSDK'" } ],
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.WindowsAppSDK",
@@ -256,10 +258,11 @@
     },
     {
       "condition": "(windowsSdkBuildToolsWinAppVersion == \"*\" && !unpackaged)",
+      "id": "pinWindowsSdkBuildToolsWinApp",
       "description": "Pin Microsoft.Windows.SDK.BuildTools.WinApp to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinApp'" } ],
+      "manualInstructions": [ { "id": "pinWindowsSdkBuildToolsWinAppManually", "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.WinApp'" } ],
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Windows.SDK.BuildTools.WinApp",
@@ -268,10 +271,11 @@
     },
     {
       "condition": "unpackaged",
+      "id": "pinWindowsSdkBuildToolsMsix",
       "description": "Pin Microsoft.Windows.SDK.BuildTools.MSIX to the latest stable version.",
       "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
       "continueOnError": true,
-      "manualInstructions": [ { "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.MSIX'" } ],
+      "manualInstructions": [ { "id": "pinWindowsSdkBuildToolsMsixManually", "text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools.MSIX'" } ],
       "args": {
         "referenceType": "package",
         "reference": "Microsoft.Windows.SDK.BuildTools.MSIX",
@@ -281,8 +285,9 @@
     {
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true,
+      "id": "restore",
       "description": "Restore NuGet packages required by this project.",
-      "manualInstructions": [{ "text": "Run 'dotnet restore'" }]
+      "manualInstructions": [{ "id": "restoreManually", "text": "Run 'dotnet restore'" }]
     }
   ]
 }

@@ -1,0 +1,6 @@
+{
+  "name": "WinUI Resource Dictionary (Item)",
+  "author": "Microsoft",
+  "description": "Adds a WinUI 3 ResourceDictionary for sharing styles and resources.",
+  "symbols/rootNamespace/description": "Namespace for the generated item."
+}
