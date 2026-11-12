@@ -1,4 +1,16 @@
 {
   "name": "WinUI Sınıf Kitaplığı",
-  "description": "Yönetilen sınıf kitaplığı (.dll) (WinUI) oluşturma projesi."
+  "author": "Microsoft",
+  "description": "Kullanıcı arabirimi bileşenlerini paylaşmak için bir WinUI 3 sınıf kitaplığı oluşturur.",
+  "symbols/dotnetVersion/description": "WinUI projesi için temel hedef çerçeve bilinen adı (TFM). Varsayılan olarak yüklü SDK sürümü kullanılır.",
+  "symbols/dotnetVersion/choices/net10.0/description": ".NET 10'u hedefleyin",
+  "symbols/dotnetVersion/choices/net11.0/description": ".NET 11'i hedefleyin",
+  "symbols/windowsAppSdkVersion/description": "Microsoft.WindowsAppSDK NuGet sürümü. En son kararlı için * kullanın.",
+  "symbols/windowsSdkBuildToolsVersion/description": "Microsoft.Windows.SDK.BuildTools NuGet sürümü. En son kararlı için * kullanın.",
+  "postActions/pinWindowsSdkBuildTools/description": "Microsoft.Windows.SDK.BuildTools'u en son kararlı sürüme sabitleyin.",
+  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "'dotnet add package Microsoft.Windows.SDK.BuildTools' komutunu çalıştırın",
+  "postActions/pinWindowsAppSdk/description": "Microsoft.WindowsAppSDK'yi en son kararlı sürümde sabitleyin.",
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "'dotnet add package Microsoft.WindowsAppSDK' komutunu çalıştırın",
+  "postActions/restore/description": "Bu projenin gerektirdiği NuGet paketlerini geri yükleyin.",
+  "postActions/restore/manualInstructions/restoreManually/text": "\"dotnet restore\" komutunu çalıştır"
 }

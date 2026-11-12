@@ -1,4 +1,7 @@
 {
-  "name": "範本控制項",
-  "description": "具有適當預設樣式的空白自定義控件 (WinUI)。"
+  "name": "WinUI 範本控制項 (項目)",
+  "author": "Microsoft",
+  "description": "新增 WinUI 3 範本控制項。根據預設，也會建立包含最小預設樣式的 Themes\\Generic.xaml。如果您的專案已經有 Themes\\Generic.xaml，請傳入 --IncludeDefaultStyle false，並手動將 a <Style TargetType=\"local:<Name>\"> 區塊新增至其中；否則，新控制項在執行階段會呈現空白。",
+  "symbols/rootNamespace/description": "產生項目的命名空間。",
+  "symbols/IncludeDefaultStyle/description": "如果專案已有 Themes\\Generic.xaml，請設為 false；然後您必須手動為新控制項新增 <Style TargetType=\"local:<Name>\">。"
 }

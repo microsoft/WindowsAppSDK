@@ -1,4 +1,5 @@
 {
-  "name": "Kaynak Dosyası (.resw)",
-  "description": "Dize ve koşullu kaynakları (WinUI) depolamak için bir dosya."
+  "name": "WinUI Kaynak Dosyası (Öğe)",
+  "author": "Microsoft",
+  "description": "Yerelleştirilmiş dizeler için bir RESW kaynak dosyası ekler."
 }

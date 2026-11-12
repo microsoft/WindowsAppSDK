@@ -1,4 +1,6 @@
 {
-  "name": "空白页",
-  "description": "空白页(WinUI)。"
+  "name": "WinUI 空白页(项)",
+  "author": "Microsoft",
+  "description": "添加带 XAML 标记和代码隐藏的 WinUI 3 Page。",
+  "symbols/rootNamespace/description": "生成的项的命名空间。"
 }

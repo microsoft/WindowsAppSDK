@@ -1,4 +1,6 @@
 {
-  "name": "Kullanıcı Denetimi",
-  "description": "Boş bir kullanıcı kontrolü (WinUI)."
+  "name": "WinUI Kullanıcı Denetimi (Öğe)",
+  "author": "Microsoft",
+  "description": "İşaretlemeyi ve arka plan kodunu içeren bir WinUI 3 UserControl ekler.",
+  "symbols/rootNamespace/description": "Oluşturulan öğe için ad alanı."
 }

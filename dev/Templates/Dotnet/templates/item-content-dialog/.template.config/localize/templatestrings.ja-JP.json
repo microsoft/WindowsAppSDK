@@ -1,0 +1,6 @@
+{
+  "name": "WinUI コンテンツ ダイアログ (項目)",
+  "author": "Microsoft",
+  "description": "マークアップとコード ビハインドを含む WinUI 3 ContentDialog を追加します。",
+  "symbols/rootNamespace/description": "生成される項目の名前空間。"
+}

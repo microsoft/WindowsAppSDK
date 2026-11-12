@@ -1,4 +1,6 @@
 {
-  "name": "リソース ディクショナリ",
-  "description": "XAML リソースの空のキー化されたコレクション (WinUI)。"
+  "name": "WinUI リソース ディクショナリ (項目)",
+  "author": "Microsoft",
+  "description": "スタイルとリソースを共有するための WinUI 3 ResourceDictionary を追加します。",
+  "symbols/rootNamespace/description": "生成される項目の名前空間。"
 }

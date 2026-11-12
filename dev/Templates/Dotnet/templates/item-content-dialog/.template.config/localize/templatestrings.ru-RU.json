@@ -1,0 +1,6 @@
+{
+  "name": "Диалоговое окно содержимого WinUI (элемент)",
+  "author": "Майкрософт",
+  "description": "Добавляет ContentDialog WinUI 3 с разметкой и файлом кода.",
+  "symbols/rootNamespace/description": "Пространство имен для создаваемого элемента."
+}

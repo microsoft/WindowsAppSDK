@@ -1,0 +1,13 @@
+{
+  "name": "Однофайловое приложение Reactor (экспериментальное)",
+  "author": "Майкрософт",
+  "description": "Экспериментальная функция. Создает пустое классическое приложение Microsoft.UI.Reactor (WinUI 3) в виде приложения на основе файлов .NET 10 в одном файле: один файл .cs, в котором директивы #:package и #:property заменяют файл .csproj. Только C#, без XAML. Запустите его с помощью \"dotnet run <name>.cs\". Microsoft.UI.Reactor — предварительная версия, и его API может измениться.",
+  "symbols/dotnetVersion/description": "Базовый моникер целевой платформы (TFM). Для приложений на основе файлов и Microsoft.UI.Reactor требуется .NET 10 или более поздняя версия.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Целевая платформа .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Целевая платформа .NET 11",
+  "symbols/reactorVersion/description": "Версия Microsoft.UI.Reactor NuGet для ссылки.",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Версия NuGet Microsoft.Windows.SDK.BuildTools.WinApp. Требуется версия 0.7.0 или более поздняя (поддержка приложений на основе файлов); используйте * для последней стабильной версии.",
+  "symbols/skipRestore/description": "Если указано, пропускает автоматическое восстановление приложения при создании.",
+  "postActions/restore/description": "Восстановить пакеты NuGet, необходимые для этого приложения.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Выполните \"dotnet restore <name>.cs\""
+}

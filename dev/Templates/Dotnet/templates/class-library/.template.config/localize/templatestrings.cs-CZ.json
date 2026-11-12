@@ -1,4 +1,16 @@
 {
   "name": "Knihovna tříd WinUI",
-  "description": "Projekt pro vytvoření spravované knihovny tříd (.dll) (WinUI)"
+  "author": "Microsoft",
+  "description": "Vytvoří knihovnu tříd WinUI 3 pro sdílení komponent uživatelského rozhraní.",
+  "symbols/dotnetVersion/description": "Základní identifikátor cílového rozhraní (TFM) projektu WinUI. Výchozí je verze nainstalované sady SDK.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Cílit na .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Cílit na .NET 11",
+  "symbols/windowsAppSdkVersion/description": "Verze balíčku NuGet Microsoft.WindowsAppSDK. Pro nejnovější stabilní verzi použijte *.",
+  "symbols/windowsSdkBuildToolsVersion/description": "Verze balíčku NuGet Microsoft.Windows.SDK.BuildTools. Pro nejnovější stabilní verzi použijte *.",
+  "postActions/pinWindowsSdkBuildTools/description": "Připněte Microsoft.Windows.SDK.BuildTools na nejnovější stabilní verzi.",
+  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "Spusťte 'dotnet add package Microsoft.Windows.SDK.BuildTools'",
+  "postActions/pinWindowsAppSdk/description": "Připnout Microsoft.WindowsAppSDK k nejnovější stabilní verzi.",
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Spusťte „dotnet add package Microsoft.WindowsAppSDK“",
+  "postActions/restore/description": "Obnovit balíčky NuGet vyžadované tímto projektem.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Spustit „dotnet restore“"
 }

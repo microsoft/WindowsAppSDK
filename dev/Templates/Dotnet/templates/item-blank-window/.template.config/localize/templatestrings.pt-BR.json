@@ -1,4 +1,6 @@
 {
-  "name": "Janela em Branco",
-  "description": "Uma janela em branco (WinUI)."
+  "name": "Janela em Branco do WinUI (Item)",
+  "author": "Microsoft",
+  "description": "Adiciona uma Janela do WinUI 3 com marcação XAML e code-behind.",
+  "symbols/rootNamespace/description": "Namespace do item gerado."
 }

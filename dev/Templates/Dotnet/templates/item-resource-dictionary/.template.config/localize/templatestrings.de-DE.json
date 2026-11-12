@@ -1,4 +1,6 @@
 {
-  "name": "Ressourcenverzeichnis",
-  "description": "Eine leere, schlüsselierte Sammlung von XAML-Ressourcen (WinUI)."
+  "name": "WinUI-Ressourcenwörterbuch (Element)",
+  "author": "Microsoft",
+  "description": "Fügt ein WinUI 3-ResourceDictionary zum Freigeben von Stilen und Ressourcen hinzu.",
+  "symbols/rootNamespace/description": "Namespace für das generierte Element."
 }

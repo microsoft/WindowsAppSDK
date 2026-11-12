@@ -142,7 +142,7 @@
     <value>[Experimental] Dicionário de Recursos</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Uma coleção vazia de recursos XAML (WinUI) com chave.</value>
+    <value>Uma coleção vazia de recursos XAML indexada por chave (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Arquivo de Recursos (.resw)</value>
@@ -151,7 +151,7 @@
     <value>[Experimental] Arquivo de Recursos (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Um arquivo para armazenar a cadeia de caracteres e os recursos condicionais (WinUI).</value>
+    <value>Um arquivo para armazenar recursos condicionais e de cadeia de caracteres (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Controle de Modelo</value>
@@ -205,7 +205,7 @@
     <value>[Experimental] Aplicativo de Teste de Unidade WinUI</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Um projeto para criar um aplicativo de teste de unidade C# para WinUI usando o MSTest.</value>
+    <value>Um projeto para criar um aplicativo de teste de unidade C# para WinUI usando MSTest.</value>
   </data>
   <data name="1040" xml:space="preserve">
     <value>Aplicativo WinUI em Branco</value>
@@ -217,7 +217,7 @@
     <value>Projeto de Empacotamento de Aplicativo do Windows para WinUI</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Um modelo de projeto que cria pacotes MSIX contendo aplicativos WinUI para side loading ou distribuição por meio do Microsoft Store.</value>
+    <value>Um modelo de projeto que cria pacotes MSIX contendo aplicativos WinUI para sideload ou distribuição por meio da Microsoft Store.</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>Instalando pacotes NuGet no projeto...</value>
@@ -251,5 +251,41 @@
   </data>
   <data name="1054" xml:space="preserve">
     <value>Nenhuma informação de saída disponível.</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>Aplicativo TabView do WinUI</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[Experimental] Aplicativo TabView do WinUI</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>Um modelo de projeto para criar um aplicativo WinUI com um controle TabView para navegação com guias.</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>Aplicativo de Navegação do WinUI</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[Experimental] Aplicativo de Navegação do WinUI</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>Um modelo de projeto para criar um aplicativo WinUI com um controle NavigationView para navegação de página.</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>Aplicativo WinUI com MVVM</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[Experimental] Aplicativo WinUI com MVVM</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>Um modelo de projeto para criar um aplicativo WinUI estruturado com o padrão MVVM usando o pacote CommunityToolkit.Mvvm.</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>Diálogo de Conteúdo</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[Experimental] Diálogo de Conteúdo</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>Uma caixa de diálogo que exibe o conteúdo na interface do usuário do aplicativo para mostrar informações ou coletar entrada (WinUI).</value>
   </data>
 </root>

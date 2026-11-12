@@ -1,4 +1,7 @@
 {
-  "name": "Controle de Modelo",
-  "description": "Um controle personalizado em branco com o estilo padrão apropriado (WinUI)."
+  "name": "Controle baseado em modelo do WinUI (Item)",
+  "author": "Microsoft",
+  "description": "Adiciona um controle baseado em modelo do WinUI 3. Por padrão, também cria Themes\\Generic.xaml com um estilo padrão mínimo. Se seu projeto já tiver um Themes\\Generic.xaml, passe --IncludeDefaultStyle false e adicione manualmente um bloco <Style TargetType=\"local:<Name>\"> a ele; caso contrário, o novo controle será renderizado em branco durante o runtime.",
+  "symbols/rootNamespace/description": "Namespace do item gerado.",
+  "symbols/IncludeDefaultStyle/description": "Defina como false quando o projeto já tiver um Themes\\Generic.xaml; nesse caso, você deverá adicionar manualmente um <Style TargetType=\"local:<Name>\"> para o novo controle."
 }

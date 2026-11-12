@@ -1,4 +1,16 @@
 {
   "name": "WinUI 클래스 라이브러리",
-  "description": "WinUI(관리되는 클래스 라이브러리)(.dll)를 만드는 프로젝트입니다."
+  "author": "Microsoft",
+  "description": "Creates a WinUI 3 class library for sharing UI components.",
+  "symbols/dotnetVersion/description": "WinUI 프로젝트의 기본 대상 TFM(프레임워크 모니커)입니다. 기본값은 설치된 SDK 버전입니다.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Target .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Target .NET 11",
+  "symbols/windowsAppSdkVersion/description": "Microsoft.WindowsAppSDK NuGet 버전입니다. 안정적인 최신 버전에 *을 사용합니다.",
+  "symbols/windowsSdkBuildToolsVersion/description": "Microsoft.Windows.SDK.BuildTools NuGet version. Use * for the latest stable.",
+  "postActions/pinWindowsSdkBuildTools/description": "Microsoft.Windows.SDK.BuildTools를 안정적인 최신 버전에 고정합니다.",
+  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'",
+  "postActions/pinWindowsAppSdk/description": "Microsoft.WindowsAppSDK를 안정적인 최신 버전에 고정합니다.",
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Run 'dotnet add package Microsoft.WindowsAppSDK'",
+  "postActions/restore/description": "이 프로젝트에 필요한 NuGet 패키지를 복원합니다.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Run 'dotnet restore'"
 }

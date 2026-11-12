@@ -1,4 +1,7 @@
 {
-  "name": "模板化控件",
-  "description": "具有适当默认样式的空白自定义控件 (WinUI)。"
+  "name": "WinUI 模板化控件(项)",
+  "author": "Microsoft",
+  "description": "添加 WinUI 3 模板化控件。默认情况下，还会创建带最小默认样式的 Themes\\Generic.xaml。如果项目已有 Themes\\Generic.xaml，请传递 --IncludeDefaultStyle false 并手动向其中添加 <Style TargetType=\"local:<Name>\"> 块；否则新控件在运行时将呈现为空白。",
+  "symbols/rootNamespace/description": "生成的项的命名空间。",
+  "symbols/IncludeDefaultStyle/description": "当项目已有 Themes\\Generic.xaml 时设置为 false；然后必须为新控件手动添加 <Style TargetType=\"local:<Name>\">。"
 }

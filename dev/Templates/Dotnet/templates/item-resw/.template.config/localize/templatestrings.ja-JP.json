@@ -1,4 +1,5 @@
 {
-  "name": "リソース ファイル (.resw)",
-  "description": "文字列と条件付きリソース (WinUI) を格納するためのファイルです。"
+  "name": "WinUI リソース ファイル (項目)",
+  "author": "Microsoft",
+  "description": "ローカライズされた文字列用の RESW リソース ファイルを追加します。"
 }

@@ -1,0 +1,13 @@
+{
+  "name": "Reactor 单文件应用(实验性)",
+  "author": "Microsoft",
+  "description": "实验性。创建空白 Microsoft.UI.Reactor (WinUI 3)桌面应用，作为单一文件 .NET 10 基于文件的应用: 一个 .cs 文件，其 #:package 和 #:property 指令取代 .csproj。纯 C#，无 XAML。使用 \"‌dotnet run <name>.cs\"‌ 运行它。Microsoft.UI.Reactor 为预发布版，其 API 可能会更改。",
+  "symbols/dotnetVersion/description": "基础目标框架名字对象(TFM)。基于文件的应用和 Microsoft.UI.Reactor 需要 .NET 10 或更高版本。",
+  "symbols/dotnetVersion/choices/net10.0/description": "面向 .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "面向 .NET 11",
+  "symbols/reactorVersion/description": "要引用的 Microsoft.UI.Reactor NuGet 版本。",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet 版本。需要 0.7.0 或更高版本(基于文件的应用支持)；使用 * 表示最新稳定版。",
+  "symbols/skipRestore/description": "如果指定，则在创建时跳过应用的自动还原。",
+  "postActions/restore/description": "还原此应用所需的 NuGet 包。",
+  "postActions/restore/manualInstructions/restoreManually/text": "运行 \"‌dotnet restore <name>.cs\"‌"
+}

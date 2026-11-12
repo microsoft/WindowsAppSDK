@@ -1,4 +1,6 @@
 {
-  "name": "Finestra vuota",
-  "description": "Una finestra vuota (WinUI)."
+  "name": "Finestra vuota WinUI (elemento)",
+  "author": "Microsoft",
+  "description": "Aggiunge una finestra WinUI 3 con markup XAML e code-behind.",
+  "symbols/rootNamespace/description": "Spazio dei nomi per l'elemento generato."
 }

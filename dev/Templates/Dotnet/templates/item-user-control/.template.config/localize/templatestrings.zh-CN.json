@@ -1,4 +1,6 @@
 {
-  "name": "用户控件",
-  "description": "空白用户控件(WinUI)。"
+  "name": "WinUI 用户控件(项)",
+  "author": "Microsoft",
+  "description": "添加带标记和代码隐藏的 WinUI 3 UserControl。",
+  "symbols/rootNamespace/description": "生成的项的命名空间。"
 }

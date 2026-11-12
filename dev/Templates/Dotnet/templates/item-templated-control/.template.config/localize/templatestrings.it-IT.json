@@ -1,4 +1,7 @@
 {
-  "name": "Controllo con modello",
-  "description": "Controllo personalizzato vuoto con lo stile predefinito appropriato (WinUI)."
+  "name": "Controllo basato su modelli WinUI (elemento)",
+  "author": "Microsoft",
+  "description": "Aggiunge un controllo basato su modelli WinUI 3. Per impostazione predefinita, crea anche Themes\\Generic.xaml con uno stile predefinito minimo. Se il progetto contiene già un file Themes\\Generic.xaml, passare --IncludeDefaultStyle false e aggiungere manualmente al file il blocco a <Style TargetType=\"local:<Name>\">; in caso contrario, il nuovo controllo verrà visualizzato come vuoto durante il runtime.",
+  "symbols/rootNamespace/description": "Spazio dei nomi per l'elemento generato.",
+  "symbols/IncludeDefaultStyle/description": "Imposta su false quando il progetto contiene già Themes\\Generic.xaml; quindi devi aggiungere manualmente un <Style TargetType=\"local:<Name>\"> per il nuovo controllo."
 }

@@ -1,4 +1,16 @@
 {
   "name": "WinUI 類別庫",
-  "description": "用於建立 WinUI) (.dll) (受管理類別庫的專案。"
+  "author": "Microsoft",
+  "description": "Creates a WinUI 3 class library for sharing UI components.",
+  "symbols/dotnetVersion/description": "WinUI 專案的基底目標框架標記 (TFM)。預設為已安裝的 SDK 版本。",
+  "symbols/dotnetVersion/choices/net10.0/description": "Target .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Target .NET 11",
+  "symbols/windowsAppSdkVersion/description": "Microsoft.WindowsAppSDK NuGet 版本。使用 * 表示最新的穩定版本。",
+  "symbols/windowsSdkBuildToolsVersion/description": "Microsoft.Windows.SDK.BuildTools NuGet version. Use * for the latest stable.",
+  "postActions/pinWindowsSdkBuildTools/description": "將 Microsoft.Windows.SDK.BuildTools 釘選到最新穩定版本。",
+  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "執行 'dotnet add package Microsoft.Windows.SDK.BuildTools'",
+  "postActions/pinWindowsAppSdk/description": "將 Microsoft.WindowsAppSDK 釘選到最新穩定版本。",
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Run 'dotnet add package Microsoft.WindowsAppSDK'",
+  "postActions/restore/description": "還原此專案所需的 NuGet 套件。",
+  "postActions/restore/manualInstructions/restoreManually/text": "Run 'dotnet restore'"
 }

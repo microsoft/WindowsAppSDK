@@ -151,7 +151,7 @@
     <value>[Eksperymentalne] Plik zasobów (resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Plik do przechowywania ciągów i zasobów warunkowych (WinUI).</value>
+    <value>Plik do przechowywania zasobów ciągów i zasobów warunkowych (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Kontrolka z szablonem</value>
@@ -217,7 +217,7 @@
     <value>Projekt pakietu aplikacji systemu Windows dla WinUI</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Szablon projektu, który tworzy pakiety MSIX zawierające aplikacje WinUI na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem Microsoft Store.</value>
+    <value>Szablon projektu tworzący pakiety MSIX zawierające aplikacje WinUI do instalacji bezpośredniej lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>Trwa instalowanie pakietów NuGet w projekcie...</value>
@@ -229,12 +229,12 @@
     <value>Brak odwołań do pakietu</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Nie można dodać odwołań do następujących pakietów dla {0}: {1}. Przed skompilowaniem dodaj odwołania do pakietu.</value>
+    <value>Nie można dodać odwołań do następujących pakietów dla {0}: {1}. Przed kompilacją dodaj odwołania do pakietu.</value>
   </data>
   <data name="1048" xml:space="preserve">
     <value>[{0}] Nie można dodać odwołań do następujących pakietów: {1}.
 
-To jest błąd środowiska. Przed skompilowaniem projektu dodaj odwołania do pakietu.
+To jest błąd środowiska. Dodaj odwołania do pakietu przed skompilowaniem projektu.
 
 Aby uzyskać więcej informacji o błędzie, sprawdź kartę Ogólne w oknie Dane wyjściowe.</value>
   </data>

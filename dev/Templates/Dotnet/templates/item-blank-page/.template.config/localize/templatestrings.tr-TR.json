@@ -1,4 +1,6 @@
 {
-  "name": "Boş Sayfa",
-  "description": "Boş bir sayfa (WinUI)."
+  "name": "WinUI Boş Sayfası (Öğe)",
+  "author": "Microsoft",
+  "description": "XAML işaretlemesini ve arka plan kodunu içeren bir WinUI 3 Page ekler.",
+  "symbols/rootNamespace/description": "Oluşturulan öğe için ad alanı."
 }

@@ -1,4 +1,7 @@
 {
-  "name": "Steuerelement mit Vorlagen",
-  "description": "Ein leeres benutzerdefiniertes Steuerelement mit der entsprechenden Standardformatierung (WinUI)."
+  "name": "WinUI-Vorlagensteuerelement (Element)",
+  "author": "Microsoft",
+  "description": "Fügt ein Vorlagensteuerelement für WinUI 3 hinzu. Standardmäßig wird außerdem die Datei Themes\\Generic.xaml mit einem minimalen Standardstil erstellt. Wenn Ihr Projekt bereits eine Datei „Themes\\Generic.xaml“ enthält, übergeben Sie „--IncludeDefaultStyle false“ und fügen Sie dort manuell eine <Style TargetType=\"local:<Name>\">-Blockierung hinzu; andernfalls wird das neue Steuerelement zur Laufzeit leer dargestellt.",
+  "symbols/rootNamespace/description": "Namespace für das generierte Element.",
+  "symbols/IncludeDefaultStyle/description": "Legen Sie den Wert auf „false“ fest, wenn das Projekt bereits eine Datei namens Themes\\Generic.xaml enthält. Dann müssen Sie für das neue Steuerelement manuell ein <Style TargetType=\"local:<Name>\"> hinzufügen."
 }

@@ -1,0 +1,6 @@
+{
+  "name": "WinUI 内容对话框(项)",
+  "author": "Microsoft",
+  "description": "添加带标记和代码隐藏的 WinUI 3 ContentDialog。",
+  "symbols/rootNamespace/description": "生成的项的命名空间。"
+}

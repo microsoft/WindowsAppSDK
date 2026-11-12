@@ -1,4 +1,6 @@
 {
-  "name": "Kaynak Sözlüğü",
-  "description": "Boş, anahtarlı XAML kaynakları koleksiyonu (WinUI)."
+  "name": "WinUI Kaynak Sözlüğü (Öğe)",
+  "author": "Microsoft",
+  "description": "Stilleri ve kaynakları paylaşmak için bir WinUI 3 ResourceDictionary ekler.",
+  "symbols/rootNamespace/description": "Oluşturulan öğe için ad alanı."
 }

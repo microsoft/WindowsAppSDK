@@ -1,4 +1,6 @@
 {
-  "name": "Controle de Usuário",
-  "description": "Um controle de usuário em branco (WinUI)."
+  "name": "Controle de usuário WinUI (Item)",
+  "author": "Microsoft",
+  "description": "Adiciona um UserControl do WinUI 3 com marcação e code-behind.",
+  "symbols/rootNamespace/description": "Namespace do item gerado."
 }

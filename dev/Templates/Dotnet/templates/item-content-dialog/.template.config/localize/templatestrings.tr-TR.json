@@ -1,0 +1,6 @@
+{
+  "name": "WinUI İçerik İletişim Kutusu (Öğe)",
+  "author": "Microsoft",
+  "description": "İşaretlemeyi ve arka plan kodunu içeren bir WinUI 3 ContentDialog ekler.",
+  "symbols/rootNamespace/description": "Oluşturulan öğe için ad alanı."
+}

@@ -142,7 +142,7 @@
     <value>[Deneysel] Kaynak Sözlüğü</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Boş, anahtarlı XAML kaynakları koleksiyonu (WinUI).</value>
+    <value>Anahtarlı, boş bir XAML kaynak koleksiyonu (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Kaynak Dosyası (.resw)</value>
@@ -178,7 +178,7 @@
     <value>[Deneysel] WinUI Sınıf Kitaplığı</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Yönetilen sınıf kitaplığı (.dll) (WinUI) oluşturma projesi.</value>
+    <value>Yönetilen sınıf kitaplığı (.dll) (WinUI) oluşturmaya yönelik bir proje.</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>WinUI Boş Uygulama (Windows Uygulama Paketleme Projesiyle Paketlenmiş)</value>
@@ -217,22 +217,22 @@
     <value>WinUI için Windows Uygulama Paketleme Projesi</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Takım projesi aracılığıyla dışarıdan yükleme veya dağıtım için WinUI uygulamaları içeren MSIX paketleri Microsoft Store.</value>
+    <value>WinUI uygulamalarını içeren ve yan yükleme veya Microsoft Store üzerinden dağıtım için kullanılmaya yönelik MSIX paketleri oluşturan proje şablonu.</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>Projeye NuGet paketleri yükleniyor...</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>İşlem sürüyor...</value>
+    <value>İşlem devam ediyor...</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>Eksik Paket Başvuruları</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Şu paketlere başvurular eklenemiyor: {0}: {1}. Lütfen derlemeden önce paket başvuruları ekleyin.</value>
+    <value>{0} için şu paketlere başvuru eklenemiyor: {1}. Derlemeden önce lütfen paket başvuruları ekleyin.</value>
   </data>
   <data name="1048" xml:space="preserve">
-    <value>[{0}] Şu paketlere başvurular eklenemiyor: {1}. Bu bir ortam hatasıdır. Projeyi derlemeden önce lütfen paket başvuruları ekleyin.</value>
+    <value>[{0}] Şu paketlere başvuru eklenemiyor: {1}. Bu bir ortam hatasıdır. Lütfen projeyi derlemeden önce paket başvuruları ekleyin.</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>NuGet Paketlerini yönet</value>
@@ -251,5 +251,41 @@
   </data>
   <data name="1054" xml:space="preserve">
     <value>Kullanılabilir çıkış bilgisi yok.</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>WinUI Sekme Görünümü Uygulaması</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[Deneysel] WinUI Sekme Görünümü Uygulaması</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>Sekme Görünümü denetimini kullanarak sekmeli gezinme sağlayan bir WinUI uygulaması oluşturmak için proje şablonu.</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>WinUI Gezinti Uygulaması</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[Deneysel] WinUI Gezinti Uygulaması</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>Gezinti Görünümü denetimini kullanarak sayfalar arasında gezinmeyi sağlayan bir WinUI uygulaması oluşturmak için proje şablonu.</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>WinUI MVVM Uygulaması</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[Deneysel] WinUI MVVM Uygulaması</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>CommunityToolkit.Mvvm paketiyle MVVM deseni kullanılarak yapılandırılmış bir WinUI uygulaması oluşturmak için proje şablonu.</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>İçerik İletişim Kutusu</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[Deneysel] İçerik İletişim Kutusu</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>Uygulamanın kullanıcı arabiriminde bilgi görüntüleyen veya giriş toplamak için içerik görüntüleyen iletişim kutusu (WinUI).</value>
   </data>
 </root>

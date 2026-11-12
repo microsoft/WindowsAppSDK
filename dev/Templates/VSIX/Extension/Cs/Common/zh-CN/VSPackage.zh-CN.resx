@@ -142,7 +142,7 @@
     <value>[实验性] 资源字典</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>WinUI) (XAML 资源的空密钥集合。</value>
+    <value>XAML 资源的空带键集合(WinUI)。</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>资源文件 (.resw)</value>
@@ -160,7 +160,7 @@
     <value>[实验性] 模板化控件</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>具有适当默认样式的空白自定义控件 (WinUI)。</value>
+    <value>具有适当默认样式的空白自定义控件(WinUI)。</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>用户控件</value>
@@ -178,7 +178,7 @@
     <value>[实验性] WinUI 类库</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>用于 (.dll) (WinUI) 创建托管类库的项目。</value>
+    <value>用于创建托管类库 (.dll) (WinUI) 的项目。</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>WinUI 空白应用(使用 Windows 应用程序打包项目打包)</value>
@@ -217,22 +217,22 @@
     <value>适用于 WinUI 的 Windows 应用程序打包项目</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>一个项目模板，用于创建 MSIX 包，其中包含用于通过Microsoft Store旁加载或分发的 WinUI 应用程序。</value>
+    <value>一个项目模板，用于创建包含 WinUI 应用程序的 MSIX 包，以便侧载或通过 Microsoft Store 分发。</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>正在将 NuGet 包安装到项目中...</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>操作在进行中...</value>
+    <value>操作正在进行...</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>缺少包引用</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>无法为 {0} 添加对以下包的引用： {1}。请在生成前添加包引用。</value>
+    <value>无法为 {0} 添加对以下包的引用： {1}。请在生成之前添加包引用。</value>
   </data>
   <data name="1048" xml:space="preserve">
-    <value>[{0}]无法添加对以下包的引用： {1}。这是环境错误。请在生成项目之前添加包引用。</value>
+    <value>[{0}]无法添加对以下包的引用： {1}。这是一个环境错误。请在生成项目之前添加包引用。</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>管理 NuGet 包</value>
@@ -251,5 +251,41 @@
   </data>
   <data name="1054" xml:space="preserve">
     <value>没有可用的输出信息。</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>WinUI TabView 应用</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[实验性] WinUI TabView 应用</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>用于创建带有 TabView 控件的 WinUI 应用以实现选项卡导航的项目模板。</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>WinUI 导航应用</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[实验性] WinUI 导航应用</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>用于创建带有 NavigationView 控件以进行页面导航的 WinUI 应用的项目模板。</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>WinUI MVVM 应用</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[实验性] WinUI MVVM 应用</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>用于使用 CommunityToolkit.Mvvm 包创建按 MVVM 模式构建的 WinUI 应用的项目模板。</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>内容对话框</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[实验性] 内容对话框</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>一个在应用 UI 上显示内容以展示信息或收集输入的对话框(WinUI)。</value>
   </data>
 </root>

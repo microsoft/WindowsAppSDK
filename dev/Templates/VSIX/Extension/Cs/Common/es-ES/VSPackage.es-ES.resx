@@ -160,7 +160,7 @@
     <value>[Experimental] Control con plantilla</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Control personalizado en blanco con el estilo predeterminado adecuado (WinUI).</value>
+    <value>Control personalizado en blanco con el estilo predeterminado apropiado (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>Control de usuario</value>
@@ -178,7 +178,7 @@
     <value>[Experimental] Biblioteca de clases WinUI</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Proyecto para crear una biblioteca de clases administradas (.dll) (WinUI).</value>
+    <value>Proyecto para crear una biblioteca de clases administrada (.dll) (WinUI).</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>Aplicación en blanco de WinUI (empaquetada con Proyecto de paquete de aplicación de Windows)</value>
@@ -217,13 +217,13 @@
     <value>Proyecto de paquete de aplicación de Windows para WinUI</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Plantilla de proyecto que crea paquetes MSIX que contienen aplicaciones WinUI para la carga o distribución de prueba mediante el Microsoft Store.</value>
+    <value>Una plantilla de proyecto que crea paquetes MSIX que contienen aplicaciones WinUI para la instalación de prueba o la distribución a través de Microsoft Store.</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>Instalando paquetes NuGet en el proyecto...</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>Operación en progreso...</value>
+    <value>Operación en curso...</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>Faltan referencias de paquete</value>
@@ -232,7 +232,7 @@
     <value>No se pueden agregar referencias a los siguientes paquetes para {0}: {1}. Agregue referencias de paquete antes de compilar.</value>
   </data>
   <data name="1048" xml:space="preserve">
-    <value>[{0}] No se pueden agregar referencias a los siguientes paquetes: {1}. Se trata de un error de entorno. Agregue referencias de paquete antes de compilar el proyecto.</value>
+    <value>[{0}] No se pueden agregar referencias a los siguientes paquetes: {1}. Este es un error de entorno. Agregue referencias de paquete antes de compilar el proyecto.</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>Administrar paquetes NuGet</value>
@@ -251,5 +251,41 @@
   </data>
   <data name="1054" xml:space="preserve">
     <value>No hay información de salida disponible.</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>Aplicación TabView de WinUI</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[Experimental] Aplicación TabView de WinUI</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>Plantilla de proyecto para crear una aplicación WinUI con un control TabView para la navegación por pestañas.</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>Aplicación de navegación de WinUI</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[Experimental] Aplicación de navegación de WinUI</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>Plantilla de proyecto para crear una aplicación WinUI con un control NavigationView para la navegación de páginas.</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>Aplicación MVVM de WinUI</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[Experimental] Aplicación MVVM de WinUI</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>Una plantilla de proyecto para crear una aplicación WinUI estructurada con el patrón MVVM utilizando el paquete CommunityToolkit.Mvvm.</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>Cuadro de diálogo de contenido</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[Experimental] Cuadro de diálogo de contenido</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>Cuadro de diálogo que muestra contenido a través de la interfaz de usuario de la aplicación para mostrar información o recopilar entradas (WinUI).</value>
   </data>
 </root>

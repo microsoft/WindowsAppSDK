@@ -1,4 +1,6 @@
 {
-  "name": "Ventana en blanco",
-  "description": "Una ventana en blanco (WinUI)."
+  "name": "WinUI Blank Window (Item)",
+  "author": "Microsoft",
+  "description": "Adds a WinUI 3 Window with XAML markup and code-behind.",
+  "symbols/rootNamespace/description": "Namespace for the generated item."
 }

@@ -1,4 +1,5 @@
 {
-  "name": "Arquivo de Recursos (.resw)",
-  "description": "Um arquivo para armazenar a cadeia de caracteres e os recursos condicionais (WinUI)."
+  "name": "Arquivo de recursos do WinUI (Item)",
+  "author": "Microsoft",
+  "description": "Adiciona um arquivo de recursos RESW para cadeias de caracteres localizadas."
 }

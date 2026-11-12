@@ -142,7 +142,7 @@
     <value>[Experimentální] Slovník prostředků</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Prázdná kolekce prostředků XAML (WinUI) s klíči</value>
+    <value>Prázdná kolekce prostředků XAML s klíči (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Soubor prostředků (.resw)</value>
@@ -151,7 +151,7 @@
     <value>[Experimental] Soubor prostředků (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Soubor pro ukládání řetězce a podmíněných prostředků (WinUI)</value>
+    <value>Soubor pro ukládání řetězců a podmíněných prostředků (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Ovládací prvek v šabloně</value>
@@ -160,7 +160,7 @@
     <value>[Experimentální] Ovládací prvek v šabloně</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Prázdný vlastní ovládací prvek s odpovídajícím výchozím stylem (WinUI)</value>
+    <value>Prázdný vlastní ovládací prvek s odpovídajícím výchozím stylem (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>Uživatelský ovládací prvek</value>
@@ -172,10 +172,10 @@
     <value>Prázdný uživatelský ovládací prvek (WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Prázdná aplikace WinUI (zabalená s projektem vytváření balíčku aplikace Windows)</value>
+    <value>Prázdná aplikace WinUI (zabalená s Projektem vytváření balíčku aplikace Windows)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimentální] Prázdná aplikace WinUI (zabalená s projektem vytváření balíčku aplikace Windows)</value>
+    <value>[Experimentální] Prázdná aplikace WinUI (zabalená s Projektem vytváření balíčku aplikace Windows)</value>
   </data>
   <data name="1027" xml:space="preserve">
     <value>Šablona projektu pro vytvoření aplikace WinUI. Součástí je projekt vytváření balíčku aplikace Windows (WAP), který vytvoří balíček MSIX pro zkušební načtení před prodejem nebo distribuci prostřednictvím obchodu Microsoft Store.</value>
@@ -205,7 +205,7 @@
     <value>[Experimentální] Testovací aplikace jednotek WinUI</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Projekt pro vytvoření aplikace pro testování jednotek C++/WinRT pro WinUI pomocí MSTestu</value>
+    <value>Projekt pro vytvoření aplikace jednotkových testů C++/WinRT pro WinUI pomocí MSTest.</value>
   </data>
   <data name="1040" xml:space="preserve">
     <value>Prázdná aplikace WinUI</value>
@@ -217,7 +217,7 @@
     <value>Projekt vytváření balíčku aplikace Windows pro WinUI</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Šablona projektu, která vytváří balíčky MSIX obsahující aplikace WinUI pro instalaci bokem nebo distribuci prostřednictvím Microsoft Store</value>
+    <value>Šablona projektu, která vytváří balíčky MSIX obsahující aplikace WinUI pro zkušební načtení nebo distribuci prostřednictvím Microsoft Store.</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>Instalují se balíčky NuGet do projektu...</value>

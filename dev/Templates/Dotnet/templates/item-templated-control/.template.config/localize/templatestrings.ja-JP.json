@@ -1,4 +1,7 @@
 {
-  "name": "テンプレート化されたコントロール",
-  "description": "適切な既定のスタイルを持つ空のカスタム コントロール (WinUI)。"
+  "name": "WinUI テンプレート コントロール (項目)",
+  "author": "Microsoft",
+  "description": "WinUI 3 テンプレート コントロールを追加します。既定では、最小限の既定のスタイルを定義した Themes\\Generic.xaml も作成されます。プロジェクトに既に Themes\\Generic.xaml がある場合は、--IncludeDefaultStyle false を渡し、<Style TargetType=\"local:<Name>\"> ブロックを手動で追加します。それ以外の場合、新しいコントロールは実行時に空白になります。",
+  "symbols/rootNamespace/description": "生成される項目の名前空間。",
+  "symbols/IncludeDefaultStyle/description": "プロジェクトに Themes\\Generic.xaml が既に存在する場合は、false に設定します。その場合、新しいコントロール用に <Style TargetType=\"local:<Name>\"> を手動で追加する必要があります。"
 }

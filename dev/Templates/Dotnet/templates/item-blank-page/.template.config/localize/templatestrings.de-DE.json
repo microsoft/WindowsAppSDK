@@ -1,4 +1,6 @@
 {
-  "name": "Leere Seite",
-  "description": "Eine leere Seite (WinUI)."
+  "name": "Leere WinUI-Seite (Element)",
+  "author": "Microsoft",
+  "description": "Fügt eine WinUI 3-Seite mit XAML-Markup und Code-Behind hinzu.",
+  "symbols/rootNamespace/description": "Namespace für das generierte Element."
 }

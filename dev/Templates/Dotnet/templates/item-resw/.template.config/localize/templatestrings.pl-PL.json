@@ -1,4 +1,5 @@
 {
-  "name": "Plik zasobów (resw)",
-  "description": "Plik do przechowywania ciągów i zasobów warunkowych (WinUI)."
+  "name": "Plik zasobów WinUI (element)",
+  "author": "Microsoft",
+  "description": "Dodaje plik zasobów RESW dla zlokalizowanych ciągów."
 }

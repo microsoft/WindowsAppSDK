@@ -1,0 +1,13 @@
+{
+  "name": "Reactor Tek Dosyalı Uygulaması (Deneysel)",
+  "author": "Microsoft",
+  "description": "Deneysel. Tek dosyalı, dosya tabanlı bir .NET 10 uygulaması olarak boş bir Microsoft.UI.Reactor (WinUI 3) masaüstü uygulaması oluşturur: .csproj öğesinin yerini #:package ve #:property yönergelerinin aldığı tek bir .cs dosyası. Yalnızca C#; XAML içermez. Bunu 'dotnet run <name>.cs' komutuyla çalıştırın. Microsoft.UI.Reactor ön sürüm aşamasındadır ve API'si değişebilir.",
+  "symbols/dotnetVersion/description": "Temel hedef çerçeve bilinen adı (TFM). Dosya tabanlı uygulamalar ve Microsoft.UI.Reactor için .NET 10 veya üzeri gerekir.",
+  "symbols/dotnetVersion/choices/net10.0/description": ".NET 10'u hedefleyin",
+  "symbols/dotnetVersion/choices/net11.0/description": ".NET 11'i hedefleyin",
+  "symbols/reactorVersion/description": "Başvurulacak Microsoft.UI.Reactor NuGet sürümü.",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet sürümü. 0.7.0 veya üzerini gerektirir (dosya tabanlı uygulama desteği); En son ahır için * kullanın.",
+  "symbols/skipRestore/description": "Belirtilmişse oluştururken uygulamanın otomatik geri yüklenmesini atlar.",
+  "postActions/restore/description": "Bu uygulamanın gerektirdiği NuGet paketlerini geri yükleyin.",
+  "postActions/restore/manualInstructions/restoreManually/text": "'dotnet restore <name>.cs' komutunu çalıştırın"
+}

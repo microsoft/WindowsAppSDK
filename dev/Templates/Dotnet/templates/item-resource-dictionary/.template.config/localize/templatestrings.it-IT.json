@@ -1,4 +1,6 @@
 {
-  "name": "Dizionario risorse",
-  "description": "Raccolta con chiave vuota di risorse XAML (WinUI)."
+  "name": "Dizionario risorse WinUI (elemento)",
+  "author": "Microsoft",
+  "description": "Aggiunge un ResourceDictionary WinUI 3 per la condivisione di stili e risorse.",
+  "symbols/rootNamespace/description": "Spazio dei nomi per l'elemento generato."
 }

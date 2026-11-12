@@ -142,7 +142,7 @@
     <value>[Experimentell] Ressourcenverzeichnis</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Eine leere, schlüsselierte Sammlung von XAML-Ressourcen (WinUI).</value>
+    <value>Eine leere Sammlung von XAML-Ressourcen mit Schlüsseln (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Ressourcendatei (.resw)</value>
@@ -160,7 +160,7 @@
     <value>[Experimentell] Steuerelement mit Vorlagen</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Ein leeres benutzerdefiniertes Steuerelement mit der entsprechenden Standardformatierung (WinUI).</value>
+    <value>Ein leeres benutzerdefiniertes Steuerelement mit dem passenden Standardstil (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>Benutzersteuerelement</value>
@@ -223,18 +223,18 @@
     <value>NuGet-Pakete werden in das Projekt installiert...</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>Wird ausgeführt...</value>
+    <value>Vorgang in Bearbeitung...</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>Fehlende Paketverweise</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Für {0} können den folgenden Paketen keine Verweise hinzugefügt werden: {1}. Fügen Sie vor dem Erstellen Paketverweise hinzu.</value>
+    <value>Verweise auf die folgenden Pakete für {0} können nicht hinzugefügt werden: {1}. Fügen Sie vor dem Erstellen Paketverweise hinzu.</value>
   </data>
   <data name="1048" xml:space="preserve">
     <value>[{0}] Den folgenden Paketen können keine Verweise hinzugefügt werden: {1}.
 
-Dies ist ein Umgebungsfehler. Fügen Sie Vor dem Erstellen des Projekts Paketverweise hinzu.
+Dies ist ein Umgebungsfehler. Fügen Sie vor dem Erstellen des Projekts Paketverweise hinzu.
 
 Weitere Informationen zum Fehler finden Sie auf der Registerkarte "Allgemein" im Ausgabefenster.</value>
   </data>

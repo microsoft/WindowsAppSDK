@@ -1,4 +1,6 @@
 {
-  "name": "Словарь ресурсов",
-  "description": "Пустая коллекция ресурсов XAML с ключами (WinUI)."
+  "name": "Словарь ресурсов WinUI (элемент)",
+  "author": "Майкрософт",
+  "description": "Добавляет ResourceDictionary WinUI 3 для общего доступа к стилям и ресурсам.",
+  "symbols/rootNamespace/description": "Пространство имен для создаваемого элемента."
 }

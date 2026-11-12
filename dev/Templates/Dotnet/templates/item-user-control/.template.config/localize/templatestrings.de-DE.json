@@ -1,4 +1,6 @@
 {
-  "name": "Benutzersteuerelement",
-  "description": "Ein leeres Benutzersteuerelement (WinUI)."
+  "name": "WinUI-Benutzersteuerelement (Element)",
+  "author": "Microsoft",
+  "description": "Fügt ein WinUI 3-UserControl mit Markup und CodeBehind hinzu.",
+  "symbols/rootNamespace/description": "Namespace für das generierte Element."
 }

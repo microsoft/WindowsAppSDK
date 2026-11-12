@@ -1,4 +1,6 @@
 {
-  "name": "Pagina vuota",
-  "description": "Una pagina vuota (WinUI)."
+  "name": "Pagina vuota WinUI (elemento)",
+  "author": "Microsoft",
+  "description": "Aggiunge una pagina WinUI 3 con markup XAML e code-behind.",
+  "symbols/rootNamespace/description": "Spazio dei nomi per l'elemento generato."
 }

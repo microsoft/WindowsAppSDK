@@ -1,4 +1,6 @@
 {
-  "name": "資源字典",
-  "description": "WinUI) (XAML 資源的空白金鑰集合。"
+  "name": "WinUI Resource Dictionary (Item)",
+  "author": "Microsoft",
+  "description": "新增 WinUI 3 ResourceDictionary 以共用樣式和資源。",
+  "symbols/rootNamespace/description": "Namespace for the generated item."
 }

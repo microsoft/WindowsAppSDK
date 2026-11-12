@@ -1,0 +1,6 @@
+{
+  "name": "Caixa de diálogo de conteúdo do WinUI (item)",
+  "author": "Microsoft",
+  "description": "Adiciona um ContentDialog do WinUI 3 com marcação e code-behind.",
+  "symbols/rootNamespace/description": "Namespace do item gerado."
+}

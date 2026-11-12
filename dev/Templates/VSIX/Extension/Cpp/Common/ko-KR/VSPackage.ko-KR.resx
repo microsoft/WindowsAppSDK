@@ -142,7 +142,7 @@
     <value>[실험적] 리소스 사전</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>비어 있는 키로 구성된 XAML 리소스 컬렉션입니다(WinUI).</value>
+    <value>비어 있는 키로 구성된 XAML 리소스 컬렉션(WinUI)입니다.</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>리소스 파일(.resw)</value>
@@ -151,7 +151,7 @@
     <value>[실험] 리소스 파일(.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>WinUI(문자열 및 조건부 리소스)를 저장하는 파일입니다.</value>
+    <value>문자열 및 조건부 리소스를 저장하기 위한 파일(WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>템플릿 제공 컨트롤</value>
@@ -160,7 +160,7 @@
     <value>[실험적] 템플릿 제공 컨트롤</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>적절한 기본 스타일(WinUI)을 사용하는 빈 사용자 지정 컨트롤입니다.</value>
+    <value>적절한 기본 스타일이 적용된 빈 사용자 지정 컨트롤(WinUI)입니다.</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>사용자 정의 컨트롤</value>
@@ -172,10 +172,10 @@
     <value>빈 사용자 정의 컨트롤(WinUI).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>WinUI 빈 앱(Windows 애플리케이션 패키징 프로젝트 패키지)</value>
+    <value>WinUI 빈 앱(Windows 애플리케이션 패키징 프로젝트로 패키지됨)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[실험적] WinUI 빈 앱(Windows 애플리케이션 패키징 프로젝트 패키지)</value>
+    <value>[실험적] WinUI 빈 앱(Windows 애플리케이션 패키징 프로젝트 패키지됨)</value>
   </data>
   <data name="1027" xml:space="preserve">
     <value>WinUI 앱을 만들기 위한 프로젝트 템플릿. Microsoft Store를 통해 테스트용으로 로드하거나 배포하기 위한 MSIX 패키지를 만들기 위해 WAP(Windows 애플리케이션 패키징) 프로젝트가 포함되어 있습니다.</value>
@@ -217,19 +217,19 @@
     <value>WinUI용 Windows 애플리케이션 패키징 프로젝트</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Microsoft Store 통해 테스트용 로드 또는 배포를 위한 WinUI 애플리케이션이 포함된 MSIX 패키지를 만드는 프로젝트 템플릿입니다.</value>
+    <value>사이드로드하거나 Microsoft Store를 통해 배포할 수 있도록 WinUI 앱이 포함된 MSIX 패키지를 만드는 프로젝트 템플릿입니다.</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>프로젝트에 NuGet 패키지를 설치하는 중입니다...</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>작업이 진행 중입니다.</value>
+    <value>작업 진행 중...</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>누락된 패키지 참조</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>{0} 대한 다음 패키지에 참조를 추가할 수 없습니다. {1}. 빌드하기 전에 패키지 참조를 추가하세요.</value>
+    <value>{0}에 대한 다음 패키지에 대한 참조를 추가할 수 없습니다. {1}. 빌드하기 전에 패키지 참조를 추가하세요.</value>
   </data>
   <data name="1048" xml:space="preserve">
     <value>[{0}] 다음 패키지에 대한 참조를 추가할 수 없습니다. {1}

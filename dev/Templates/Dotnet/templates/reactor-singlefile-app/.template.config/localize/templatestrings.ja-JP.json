@@ -1,0 +1,13 @@
+{
+  "name": "Reactor 単一ファイル アプリ (試験段階)",
+  "author": "Microsoft",
+  "description": "試験段階。空の Microsoft.UI.Reactor (WinUI 3) デスクトップ アプリを、単一ファイルの .NET 10 ファイルベース アプリとして作成します。1 つの .cs ファイルに含まれる #:package と #:property ディレクティブで、.csproj ファイルを置き換えます。純粋の C#、XAML なし。'dotnet run <name>.cs' で実行します。Microsoft.UI.Reactor はプレリリースであり、その API は変更される可能性があります。",
+  "symbols/dotnetVersion/description": "基本ターゲット フレームワーク モニカー (TFM)。ファイル ベースのアプリおよび Microsoft.UI.Reactor には、.NET 10 以降が必要です。",
+  "symbols/dotnetVersion/choices/net10.0/description": ".NET 10 をターゲットにします",
+  "symbols/dotnetVersion/choices/net11.0/description": ".NET 11 をターゲットにします",
+  "symbols/reactorVersion/description": "参照する Microsoft.UI.Reactor NuGet のバージョン",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Microsoft.Windows.SDK.BuildTools.WinApp の NuGet バージョン。0.7.0 以降が必要です (ファイル ベースのアプリをサポート)。最新の安定版を使用するには、* を指定します。",
+  "symbols/skipRestore/description": "指定した場合、作成時のアプリの自動復元をスキップします。",
+  "postActions/restore/description": "このアプリに必要な NuGet パッケージを復元します。",
+  "postActions/restore/manualInstructions/restoreManually/text": "'dotnet restore <name>.cs' を実行する"
+}

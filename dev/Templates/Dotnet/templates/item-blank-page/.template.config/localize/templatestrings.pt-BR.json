@@ -1,4 +1,6 @@
 {
-  "name": "Página em Branco",
-  "description": "Uma página em branco (WinUI)."
+  "name": "Página em Branco do WinUI (Item)",
+  "author": "Microsoft",
+  "description": "Adiciona uma Página do WinUI 3 com marcação XAML e code-behind.",
+  "symbols/rootNamespace/description": "Namespace do item gerado."
 }

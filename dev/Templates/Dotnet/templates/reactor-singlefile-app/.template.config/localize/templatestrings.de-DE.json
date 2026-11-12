@@ -1,0 +1,13 @@
+{
+  "name": "Reactor-App mit einer Datei (experimentell)",
+  "author": "Microsoft",
+  "description": "Experimentell. Erstellt eine leere Microsoft.UI.Reactor-Desktop-App (WinUI 3) als dateibasierte .NET 10-App mit einer einzigen .cs-Datei. Die Direktiven #:package und #:property ersetzen die .csproj-Datei. Reines C#, kein XAML. Führen Sie die App mit „dotnet run <name>.cs“ aus. Microsoft.UI.Reactor ist eine Vorabversion, und die API kann sich ändern.",
+  "symbols/dotnetVersion/description": "Basis-Zielframeworkmoniker (TFM). Dateibasierte Apps und Microsoft.UI.Reactor erfordern .NET 10 oder höher.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Zielversion .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Zielversion .NET 11",
+  "symbols/reactorVersion/description": "NuGet-Version von Microsoft.UI.Reactor, auf die verwiesen werden soll.",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet-Version. Erfordert 0.7.0 oder höher (dateibasierte App-Unterstützung); Verwenden Sie * für die neueste stabile Version.",
+  "symbols/skipRestore/description": "Falls angegeben, wird die automatische Wiederherstellung der App beim Erstellen übersprungen.",
+  "postActions/restore/description": "NuGet-Pakete wiederherstellen, die von dieser App benötigt werden.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Führen Sie „dotnet restore <name>.cs“ aus"
+}

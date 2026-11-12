@@ -1,4 +1,16 @@
 {
   "name": "WinUI-Klassenbibliothek",
-  "description": "Ein Projekt zum Erstellen einer verwalteten Klassenbibliothek (.dll) (WinUI)."
+  "author": "Microsoft",
+  "description": "Erstellt eine WinUI 3-Klassenbibliothek zum Teilen von UI-Komponenten.",
+  "symbols/dotnetVersion/description": "Basis-Zielrameworkmoniker (TFM) für das WinUI-Projekt. Standardmäßig wird die installierte SDK-Version verwendet.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Zielversion .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Zielversion .NET 11",
+  "symbols/windowsAppSdkVersion/description": "Microsoft.WindowsAppSDK NuGet-Version. Verwenden Sie * für die neueste stabile Version.",
+  "symbols/windowsSdkBuildToolsVersion/description": "Microsoft.Windows.SDK.BuildTools NuGet-Version. Verwenden Sie * für die neueste stabile Version.",
+  "postActions/pinWindowsSdkBuildTools/description": "Heften Sie Microsoft.Windows.SDK.BuildTools an die neueste stabile Version an.",
+  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "Führen Sie 'dotnet add package Microsoft.Windows.SDK.BuildTools' aus",
+  "postActions/pinWindowsAppSdk/description": "Microsoft.WindowsAppSDK auf die neueste stabile Version anheften.",
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Führen Sie 'dotnet add package Microsoft.WindowsAppSDK' aus",
+  "postActions/restore/description": "NuGet-Pakete wiederherstellen, die für dieses Projekt erforderlich sind.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Führen Sie „dotnet restore“ aus"
 }

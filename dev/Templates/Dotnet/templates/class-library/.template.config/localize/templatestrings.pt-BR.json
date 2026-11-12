@@ -1,4 +1,16 @@
 {
   "name": "Biblioteca de Classes WinUI",
-  "description": "Um projeto para criar uma biblioteca de classes gerenciada (.dll) (WinUI)."
+  "author": "Microsoft",
+  "description": "Cria uma biblioteca de classes WinUI 3 para compartilhar componentes de interface do usuário.",
+  "symbols/dotnetVersion/description": "Moniker da estrutura de destino base (TFM) para o projeto WinUI. O padrão é a versão do SDK instalada.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Usar .NET 10 como destino",
+  "symbols/dotnetVersion/choices/net11.0/description": "Usar .NET 11 como destino",
+  "symbols/windowsAppSdkVersion/description": "Versão do Microsoft.WindowsAppSDK NuGet. Use * para a versão estável mais recente.",
+  "symbols/windowsSdkBuildToolsVersion/description": "Versão do NuGet Microsoft.Windows.SDK.BuildTools. Use * para a versão estável mais recente.",
+  "postActions/pinWindowsSdkBuildTools/description": "Fixe o Microsoft.Windows.SDK.BuildTools na versão estável mais recente.",
+  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "Execute 'dotnet add package Microsoft.Windows.SDK.BuildTools'",
+  "postActions/pinWindowsAppSdk/description": "Fixe o Microsoft.WindowsAppSDK na versão estável mais recente.",
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Executar 'dotnet add package Microsoft.WindowsAppSDK'",
+  "postActions/restore/description": "Restaurar pacotes NuGet necessários para este projeto.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Executar 'dotnet restore'"
 }

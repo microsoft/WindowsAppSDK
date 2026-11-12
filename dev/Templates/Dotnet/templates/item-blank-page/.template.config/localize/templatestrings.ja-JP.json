@@ -1,4 +1,6 @@
 {
-  "name": "空白のページ",
-  "description": "空のページ (WinUI)。"
+  "name": "WinUI の空白ページ (項目)",
+  "author": "Microsoft",
+  "description": "XAML マークアップとコード ビハインドを含む WinUI 3 ページを追加します。",
+  "symbols/rootNamespace/description": "生成される項目の名前空間。"
 }

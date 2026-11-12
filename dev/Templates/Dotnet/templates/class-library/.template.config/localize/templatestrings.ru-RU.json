@@ -1,4 +1,16 @@
 {
   "name": "Библиотека классов WinUI",
-  "description": "Проект для создания управляемой библиотеки классов (.dll) (WinUI)."
+  "author": "Майкрософт",
+  "description": "Создает библиотеку классов WinUI 3 для общего доступа к компонентам пользовательского интерфейса.",
+  "symbols/dotnetVersion/description": "Базовый монокер целевой платформы (TFM) для проекта WinUI. По умолчанию — установленная версия пакета SDK.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Целевая платформа .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Целевая платформа .NET 11",
+  "symbols/windowsAppSdkVersion/description": "Версия NuGet Microsoft.WindowsAppSDK. Используйте * для последней стабильной версии.",
+  "symbols/windowsSdkBuildToolsVersion/description": "Версия NuGet Microsoft.Windows.SDK.BuildTools. Используйте * для последней стабильной версии.",
+  "postActions/pinWindowsSdkBuildTools/description": "Закрепите Microsoft.Windows.SDK.BuildTools до последней стабильной версии.",
+  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "Выполните \"dotnet add package Microsoft.Windows.SDK.BuildTools\"",
+  "postActions/pinWindowsAppSdk/description": "Закрепите Microsoft.WindowsAppSDK на последней стабильной версии.",
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Выполните \"dotnet add package Microsoft.WindowsAppSDK\"",
+  "postActions/restore/description": "Восстановите пакеты NuGet, необходимые для этого проекта.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Выполните \"dotnet restore\""
 }

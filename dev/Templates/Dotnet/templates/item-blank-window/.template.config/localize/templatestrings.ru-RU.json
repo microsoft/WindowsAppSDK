@@ -1,4 +1,6 @@
 {
-  "name": "Пустое окно",
-  "description": "Пустое окно (WinUI)."
+  "name": "Пустое окно WinUI (элемент)",
+  "author": "Майкрософт",
+  "description": "Добавляет окно WinUI 3 с разметкой XAML и файлом кода.",
+  "symbols/rootNamespace/description": "Пространство имен для создаваемого элемента."
 }

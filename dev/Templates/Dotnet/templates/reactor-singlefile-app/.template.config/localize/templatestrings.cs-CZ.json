@@ -1,0 +1,13 @@
+{
+  "name": "Aplikace Reactor v jediném souboru (experimentální)",
+  "author": "Microsoft",
+  "description": "Experimentální. Vytvoří prázdnou desktopovou aplikaci Microsoft.UI.Reactor (WinUI 3) založenou na jednom souboru .NET 10: jeden soubor .cs, ve kterém direktivy #:package a #:property nahrazují soubor .csproj. Pouze C#, bez XAML. Spusťte ji pomocí „dotnet run <name>.cs“. Microsoft.UI.Reactor je ve verzi před vydáním a jeho rozhraní API se může změnit.",
+  "symbols/dotnetVersion/description": "Základní moniker cílové architektury (TFM). Souborové aplikace a Microsoft.UI.Reactor vyžadují .NET 10 nebo novější.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Cílit na .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Cílit na .NET 11",
+  "symbols/reactorVersion/description": "Verze balíčku NuGet Microsoft.UI.Reactor, na kterou se má odkazovat.",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Verze balíčku NuGet Microsoft.Windows.SDK.BuildTools.WinApp. Vyžaduje verzi 0.7.0 nebo novější (podpora aplikací založených na souborech); pro nejnovější stabilní verzi použijte *.",
+  "symbols/skipRestore/description": "Pokud je zadáno, přeskočí se automatické obnovení aplikace při vytvoření.",
+  "postActions/restore/description": "Obnovit balíčky NuGet vyžadované touto aplikací.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Spusťte „dotnet restore <name>.cs“"
+}

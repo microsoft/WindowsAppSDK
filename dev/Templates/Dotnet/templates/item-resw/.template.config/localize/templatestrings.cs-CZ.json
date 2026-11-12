@@ -1,4 +1,5 @@
 {
-  "name": "Soubor prostředků (.resw)",
-  "description": "Soubor pro ukládání řetězce a podmíněných prostředků (WinUI)"
+  "name": "Soubor prostředků WinUI (položka)",
+  "author": "Microsoft",
+  "description": "Přidá soubor prostředků RESW pro lokalizované řetězce."
 }

@@ -1,0 +1,6 @@
+{
+  "name": "Finestra di dialogo del contenuto WinUI (elemento)",
+  "author": "Microsoft",
+  "description": "Aggiunge un ContentDialog di WinUI 3 con markup e code-behind.",
+  "symbols/rootNamespace/description": "Spazio dei nomi per l'elemento generato."
+}

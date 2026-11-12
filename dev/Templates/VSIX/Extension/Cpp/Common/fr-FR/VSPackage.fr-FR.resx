@@ -151,7 +151,7 @@
     <value>[Experimental] Fichier de ressources (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Fichier de stockage de la chaîne et des ressources conditionnelles (WinUI).</value>
+    <value>Fichier destiné à stocker des ressources de chaînes et des ressources conditionnelles (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Contrôle avec modèle</value>
@@ -211,7 +211,7 @@
     <value>Application WinUI vierge</value>
   </data>
   <data name="1041" xml:space="preserve">
-    <value>Projet de création d’une application WinUI vide.</value>
+    <value>Un projet pour créer une application WinUI vide.</value>
   </data>
   <data name="1042" xml:space="preserve">
     <value>Projet de création de packages d'applications Windows pour WinUI</value>
@@ -229,14 +229,14 @@
     <value>Référence(s) de package manquante(s)</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Impossible d’ajouter des références aux packages suivants pour {0} : {1}. Ajoutez des références de package avant de générer.</value>
+    <value>Impossible d’ajouter des références aux packages suivants pour {0} : {1}. Ajoutez des références de package avant la génération.</value>
   </data>
   <data name="1048" xml:space="preserve">
     <value>[{0}] Impossible d’ajouter des références aux packages suivants : {1}.
 
-Il s’agit d’une erreur d’environnement. Ajoutez des références de package avant de générer le projet.
+Il s’agit d’une erreur liée à l’environnement. Ajoutez les références aux packages avant de générer le projet.
 
-Pour plus d’informations sur l’erreur, case activée l’onglet Général dans la fenêtre Sortie.</value>
+Pour plus d’informations sur l’erreur, consultez l’onglet Général de la fenêtre Sortie.</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>Gérer les packages NuGet</value>

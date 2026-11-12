@@ -1,4 +1,5 @@
 {
-  "name": "File di risorse (.resw)",
-  "description": "File per l'archiviazione di risorse stringa e condizionali (WinUI)."
+  "name": "File di risorse WinUI (elemento)",
+  "author": "Microsoft",
+  "description": "Aggiunge un file di risorse RESW per le stringhe localizzate."
 }

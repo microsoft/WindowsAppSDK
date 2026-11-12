@@ -1,0 +1,13 @@
+{
+  "name": "Reactor 單一檔案應用程式 (實驗性)",
+  "author": "Microsoft",
+  "description": "實驗性。建立空白的 Microsoft.UI.Reactor (WinUI 3) 桌面應用程式，做為單一檔案的 .NET 10 檔案型應用程式: 只需一個 .cs 檔案，其中的 #:package 和 #:property 指示詞可取代 .csproj。純 C#，不使用 XAML。使用 'dotnet run <name>.cs' 執行。Microsoft.UI.Reactor 是發行前版本，其 API 可能會變更。",
+  "symbols/dotnetVersion/description": "基礎目標 Framework Moniker (TFM)。檔案型應用程式與 Microsoft.UI.Reactor 需要 .NET 10 或更新版本。",
+  "symbols/dotnetVersion/choices/net10.0/description": "以 .NET 10 為目標",
+  "symbols/dotnetVersion/choices/net11.0/description": "以 .NET 11 為目標",
+  "symbols/reactorVersion/description": "要參考的 Microsoft.UI.Reactor NuGet 套件版本。",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Microsoft.Windows.SDK.BuildTools.WinApp NuGet 版本。需要 0.7.0 或更新版本 (檔案型應用程式支援);使用 * 表示最新的穩定版本。",
+  "symbols/skipRestore/description": "若有指定，建立應用程式時將略過自動還原。",
+  "postActions/restore/description": "還原此應用程式所需的 NuGet 套件。",
+  "postActions/restore/manualInstructions/restoreManually/text": "執行 'dotnet restore <name>.cs'"
+}

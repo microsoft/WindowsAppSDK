@@ -151,7 +151,7 @@
     <value>[試験段階] リソース ファイル (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>文字列と条件付きリソース (WinUI) を格納するためのファイルです。</value>
+    <value>文字列と条件付きリソースを格納するファイル (WinUI)。</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>テンプレート化されたコントロール</value>
@@ -178,7 +178,7 @@
     <value>[試験段階] WinUI クラス ライブラリ</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>マネージ クラス ライブラリ (.dll) (WinUI) を作成するためのプロジェクトです。</value>
+    <value>マネージド クラス ライブラリ (.dll) (WinUI) を作成するためのプロジェクトです。</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>WinUI の空のアプリ (Windows アプリケーション パッケージ プロジェクトでパッケージ化)</value>
@@ -211,19 +211,19 @@
     <value>WinUI の空のアプリ</value>
   </data>
   <data name="1041" xml:space="preserve">
-    <value>空の WinUI アプリを作成するためのプロジェクトです。</value>
+    <value>空の WinUI アプリを作成するためのプロジェクト。</value>
   </data>
   <data name="1042" xml:space="preserve">
-    <value>WinUI 用の Windows アプリケーション パッケージ プロジェクト</value>
+    <value>WinUI 用 Windows アプリケーション パッケージ プロジェクト</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Microsoft Storeを使用してサイドローディングまたはディストリビューションを行う WinUI アプリケーションを含む MSIX パッケージを作成するプロジェクト テンプレートです。</value>
+    <value>Microsoft Store を介したサイドローディングまたは配布用の WinUI アプリケーションを含む MSIX パッケージを作成するプロジェクト テンプレート。</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>NuGet パッケージをプロジェクトにインストールしています...</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>操作は実行中です...</value>
+    <value>操作を実行しています...</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>パッケージ参照がありません</value>
@@ -247,9 +247,45 @@
     <value>ビルドする前に、パッケージ参照を手動で追加してください。</value>
   </data>
   <data name="1053" xml:space="preserve">
-    <value>全般</value>
+    <value>一般</value>
   </data>
   <data name="1054" xml:space="preserve">
     <value>使用できる出力情報がありません。</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>WinUI TabView アプリ</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[試験段階] WinUI TabView アプリ</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>タブ ナビゲーションを行う TabView コントロールを備えた WinUI アプリを作成するためのプロジェクト テンプレート。</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>WinUI ナビゲーション アプリ</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[試験段階] WinUI ナビゲーション アプリ</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>ページ ナビゲーションを行う NavigationView コントロールを備えた WinUI アプリを作成するためのプロジェクト テンプレート。</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>WinUI MVVM アプリ</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[試験段階] WinUI MVVM アプリ</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>CommunityToolkit.Mvvm パッケージを使用し、MVVM パターンに基づいて構造化された WinUI アプリを作成するためのプロジェクト テンプレート。</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>コンテンツ ダイアログ</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[試験段階] コンテンツ ダイアログ</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>情報を表示したり、入力内容を取得したりするために、アプリの UI の上にコンテンツを表示するダイアログボックス (WinUI)。</value>
   </data>
 </root>

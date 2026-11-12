@@ -142,7 +142,7 @@
     <value>[Experimentell] Ressourcenverzeichnis</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Eine leere, schlüsselierte Sammlung von XAML-Ressourcen (WinUI).</value>
+    <value>Eine leere Sammlung von XAML-Ressourcen mit Schlüsseln (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Ressourcendatei (.resw)</value>
@@ -160,7 +160,7 @@
     <value>[Experimentell] Steuerelement mit Vorlagen</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Ein leeres benutzerdefiniertes Steuerelement mit der entsprechenden Standardformatierung (WinUI).</value>
+    <value>Ein leeres benutzerdefiniertes Steuerelement mit dem passenden Standardstil (WinUI).</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>Benutzersteuerelement</value>
@@ -223,16 +223,16 @@
     <value>NuGet-Pakete werden in das Projekt installiert...</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>Wird ausgeführt...</value>
+    <value>Vorgang in Bearbeitung...</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>Fehlende Paketverweise</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Für {0} können den folgenden Paketen keine Verweise hinzugefügt werden: {1}. Fügen Sie vor dem Erstellen Paketverweise hinzu.</value>
+    <value>Verweise auf die folgenden Pakete für {0} können nicht hinzugefügt werden: {1}. Fügen Sie vor dem Erstellen Paketverweise hinzu.</value>
   </data>
   <data name="1048" xml:space="preserve">
-    <value>[{0}] Den folgenden Paketen können keine Verweise hinzugefügt werden: {1}. Dies ist ein Umgebungsfehler. Fügen Sie Vor dem Erstellen des Projekts Paketverweise hinzu.</value>
+    <value>[{0}] Den folgenden Paketen können keine Verweise hinzugefügt werden: {1}. Dies ist ein Umgebungsfehler. Fügen Sie vor dem Erstellen des Projekts Paketverweise hinzu.</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>NuGet-Pakete verwalten</value>
@@ -251,5 +251,41 @@
   </data>
   <data name="1054" xml:space="preserve">
     <value>Keine Ausgabedaten verfügbar.</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>WinUI-TabView-App</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[Experimentell] WinUI-TabView-App</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>Eine Projektvorlage zum Erstellen einer WinUI-App mit einem TabView-Steuerelement für die Registerkartennavigation.</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>WinUI-Navigations-App</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[Experimentell] WinUI-Navigations-App</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>Eine Projektvorlage zum Erstellen einer WinUI-App mit einem NavigationView-Steuerelement für die Seitennavigation.</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>WinUI MVVM App</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[Experimentell] WinUI-MVVM-App</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>Eine Projektvorlage zum Erstellen einer WinUI-App nach dem MVVM-Muster mit dem Paket CommunityToolkit.Mvvm.</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>Dialogfeld „Inhalt“</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[Experimentell] Inhaltsdialogfeld</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>Ein Dialogfeld, in dem Inhalte über die App-Benutzeroberfläche angezeigt werden, um Informationen anzuzeigen oder Eingaben zu sammeln (WinUI).</value>
   </data>
 </root>

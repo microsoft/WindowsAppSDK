@@ -142,7 +142,7 @@
     <value>[實驗性] 資源字典</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>WinUI) (XAML 資源的空白金鑰集合。</value>
+    <value>XAML 資源 (WinUI) 的空白、具索引鍵的集合。</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>資源檔 (.resw)</value>
@@ -151,7 +151,7 @@
     <value>[實驗性] 資源檔 (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>用於在 WinUI) (儲存字串和條件式資源的檔案。</value>
+    <value>用來儲存字串和條件式資源 (WinUI) 的檔案。</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>範本控制項</value>
@@ -160,7 +160,7 @@
     <value>[實驗性] 範本控制項</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>具有適當預設樣式的空白自定義控件 (WinUI)。</value>
+    <value>具有適當預設樣式 (WinUI) 的空白自訂控制項。</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>使用者控制項</value>
@@ -205,7 +205,7 @@
     <value>[實驗性] WinUI 單元測試應用程式</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>用於使用 MSTest 建立 WinUI C++/WinRT 單元測試應用程式的專案。</value>
+    <value>使用 MSTest 為 WinUI 建立 C++/WinRT 單元測試應用程式的專案。</value>
   </data>
   <data name="1040" xml:space="preserve">
     <value>WinUI 空白應用程式</value>
@@ -217,26 +217,26 @@
     <value>WinUI 的 Windows 應用程式封裝專案</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>此項目範本會建立 MSIX 套件，其中包含 WinUI 應用程式以透過Microsoft Store側載或散發。</value>
+    <value>專案範本，可建立包含 WinUI 應用程式的 MSIX 套件，以透過 Microsoft Store 側載或散佈。</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>正在將 NuGet 套件安裝到專案中...</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>操作進行中...</value>
+    <value>作業進行中...</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>缺少套件參考</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>無法為以下套件添加參考，{0}：{1}。請在製作前加入套件參考資料。</value>
+    <value>無法為 {0} 加入下列套件的參考： {1}。請先新增套件參考再建置。</value>
   </data>
   <data name="1048" xml:space="preserve">
-    <value>[{0}]無法新增以下套件的參考：{1}。
+    <value>[{0}]無法將參考加入下列套件： {1}。
 
-這是環境錯誤。請在建置專案前先加入套件參考。
+這是環境錯誤。請先新增套件參考，再建置專案。
 
-想了解更多錯誤細節，請查看輸出視窗中的「一般」標籤。</value>
+如需有關錯誤的詳細資訊，請檢查 [輸出] 視窗中的 [一般] 索引標籤。</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>管理 NuGet 套件</value>

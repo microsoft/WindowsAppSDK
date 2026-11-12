@@ -1,4 +1,5 @@
 {
-  "name": "리소스 파일(.resw)",
-  "description": "WinUI(문자열 및 조건부 리소스)를 저장하는 파일입니다."
+  "name": "WinUI 리소스 파일(항목)",
+  "author": "Microsoft",
+  "description": "지역화된 문자열을 위한 RESW 리소스 파일을 추가합니다."
 }

@@ -229,7 +229,7 @@
     <value>Отсутствуют ссылки на пакеты</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Не удалось добавить ссылки на следующие пакеты для {0}: {1}. Перед сборкой добавьте ссылки на пакеты.</value>
+    <value>Не удалось добавить ссылки на следующие пакеты для {0}: {1}. Добавьте ссылки на пакеты перед сборкой.</value>
   </data>
   <data name="1048" xml:space="preserve">
     <value>[{0}] Не удалось добавить ссылки на следующие пакеты: {1}. Это ошибка среды. Добавьте ссылки на пакеты перед сборкой проекта.</value>
@@ -247,9 +247,45 @@
     <value>Вручную добавьте ссылки на пакеты перед сборкой.</value>
   </data>
   <data name="1053" xml:space="preserve">
-    <value>Общее</value>
+    <value>Общие сведения</value>
   </data>
   <data name="1054" xml:space="preserve">
     <value>Информация о выходных данных недоступна.</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>Приложение WinUI TabView</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[Экспериментально] Приложение WinUI TabView</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>Шаблон проекта для создания приложения WinUI с элементом управления TabView для навигации по вкладкам.</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>Приложение навигации WinUI</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[Экспериментально] Приложение WinUI Navigation</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>Шаблон проекта для создания приложения WinUI с элементом управления NavigationView для навигации по страницам.</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>Приложение WinUI MVVM</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[Экспериментально] Приложение WinUI MVVM</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>Шаблон проекта для создания приложения WinUI, структурированного по шаблону MVVM с использованием пакета CommunityToolkit.Mvvm.</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>Диалоговое окно содержимого</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[Экспериментально] Диалоговое окно содержимого</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>Диалоговое окно, отображающее содержимое поверх пользовательского интерфейса приложения для отображения сведений или сбора входных данных (WinUI).</value>
   </data>
 </root>

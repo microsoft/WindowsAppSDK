@@ -142,7 +142,7 @@
     <value>[Sperimentale] Dizionario risorse</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Raccolta con chiave vuota di risorse XAML (WinUI).</value>
+    <value>Una raccolta vuota di risorse XAML con chiavi (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>File di risorse (.resw)</value>
@@ -217,7 +217,7 @@
     <value>Progetto di creazione pacchetti per applicazioni Windows per WinUI</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Modello di progetto che crea pacchetti MSIX contenenti applicazioni WinUI per il sideload o la distribuzione tramite il Microsoft Store.</value>
+    <value>Modello di progetto che crea pacchetti MSIX contenenti applicazioni WinUI per il trasferimento locale o la distribuzione tramite Microsoft Store.</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>Installazione dei pacchetti NuGet nel progetto...</value>
@@ -229,14 +229,14 @@
     <value>Riferimenti ai pacchetti mancanti</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Non è possibile aggiungere riferimenti ai pacchetti seguenti per {0}: {1}. Aggiungere i riferimenti al pacchetto prima della compilazione.</value>
+    <value>Impossibile aggiungere riferimenti ai pacchetti seguenti per {0}: {1}. Aggiungere i riferimenti al pacchetto prima della compilazione.</value>
   </data>
   <data name="1048" xml:space="preserve">
-    <value>[{0}] Non è possibile aggiungere riferimenti ai pacchetti seguenti: {1}.
+    <value>[{0}] Impossibile aggiungere riferimenti ai pacchetti seguenti: {1}.
 
-Errore di ambiente. Aggiungere i riferimenti al pacchetto prima di compilare il progetto.
+Si tratta di un errore di ambiente. Aggiungere i riferimenti al pacchetto prima di compilare il progetto.
 
-Per ulteriori dettagli sull'errore, vedere la scheda Generale nella finestra di output.</value>
+Per ulteriori dettagli sull'errore, controllare la scheda Generale nella finestra di output.</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>Gestisci pacchetti NuGet</value>

@@ -1,4 +1,5 @@
 {
-  "name": "資源檔 (.resw)",
-  "description": "用於在 WinUI) (儲存字串和條件式資源的檔案。"
+  "name": "WinUI Resources File (Item)",
+  "author": "Microsoft",
+  "description": "新增當地語系化字串的 RESW 資源檔案。"
 }

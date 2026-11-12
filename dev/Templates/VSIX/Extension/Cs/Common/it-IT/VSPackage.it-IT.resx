@@ -142,7 +142,7 @@
     <value>[Sperimentale] Dizionario risorse</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Raccolta con chiave vuota di risorse XAML (WinUI).</value>
+    <value>Una raccolta vuota di risorse XAML con chiavi (WinUI).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>File di risorse (.resw)</value>
@@ -217,7 +217,7 @@
     <value>Progetto di creazione pacchetti per applicazioni Windows per WinUI</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Modello di progetto che crea pacchetti MSIX contenenti applicazioni WinUI per il sideload o la distribuzione tramite il Microsoft Store.</value>
+    <value>Modello di progetto che crea pacchetti MSIX contenenti applicazioni WinUI per il trasferimento locale o la distribuzione tramite Microsoft Store.</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>Installazione dei pacchetti NuGet nel progetto...</value>
@@ -229,10 +229,10 @@
     <value>Riferimenti ai pacchetti mancanti</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Non è possibile aggiungere riferimenti ai pacchetti seguenti per {0}: {1}. Aggiungere i riferimenti al pacchetto prima della compilazione.</value>
+    <value>Impossibile aggiungere riferimenti ai pacchetti seguenti per {0}: {1}. Aggiungere i riferimenti al pacchetto prima della compilazione.</value>
   </data>
   <data name="1048" xml:space="preserve">
-    <value>[{0}] Non è possibile aggiungere riferimenti ai pacchetti seguenti: {1}. Errore di ambiente. Aggiungere i riferimenti al pacchetto prima di compilare il progetto.</value>
+    <value>[{0}] Impossibile aggiungere riferimenti ai pacchetti seguenti: {1}. Si tratta di un errore di ambiente. Aggiungere i riferimenti al pacchetto prima di compilare il progetto.</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>Gestisci pacchetti NuGet</value>
@@ -251,5 +251,41 @@
   </data>
   <data name="1054" xml:space="preserve">
     <value>Nessuna informazione sull'output disponibile.</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>App TabView WinUI</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[Sperimentale] App TabView WinUI</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>Modello di progetto per la creazione di un'app WinUI con un controllo TabView per lo spostamento a schede.</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>App di navigazione WinUI</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[Sperimentale] App di navigazione WinUI</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>Modello di progetto per la creazione di un'app WinUI con un controllo NavigationView per lo spostamento tra le pagine.</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>App MVVM WinUI</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[Sperimentale] App MVVM WinUI</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>Modello di progetto per la creazione di un'app WinUI strutturata con il modello MVVM usando il pacchetto CommunityToolkit.Mvvm.</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>Finestra di dialogo di contenuto</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[Sperimentale] Finestra di dialogo di contenuto</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>Finestra di dialogo che visualizza il contenuto nell'interfaccia utente dell'app per visualizzare informazioni o raccogliere input (WinUI).</value>
   </data>
 </root>

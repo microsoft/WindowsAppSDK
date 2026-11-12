@@ -1,4 +1,6 @@
 {
-  "name": "使用者控制項",
-  "description": "空白使用者控制項 (WinUI)。"
+  "name": "WinUI User Control (Item)",
+  "author": "Microsoft",
+  "description": "Adds a WinUI 3 UserControl with markup and code-behind.",
+  "symbols/rootNamespace/description": "Namespace for the generated item."
 }

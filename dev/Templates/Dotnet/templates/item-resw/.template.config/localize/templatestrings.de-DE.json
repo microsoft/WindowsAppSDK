@@ -1,4 +1,5 @@
 {
-  "name": "Ressourcendatei (.resw)",
-  "description": "Eine Datei zum Speichern von Zeichenfolgen- und bedingten Ressourcen (WinUI)."
+  "name": "WinUI-Ressourcendatei (Element)",
+  "author": "Microsoft",
+  "description": "Fügt eine RESW-Ressourcendatei für lokalisierte Zeichenfolgen hinzu."
 }

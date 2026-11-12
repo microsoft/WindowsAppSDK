@@ -1,4 +1,6 @@
 {
-  "name": "Leeres Fenster",
-  "description": "Ein leeres Fenster (WinUI)."
+  "name": "Leeres Fenster für WinUI (Element)",
+  "author": "Microsoft",
+  "description": "Fügt ein WinUI 3-Fenster mit XAML-Markup und CodeBehind hinzu.",
+  "symbols/rootNamespace/description": "Namespace für das generierte Element."
 }

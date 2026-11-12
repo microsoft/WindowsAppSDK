@@ -1,4 +1,7 @@
 {
-  "name": "Ovládací prvek v šabloně",
-  "description": "Prázdný vlastní ovládací prvek s odpovídajícím výchozím stylem (WinUI)"
+  "name": "Šablonový ovládací prvek WinUI (položka)",
+  "author": "Microsoft",
+  "description": "Přidá šablonový ovládací prvek WinUI 3. Ve výchozím nastavení také vytvoří Themes\\Generic.xaml s minimálním výchozím stylem. Pokud už projekt obsahuje Themes\\Generic.xaml, předejte --IncludeDefaultStyle false a ručně do něj přidejte blok <Style TargetType=\"local:<Name>\">. Jinak se nový ovládací prvek za běhu zobrazí prázdný.",
+  "symbols/rootNamespace/description": "Obor názvů generované položky.",
+  "symbols/IncludeDefaultStyle/description": "Nastavte hodnotu false, pokud už projekt obsahuje Themes\\Generic.xaml. Potom musíte pro nový ovládací prvek ručně přidat <Style TargetType=\"local:<Name>\">."
 }

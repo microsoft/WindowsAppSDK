@@ -1,4 +1,6 @@
 {
-  "name": "리소스 사전",
-  "description": "비어 있는 키로 구성된 XAML 리소스 컬렉션입니다(WinUI)."
+  "name": "WinUI 리소스 사전(항목)",
+  "author": "Microsoft",
+  "description": "스타일 및 리소스를 공유하기 위한 WinUI 3 ResourceDictionary를 추가합니다.",
+  "symbols/rootNamespace/description": "생성된 항목의 네임스페이스입니다."
 }

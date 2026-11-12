@@ -1,0 +1,13 @@
+{
+  "name": "App Reactor Single-File (sperimentale)",
+  "author": "Microsoft",
+  "description": "Sperimentale. Crea un'app desktop vuota Microsoft.UI.Reactor (WinUI 3) come app .NET 10 basata su file singolo: un file .cs in cui le direttive #:package e #:property sostituiscono il file .csproj. Solo C#, senza XAML. Esegui con \"dotnet run <name>.cs\". Microsoft.UI.Reactor è in versione preliminare e la relativa API potrebbe cambiare.",
+  "symbols/dotnetVersion/description": "Moniker framework di destinazione di base (TFM). Le app basate su file e Microsoft.UI.Reactor richiedono .NET 10 o versione successiva.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Destinazione .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Destinazione .NET 11",
+  "symbols/reactorVersion/description": "Versione NuGet di Microsoft.UI.Reactor da usare come riferimento.",
+  "symbols/windowsSdkBuildToolsWinAppVersion/description": "Versione NuGet di Microsoft.Windows.SDK.BuildTools.WinApp. Richiede la versione 0.7.0 o successiva (supporto per app basate su file); usare * per l'ultima versione stabile.",
+  "symbols/skipRestore/description": "Se specificato, ignora il ripristino automatico dell'app durante la creazione.",
+  "postActions/restore/description": "Ripristina i pacchetti NuGet richiesti da questa app.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Esegui 'dotnet restore <name>.cs'"
+}

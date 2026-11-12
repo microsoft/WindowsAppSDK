@@ -1,4 +1,6 @@
 {
-  "name": "Słownik zasobów",
-  "description": "Pusta kolekcja kluczy zasobów XAML (WinUI)."
+  "name": "Słownik zasobów WinUI (element)",
+  "author": "Microsoft",
+  "description": "Dodaje WinUI 3 ResourceDictionary do udostępniania stylów i zasobów.",
+  "symbols/rootNamespace/description": "Przestrzeń nazw dla wygenerowanego elementu."
 }

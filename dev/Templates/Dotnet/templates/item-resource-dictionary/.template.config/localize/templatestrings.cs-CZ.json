@@ -1,4 +1,6 @@
 {
-  "name": "Slovník prostředků",
-  "description": "Prázdná kolekce prostředků XAML (WinUI) s klíči"
+  "name": "Slovník prostředků WinUI (položka)",
+  "author": "Microsoft",
+  "description": "Přidá WinUI 3 ResourceDictionary pro sdílení stylů a prostředků.",
+  "symbols/rootNamespace/description": "Obor názvů generované položky."
 }

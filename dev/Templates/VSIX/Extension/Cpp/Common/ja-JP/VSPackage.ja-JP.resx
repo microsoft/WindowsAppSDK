@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>空白のウィンドウ</value>
+    <value>空のウィンドウ</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[試験段階] 空白のウィンドウ</value>
+    <value>[試験段階] 空のウィンドウ</value>
   </data>
   <data name="1003" xml:space="preserve">
     <value>空白のウィンドウ (WinUI)。</value>
@@ -130,10 +130,10 @@
     <value>空白のページ</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[試験段階] 空白のページ</value>
+    <value>[試験段階] 空のページ</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>空白のページ (WinUI)。</value>
+    <value>空のページ (WinUI)。</value>
   </data>
   <data name="1009" xml:space="preserve">
     <value>リソース ディクショナリ</value>
@@ -142,7 +142,7 @@
     <value>[試験段階] リソース ディクショナリ</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>XAML リソースの、空のキー付きコレクション (WinUI)。</value>
+    <value>XAML リソースの空のキー化されたコレクション (WinUI)。</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>リソース ファイル (.resw)</value>
@@ -151,7 +151,7 @@
     <value>[試験段階] リソース ファイル (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>文字列と条件付きリソース (WinUI) を格納するためのファイルです。</value>
+    <value>文字列と条件付きリソースを格納するファイル (WinUI)。</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>テンプレート化されたコントロール</value>
@@ -160,7 +160,7 @@
     <value>[試験段階] テンプレート化されたコントロール</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>適切な既定のスタイルを持つ、空のカスタム コントロール (WinUI)。</value>
+    <value>適切な既定のスタイルを持つ空のカスタム コントロール (WinUI)。</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>ユーザー コントロール</value>
@@ -172,10 +172,10 @@
     <value>空のユーザー コントロール (WinUI)。</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>WinUI 空のアプリ (Windows アプリケーション パッケージ プロジェクトでパッケージ化)</value>
+    <value>WinUI の空のアプリ (Windows アプリケーション パッケージ プロジェクトでパッケージ化)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[試験段階] WinUI 空のアプリ (Windows アプリケーション パッケージ プロジェクトでパッケージ化)</value>
+    <value>[試験段階] WinUI の空のアプリ (Windows アプリケーション パッケージ プロジェクトでパッケージ化)</value>
   </data>
   <data name="1027" xml:space="preserve">
     <value>WinUI アプリを作成するためのプロジェクト テンプレート。Microsoft Store を介したサイドローディングまたは配布用の MSIX パッケージを作成するために、Windows アプリケーション パッケージ (WAP) プロジェクトが含まれています。</value>
@@ -208,22 +208,22 @@
     <value>MSTest を使用して WinUI 用 C++/WinRT 単体テスト アプリを作成するためのプロジェクト。</value>
   </data>
   <data name="1040" xml:space="preserve">
-    <value>WinUI 空のアプリ</value>
+    <value>WinUI の空のアプリ</value>
   </data>
   <data name="1041" xml:space="preserve">
-    <value>空の WinUI アプリを作成するためのプロジェクトです。</value>
+    <value>空の WinUI アプリを作成するためのプロジェクト。</value>
   </data>
   <data name="1042" xml:space="preserve">
-    <value>WinUI 用の Windows アプリケーション パッケージ プロジェクト</value>
+    <value>WinUI 用 Windows アプリケーション パッケージ プロジェクト</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Microsoft Storeを使用してサイドローディングまたはディストリビューションを行う WinUI アプリケーションを含む MSIX パッケージを作成するプロジェクト テンプレートです。</value>
+    <value>Microsoft Store を介したサイドローディングまたは配布用の WinUI アプリケーションを含む MSIX パッケージを作成するプロジェクト テンプレート。</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>NuGet パッケージをプロジェクトにインストールしています...</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>操作は実行中です...</value>
+    <value>操作を実行しています...</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>パッケージ参照がありません</value>
@@ -236,7 +236,7 @@
 
 これは環境エラーです。プロジェクトをビルドする前に、パッケージ参照を追加してください。
 
-エラーの詳細については、出力ウィンドウの [全般] タブをチェックしてください。</value>
+エラーの詳細については、[出力] ウィンドウの [全般] タブをチェックしてください。</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>NuGet パッケージの管理</value>
@@ -251,7 +251,7 @@
     <value>ビルドする前に、パッケージ参照を手動で追加してください。</value>
   </data>
   <data name="1053" xml:space="preserve">
-    <value>全般</value>
+    <value>一般</value>
   </data>
   <data name="1054" xml:space="preserve">
     <value>使用できる出力情報がありません。</value>

@@ -1,4 +1,6 @@
 {
-  "name": "空のウィンドウ",
-  "description": "空白のウィンドウ (WinUI)。"
+  "name": "WinUI 空白ウィンドウ (項目)",
+  "author": "Microsoft",
+  "description": "XAML マークアップと分離コードを含む WinUI 3 ウィンドウを追加します。",
+  "symbols/rootNamespace/description": "生成される項目の名前空間。"
 }

@@ -1,4 +1,6 @@
 {
-  "name": "Prázdné okno",
-  "description": "Prázdné okno (WinUI)."
+  "name": "Prázdné okno WinUI (položka)",
+  "author": "Microsoft",
+  "description": "Přidá okno WinUI 3 s revizí XAML a code-behind.",
+  "symbols/rootNamespace/description": "Obor názvů generované položky."
 }

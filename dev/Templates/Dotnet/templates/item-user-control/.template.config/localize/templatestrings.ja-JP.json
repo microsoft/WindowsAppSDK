@@ -1,4 +1,6 @@
 {
-  "name": "ユーザー コントロール",
-  "description": "空のユーザー コントロール (WinUI)。"
+  "name": "WinUI ユーザー コントロール (項目)",
+  "author": "Microsoft",
+  "description": "マークアップとコードビハインドを含む WinUI 3 の UserControl を追加します。",
+  "symbols/rootNamespace/description": "生成される項目の名前空間。"
 }

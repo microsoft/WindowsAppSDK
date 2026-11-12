@@ -151,7 +151,7 @@
     <value>[Experimental] Fichier de ressources (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Fichier de stockage de la chaîne et des ressources conditionnelles (WinUI).</value>
+    <value>Fichier destiné à stocker des ressources de chaînes et des ressources conditionnelles (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Contrôle avec modèle</value>
@@ -211,7 +211,7 @@
     <value>Application WinUI vierge</value>
   </data>
   <data name="1041" xml:space="preserve">
-    <value>Projet de création d’une application WinUI vide.</value>
+    <value>Un projet pour créer une application WinUI vide.</value>
   </data>
   <data name="1042" xml:space="preserve">
     <value>Projet de création de packages d'applications Windows pour WinUI</value>
@@ -229,7 +229,7 @@
     <value>Référence(s) de package manquante(s)</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Impossible d’ajouter des références aux packages suivants pour {0} : {1}. Ajoutez des références de package avant de générer.</value>
+    <value>Impossible d’ajouter des références aux packages suivants pour {0} : {1}. Ajoutez des références de package avant la génération.</value>
   </data>
   <data name="1048" xml:space="preserve">
     <value>[{0}] Impossible d’ajouter des références aux packages suivants : {1}. Il s’agit d’une erreur d’environnement. Ajoutez des références de package avant de générer le projet.</value>
@@ -251,5 +251,41 @@
   </data>
   <data name="1054" xml:space="preserve">
     <value>Aucune information de résultat disponible.</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>Application WinUI avec TabView</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[Expérimental] Application WinUI avec TabView</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>Modèle de projet pour créer une application WinUI avec un contrôle TabView pour la navigation par onglets.</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>Application de navigation WinUI</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[Expérimental] Application de navigation WinUI</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>Modèle de projet pour la création d’une application WinUI avec un contrôle NavigationView pour la navigation entre les pages.</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>Application WinUI avec MVVM</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[Expérimental] Application WinUI avec MVVM</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>Modèle de projet pour la création d’une application WinUI structurée avec le modèle MVVM à l’aide du package CommunityToolkit.Mvvm.</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>Boîte de dialogue de contenu</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[Expérimental] Boîte de dialogue de contenu</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>Boîte de dialogue qui affiche le contenu sur l’interface utilisateur de l’application pour afficher des informations ou collecter des entrées (WinUI).</value>
   </data>
 </root>

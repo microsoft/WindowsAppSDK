@@ -151,7 +151,7 @@
     <value>[Eksperymentalne] Plik zasobów (resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Plik do przechowywania ciągów i zasobów warunkowych (WinUI).</value>
+    <value>Plik do przechowywania zasobów ciągów i zasobów warunkowych (WinUI).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Kontrolka z szablonem</value>
@@ -178,7 +178,7 @@
     <value>[Eksperymentalne] Biblioteka klas WinUI</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Projekt służący do tworzenia zarządzanej biblioteki klas (.dll) (WinUI).</value>
+    <value>Projekt do tworzenia zarządzanej biblioteki klas (.dll) (WinUI).</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>Pusta aplikacja WinUI (spakowana z projektem pakietu aplikacji systemu Windows)</value>
@@ -217,7 +217,7 @@
     <value>Projekt pakietu aplikacji systemu Windows dla WinUI</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Szablon projektu, który tworzy pakiety MSIX zawierające aplikacje WinUI na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem Microsoft Store.</value>
+    <value>Szablon projektu tworzący pakiety MSIX zawierające aplikacje WinUI do instalacji bezpośredniej lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
   </data>
   <data name="1044" xml:space="preserve">
     <value>Trwa instalowanie pakietów NuGet w projekcie...</value>
@@ -229,10 +229,10 @@
     <value>Brak odwołań do pakietu</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Nie można dodać odwołań do następujących pakietów dla {0}: {1}. Przed skompilowaniem dodaj odwołania do pakietu.</value>
+    <value>Nie można dodać odwołań do następujących pakietów dla {0}: {1}. Przed kompilacją dodaj odwołania do pakietu.</value>
   </data>
   <data name="1048" xml:space="preserve">
-    <value>[{0}] Nie można dodać odwołań do następujących pakietów: {1}. To jest błąd środowiska. Przed skompilowaniem projektu dodaj odwołania do pakietu.</value>
+    <value>[{0}] Nie można dodać odwołań do następujących pakietów: {1}. To jest błąd środowiska. Dodaj odwołania do pakietu przed skompilowaniem projektu.</value>
   </data>
   <data name="1049" xml:space="preserve">
     <value>Zarządzanie pakietami NuGet</value>
@@ -244,12 +244,48 @@
     <value>Brak odwołań do pakietu dla {0}:</value>
   </data>
   <data name="1052" xml:space="preserve">
-    <value>Przed utworzeniem ręcznie dodaj odwołania do pakietów.</value>
+    <value>Przed kompilacją ręcznie dodaj odwołania do pakietów.</value>
   </data>
   <data name="1053" xml:space="preserve">
     <value>Ogólne</value>
   </data>
   <data name="1054" xml:space="preserve">
     <value>Brak dostępnych informacji wyjściowych.</value>
+  </data>
+  <data name="1055" xml:space="preserve">
+    <value>Aplikacja WinUI TabView</value>
+  </data>
+  <data name="1056" xml:space="preserve">
+    <value>[Eksperymentalne] Aplikacja WinUI TabView</value>
+  </data>
+  <data name="1057" xml:space="preserve">
+    <value>Szablon projektu do tworzenia aplikacji WinUI z kontrolką TabView do nawigacji z kartami.</value>
+  </data>
+  <data name="1059" xml:space="preserve">
+    <value>Aplikacja WinUI Navigation</value>
+  </data>
+  <data name="1060" xml:space="preserve">
+    <value>[Eksperymentalne] Aplikacja WinUI Navigation</value>
+  </data>
+  <data name="1061" xml:space="preserve">
+    <value>Szablon projektu do tworzenia aplikacji WinUI z kontrolką NavigationView do nawigacji między stronami.</value>
+  </data>
+  <data name="1062" xml:space="preserve">
+    <value>Aplikacja WinUI MVVM</value>
+  </data>
+  <data name="1063" xml:space="preserve">
+    <value>[Eksperymentalne] Aplikacja WinUI MVVM</value>
+  </data>
+  <data name="1064" xml:space="preserve">
+    <value>Szablon projektu służący do tworzenia aplikacji WinUI ze strukturą wzorca MVVM przy użyciu pakietu CommunityToolkit.Mvvm.</value>
+  </data>
+  <data name="1065" xml:space="preserve">
+    <value>Okno dialogowe zawartości</value>
+  </data>
+  <data name="1066" xml:space="preserve">
+    <value>[Eksperymentalne] Okno dialogowe zawartości</value>
+  </data>
+  <data name="1067" xml:space="preserve">
+    <value>Okno dialogowe, które wyświetla zawartość w interfejsie użytkownika aplikacji w celu wyświetlenia informacji lub zebrania danych wejściowych (WinUI).</value>
   </data>
 </root>
