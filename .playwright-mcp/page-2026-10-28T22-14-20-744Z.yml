@@ -1,0 +1,98 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e4]:
+    - banner [ref=f5e5]:
+      - generic [ref=f5e6]:
+        - navigation [ref=f5e7]:
+          - link "Skip to main content" [ref=f5e8] [cursor=pointer]:
+            - /url: "#skip-to-main-content"
+          - link "Azure DevOps organization home page" [ref=f5e9] [cursor=pointer]:
+            - /url: /microsoft
+          - navigation "Breadcrumb" [ref=f5e12]:
+            - generic "Breadcrumb Item" [ref=f5e13]:
+              - generic [ref=f5e14]:
+                - link "microsoft" [ref=f5e16] [cursor=pointer]:
+                  - /url: /microsoft/
+                - generic [ref=f5e19]: /
+              - generic [ref=f5e20]:
+                - link "OS" [ref=f5e22] [cursor=pointer]:
+                  - /url: /microsoft/OS
+                - generic [ref=f5e25]: /
+              - generic [ref=f5e26]:
+                - link "Artifacts" [ref=f5e28] [cursor=pointer]:
+                  - /url: /microsoft/OS/_artifacts
+                - generic [ref=f5e31]: /
+              - link "Feeds" [ref=f5e34] [cursor=pointer]:
+                - /url: /microsoft/OS/_artifacts
+          - search "Project-wide search" [ref=f5e38]:
+            - button "Get search results" [ref=f5e39] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f5e41]: 
+            - textbox "Search filter lists or suggestions appear below." [ref=f5e42]:
+              - /placeholder: Search
+        - menubar [ref=f5e43]:
+          - menuitem [ref=f5e44]:
+            - button "DevOps Assistant" [ref=f5e45] [cursor=pointer]
+          - menuitem [ref=f5e46]:
+            - button "My Work" [ref=f5e47] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f5e49]: 
+          - menuitem [ref=f5e50]:
+            - button "Marketplace" [ref=f5e51] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f5e53]: 
+          - menuitem [ref=f5e54]:
+            - button "Help" [ref=f5e55] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f5e57]: 
+          - menuitem [ref=f5e58]:
+            - button "User settings" [ref=f5e59] [cursor=pointer]:
+              - generic [aria-hidden] [ref=f5e61]: 
+          - menuitem [ref=f5e62]:
+            - button "Account manager for Lauren Ciha" [ref=f5e66] [cursor=pointer]
+    - generic [ref=f5e71]:
+      - navigation "Project OS" [ref=f5e73]:
+        - generic [ref=f5e74]:
+          - img "OS" [ref=f5e77]
+          - button "Create" [ref=f5e78] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f5e80]: 
+        - menubar [ref=f5e82]:
+          - menuitem "Overview" [ref=f5e84] [cursor=pointer]
+          - menuitem "Boards" [ref=f5e87] [cursor=pointer]
+          - menuitem "Repos" [ref=f5e90] [cursor=pointer]
+          - menuitem "Pipelines" [ref=f5e93] [cursor=pointer]
+          - menuitem "Test Plans" [ref=f5e96] [cursor=pointer]
+          - menuitem "Artifacts" [ref=f5e99] [cursor=pointer]
+          - menuitem "Compliance" [ref=f5e102] [cursor=pointer]
+          - menuitem "Agency Hub" [ref=f5e105] [cursor=pointer]
+          - menuitem "Start Right" [ref=f5e108] [cursor=pointer]
+          - menuitem "Areas" [ref=f5e111] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f5e114]: 
+          - menuitem "DevOps Assistant" [ref=f5e116] [cursor=pointer]
+        - generic [ref=f5e119]:
+          - link "Project settings" [ref=f5e120] [cursor=pointer]:
+            - /url: /microsoft/OS/_settings/
+            - img "Project settings" [ref=f5e121]:
+              - generic [aria-hidden] [ref=f5e122]: 
+          - button "Show more information" [ref=f5e123]:
+            - generic [aria-hidden] [ref=f5e125] [cursor=pointer]: 
+      - generic [ref=f5e126]:
+        - generic [ref=f5e130]:
+          - generic [ref=f5e131]:
+            - generic [aria-hidden] [ref=f5e134]: 
+            - alert [ref=f5e135]:
+              - generic [ref=f5e137]:
+                - text: All CloudWiki instances (OSGWIKI, DevicesWiki, etc) are under Emergency Maintenance until further notice - See
+                - 'link "ICM: 890408820" [ref=f5e138] [cursor=pointer]':
+                  - /url: https://portal.microsofticm.com/imp/v5/incidents/details/890408820/summary
+          - button "Dismiss warning message" [ref=f5e140] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f5e142]: 
+        - main [ref=f5e143]:
+          - generic [ref=f5e146]:
+            - generic [ref=f5e148]:
+              - heading [level=1] [ref=f5e149]
+              - generic [ref=f5e150]: "Feed:"
+              - generic [ref=f5e153] [cursor=pointer]:
+                - button "Select a feed" [ref=f5e154]
+                - generic [aria-hidden] [ref=f5e156]: 
+            - toolbar [ref=f5e157]:
+              - button "Feed Settings" [disabled] [ref=f5e159]:
+                - generic [aria-hidden] [ref=f5e161]: 
+  - generic [ref=f5e164]:
+    - paragraph [ref=f5e166]: Exited full-screen mode
+    - paragraph [ref=f5e168]: Loading feed WinAppSDK

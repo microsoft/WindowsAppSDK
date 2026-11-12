@@ -1,0 +1,181 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e5]:
+        - link "Skip To Content":
+          - /url: "#"
+      - generic [ref=e7]:
+        - link [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img "NuGet Home" [ref=e10]
+        - generic [ref=e11]:
+          - list [ref=e12]:
+            - listitem [ref=e13]:
+              - link "Packages" [ref=e14] [cursor=pointer]:
+                - /url: https://www.nuget.org/packages?prerel=true
+            - listitem [ref=e15]:
+              - link "Upload" [ref=e16] [cursor=pointer]:
+                - /url: /packages/manage/upload
+            - listitem [ref=e17]:
+              - link "Statistics" [ref=e18] [cursor=pointer]:
+                - /url: /stats
+            - listitem [ref=e19]:
+              - link "Documentation" [ref=e20] [cursor=pointer]:
+                - /url: https://docs.microsoft.com/nuget/
+            - listitem [ref=e21]:
+              - link "Downloads" [ref=e22] [cursor=pointer]:
+                - /url: /downloads
+            - listitem [ref=e23]:
+              - link "Blog" [ref=e24] [cursor=pointer]:
+                - /url: https://blog.nuget.org/
+          - list [ref=e25]:
+            - listitem [ref=e26]:
+              - link "Sign in" [ref=e27] [cursor=pointer]:
+                - /url: /users/account/LogOn?returnUrl=%2Fpackages%3Fq%3Dpackageid%253AMicrosoft.Internal.MUXTestInfra%26prerel%3Dtrue
+  - generic [ref=e29]:
+    - generic "Package search bar" [ref=e31]:
+      - generic [ref=e34]:
+        - textbox "Enter packages to search" [ref=e35]:
+          - /placeholder: Search for packages...
+          - text: packageid:Microsoft.Internal.MUXTestInfra
+        - button "Search" [ref=e37] [cursor=pointer]:
+          - generic [aria-hidden] [ref=e38]: 
+    - main [ref=e39]:
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - text: 
+          - generic [ref=e42]:
+            - group [ref=e44]:
+              - generic [ref=e45]:
+                - text: Frameworks
+                - button "Filters packages based on the target frameworks they are compatible with." [ref=e46] [cursor=pointer]:
+                  - generic [ref=e47]: 
+                  - tooltip "Filters packages based on the target frameworks they are compatible with."
+                - link "Learn more about advanced filtering and sorting" [ref=e51] [cursor=pointer]:
+                  - /url: https://learn.microsoft.com/nuget/consume-packages/finding-and-choosing-packages#advanced-filtering-and-sorting
+                  - text: Learn more
+              - generic [ref=e52]:
+                - paragraph [ref=e53]: Include compatible frameworks
+                - generic "Include computed compatible frameworks when filtering for packages." [ref=e54] [cursor=pointer]:
+                  - checkbox "Include computed compatible frameworks when filtering for packages." [checked] [ref=e55]: ✓
+              - generic [ref=e56]:
+                - paragraph [ref=e57]:
+                  - text: Framework Filter Mode
+                  - button "Decides whether to show packages matching ALL of the selected Target Frameworks (TFMs), or ANY of them." [ref=e58] [cursor=pointer]:
+                    - generic [ref=e59]: 
+                    - tooltip "Decides whether to show packages matching ALL of the selected Target Frameworks (TFMs), or ANY of them."
+                - generic [ref=e63]:
+                  - radio "Show packages matching ALL of the selected Frameworks and TFMs." [checked]
+                  - generic "Show packages matching ALL of the selected Frameworks and TFMs." [ref=e64] [cursor=pointer]: ALL
+                  - radio "Show packages matching ANY of the selected Frameworks or TFMs."
+                  - generic "Show packages matching ANY of the selected Frameworks or TFMs." [ref=e65] [cursor=pointer]: ANY
+              - generic [ref=e67]:
+                - button "shows and hides TFM filters for .NET" [ref=e68] [cursor=pointer]:
+                  - generic [ref=e69]: 
+                - generic [ref=e70] [cursor=pointer]:
+                  - checkbox ".NET Selecting .NET will show you packages compatible with any of the individual frameworks within the .NET generation." [ref=e71]
+                  - generic [ref=e72]:
+                    - text: .NET
+                    - button "Selecting .NET will show you packages compatible with any of the individual frameworks within the .NET generation." [ref=e73]:
+                      - generic [ref=e74]: 
+                      - tooltip "Selecting .NET will show you packages compatible with any of the individual frameworks within the .NET generation."
+              - generic [ref=e79]:
+                - button "shows and hides TFM filters for .NET Core" [ref=e80] [cursor=pointer]:
+                  - generic [ref=e81]: 
+                - generic [ref=e82] [cursor=pointer]:
+                  - checkbox ".NET Core" [ref=e83]
+                  - generic [ref=e84]: .NET Core
+              - generic [ref=e86]:
+                - button "shows and hides TFM filters for .NET Standard" [ref=e87] [cursor=pointer]:
+                  - generic [ref=e88]: 
+                - generic [ref=e89] [cursor=pointer]:
+                  - checkbox ".NET Standard" [ref=e90]
+                  - generic [ref=e91]: .NET Standard
+              - generic [ref=e93]:
+                - button "shows and hides TFM filters for .NET Framework" [ref=e94] [cursor=pointer]:
+                  - generic [ref=e95]: 
+                - generic [ref=e96] [cursor=pointer]:
+                  - checkbox ".NET Framework" [ref=e97]
+                  - generic [ref=e98]: .NET Framework
+            - group "Package type" [ref=e100]:
+              - 'generic "Package Type: All types" [ref=e103] [cursor=pointer]':
+                - 'radio "Package Type: All types" [checked] [ref=e104]'
+                - generic [ref=e105]: All types
+              - 'generic "Package Type: Dependency" [ref=e107] [cursor=pointer]':
+                - 'radio "Package Type: Dependency" [ref=e108]'
+                - generic [ref=e109]: Dependency
+              - 'generic "Package Type: .NET tool" [ref=e111] [cursor=pointer]':
+                - 'radio "Package Type: .NET tool" [ref=e112]'
+                - generic [ref=e113]: .NET tool
+              - 'generic "Package Type: Template" [ref=e115] [cursor=pointer]':
+                - 'radio "Package Type: Template" [ref=e116]'
+                - generic [ref=e117]: Template
+              - 'generic "Package Type: MSBuild SDK" [ref=e119] [cursor=pointer]':
+                - 'radio "Package Type: MSBuild SDK" [ref=e120]'
+                - generic [ref=e121]: MSBuild SDK
+              - generic [ref=e122]:
+                - 'generic "Package Type: MCP Server" [ref=e123] [cursor=pointer]':
+                  - 'radio "Package Type: MCP Server" [ref=e124]'
+                  - generic [ref=e125]: MCP Server
+                - link "Learn more about NuGet MCP server packages" [ref=e126] [cursor=pointer]:
+                  - /url: https://aka.ms/nuget/mcp/concepts
+                  - text: Learn more
+            - group "Options" [ref=e128]:
+              - 'generic "Options: Include prerelease" [ref=e131] [cursor=pointer]':
+                - 'checkbox "Options: Include prerelease" [checked] [ref=e132]': ✓
+                - generic [ref=e133]: Include prerelease
+            - generic [ref=e134]:
+              - button "Apply" [ref=e136] [cursor=pointer]
+              - button "Reset" [ref=e138] [cursor=pointer]
+        - generic [ref=e139]:
+          - generic [ref=e140]:
+            - heading "0 packages returned for packageid:Microsoft.Internal.MUXTestInfra" [level=1] [ref=e142]
+            - generic [ref=e143]:
+              - generic [ref=e144]: Sort by
+              - combobox "sort package search results by" [ref=e145]:
+                - 'option "Sort By: Relevance" [selected]': Relevance
+                - 'option "Sort By: Downloads"': Downloads
+                - 'option "Sort By: Recently updated"': Recently updated
+          - generic [ref=e149]:
+            - text: NuGet package search works the same on nuget.org, from the NuGet CLI, and within the NuGet Package Manager extension in Visual Studio. Check out our
+            - strong [ref=e150]:
+              - link "Search Syntax" [ref=e151] [cursor=pointer]:
+                - /url: https://docs.microsoft.com/nuget/consume-packages/finding-and-choosing-packages#search-syntax
+            - text: .
+          - list
+  - contentinfo [ref=e154]:
+    - generic [ref=e155]:
+      - generic [ref=e156]:
+        - generic [ref=e157]:
+          - link "Contact" [ref=e159] [cursor=pointer]:
+            - /url: /policies/Contact
+          - paragraph [ref=e160]: Got questions about NuGet or the NuGet Gallery?
+        - generic [ref=e161]:
+          - link "Status" [ref=e163] [cursor=pointer]:
+            - /url: https://status.nuget.org/
+          - paragraph [ref=e164]: Find out the service status of NuGet.org and its related services.
+        - generic [ref=e165]:
+          - link "Frequently Asked Questions" [ref=e167] [cursor=pointer]:
+            - /url: https://aka.ms/nuget-faq
+            - text: FAQ
+          - paragraph [ref=e168]: Read the Frequently Asked Questions about NuGet and see if your question made the list.
+      - generic [ref=e169]:
+        - img "NuGet Home" [ref=e171]
+        - paragraph [ref=e175]:
+          - text: © Microsoft 2026 -
+          - link "About" [ref=e176] [cursor=pointer]:
+            - /url: /policies/About
+          - text: "-"
+          - link "Terms of Use" [ref=e177] [cursor=pointer]:
+            - /url: /policies/Terms
+          - text: "-"
+          - link [ref=e178] [cursor=pointer]:
+            - /url: https://aka.ms/yourcaliforniaprivacychoices
+            - img "Your Privacy Choices Opt-Out Icon" [ref=e179]
+            - text: Your Privacy Choices
+          - text: "-"
+          - link "Privacy Statement" [ref=e180] [cursor=pointer]:
+            - /url: https://go.microsoft.com/fwlink/?LinkId=521839
+          - text: "-"
+          - link "Trademarks" [ref=e181] [cursor=pointer]:
+            - /url: https://www.microsoft.com/trademarks

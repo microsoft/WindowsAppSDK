@@ -62,7 +62,7 @@
     <MicrosoftWindowsSDKBuildToolsVersion>10.0.26100.4654</MicrosoftWindowsSDKBuildToolsVersion>
     <MicrosoftWindowsSDKBuildToolsMSIXVersion>1.7.20250829.1</MicrosoftWindowsSDKBuildToolsMSIXVersion>
     <MicrosoftWindowsCppWinRTVersion>2.0.230706.1</MicrosoftWindowsCppWinRTVersion>
-    <MicrosoftWindowsCsWinRTPackageVersion>2.1.1</MicrosoftWindowsCsWinRTPackageVersion>
+    <MicrosoftWindowsCsWinRTPackageVersion>2.1.10.251209.1</MicrosoftWindowsCsWinRTPackageVersion>
     <MicrosoftWindowsImplementationLibraryVersion>1.0.240803.1</MicrosoftWindowsImplementationLibraryVersion>
     <MicrosoftBuildTasksGitVersion>1.1.1</MicrosoftBuildTasksGitVersion>
     <MicrosoftSourceLinkCommonVersion>1.1.1</MicrosoftSourceLinkCommonVersion>
