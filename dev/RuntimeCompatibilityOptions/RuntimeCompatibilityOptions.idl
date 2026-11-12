@@ -138,6 +138,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         Xaml_OptimizeApplyStylesApplyTemplate = 64638252,
         LiftedInput_CloseSystemInputSite = 64661352,
         WinUI_FlyoutCheckForNullPresenter = 64730431,
+
+        // 2.7.1
+        SystemBackdrops_SwitcherCompatibility = 64757487,
+        WinUI_WindowPlacementPersistence = 65103751,
+        MenuFlyout_NoMenuOpenedOnCanceledOpening = 65157874,
     };
 
     /// Represents a version of the Windows App Runtime.
