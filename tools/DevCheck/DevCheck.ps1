@@ -9,7 +9,7 @@
     Review the current environment and fix or warn if anything is amiss. This includes...
     * Developer mode is enabled
     * LongPath support is enabled
-    * Visual Studio 2026 is installed and properly configured
+    * Visual Studio 2022 or 2026 is installed and properly configured
     * Windows SDK(s) are installed
     * Nuget.exe is installed
     * Test certificate to sign test MSIX packages is installed
@@ -638,43 +638,48 @@ function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr, [in
 }
 
 $global:vspath = ''
-# Visual Studio 2026 (18.x) is required to build with the .NET 11 SDK.
-$global:vsVersionRange = '[18.0,19.0)'
+$global:vsversion = $null
 function Get-VisualStudioInstallPath
 {
-    Write-Verbose "Detecting VisualStudio 2026..."
+    Write-Verbose "Detecting Visual Studio 2022 or 2026..."
+    $global:vspath = ''
+    $global:vsversion = $null
     $vswhere_exe = Get-VSWhere
     if ([string]::IsNullOrEmpty($vswhere_exe))
     {
         return $null
     }
-    $args = " -latest -products * -version $($global:vsVersionRange) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
+    $args = " -latest -products * -version [17.0,19.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format json"
     Write-Verbose "Executing $vswhere_exe $args"
-    $path = Run-Process $vswhere_exe $args
-    $path = $path -replace [environment]::NewLine, ''
-    Write-Verbose "Visual Studio detected at $path"
-    $global:vspath = $path
-    return $path
+    $instances = Run-Process $vswhere_exe $args | ConvertFrom-Json
+    if (-not $instances)
+    {
+        return $null
+    }
+    $global:vspath = $instances[0].installationPath
+    $global:vsversion = [version]$instances[0].installationVersion
+    Write-Verbose "Visual Studio $global:vsversion detected at $global:vspath"
+    return $global:vspath
 }
 
 function Test-VisualStudioComponent
 {
     param(
-        [String]$component,
-        [String]$versionRange
+        [String]$component
     )
 
     $vswhere_exe = Get-VSWhere
-    if ([string]::IsNullOrEmpty($global:vswhere))
+    if ([string]::IsNullOrEmpty($vswhere_exe))
     {
-        return 0
+        return 1
     }
-    $args = " -latest -products * -version $versionRange -requires $component -property productDisplayVersion"
+    $versionRange = "[$global:vsversion,$global:vsversion]"
+    $args = " -products * -version $versionRange -requires $component -property installationPath"
     Write-Verbose "Executing $vswhere_exe $args"
     try
     {
         $value = Run-Process $vswhere_exe $args -throwIfExitCodeIsFailure $true
-        if ([string]::IsNullOrEmpty($value))
+        if (($value -split '\r?\n') -notcontains $global:vspath)
         {
             throw "Component"
         }
@@ -684,7 +689,7 @@ function Test-VisualStudioComponent
     catch
     {
         $e = $_
-        Write-Host "...ERROR $($e): $($component) not found or valid" -ForegroundColor Red -BackgroundColor Black
+        Write-Host "...ERROR $($e): $($component) not found or valid in $global:vspath" -ForegroundColor Red -BackgroundColor Black
         return 1
     }
 }
@@ -694,9 +699,8 @@ function Test-VisualStudioComponents
     Write-Verbose "Detecting VisualStudio components..."
     $root = Get-ProjectRoot
     $path = Join-Path $root 'docs\Coding-Guidelines'
-    $filename = Join-Path $path 'VisualStudio2022.vsconfig'
-
-    $versionRange = $global:vsVersionRange
+    $config = if ($global:vsversion.Major -eq 18) { 'VisualStudio2026.vsconfig' } else { 'VisualStudio2022.vsconfig' }
+    $filename = Join-Path $path $config
 
     $json = Get-Content $filename -EA:Stop -Raw | ConvertFrom-Json
     Write-Host "...Scanning $($json.components.Length) components in $($filename)" -NoNewline
@@ -705,10 +709,11 @@ function Test-VisualStudioComponents
     ForEach ($component in $components)
     {
         Write-Host "." -NoNewline
-        $errors += (Test-VisualStudioComponent $component $versionRange)
+        $errors += (Test-VisualStudioComponent $component)
     }
     if ($errors -gt 0)
     {
+        $global:issues += $errors
         Write-Host ""
         return $false
     }
@@ -724,8 +729,9 @@ function Test-VisualStudioInstall
     {
         $global:issues++
         $ok = $false
+        Write-Host "ERROR: Visual Studio 2022 or 2026 with C++ build tools not found" -ForegroundColor Red -BackgroundColor Black
     }
-    Write-Host "VisualStudio 2026...$path"
+    Write-Host "Visual Studio...$path"
     return $ok
 }
 

@@ -4,7 +4,7 @@
 
 Development requires the following installation:
 
-1. Install Visual Studio 2026
+1. Install Visual Studio 2022 or 2026
 
    Select the following workloads:
      * .NET desktop development
@@ -13,10 +13,14 @@ Development requires the following installation:
 
    Additional components are quired. To add them via the Visual Studio Installer...
      * select `More` / `Import configuration`
-     * select the file `docs\Coding-Guidelines\VisualStudio2022.vsconfig` in the repository
+     * select the matching file `docs\Coding-Guidelines\VisualStudio2022.vsconfig` or `VisualStudio2026.vsconfig` in the repository
      * select `Review details`
      * select `Modify`
    and wait for the install to complete.
+
+   Visual Studio 2026 also needs the v143 (VS 2022 17.14) C++ toolset and Spectre-mitigated
+   libraries included in its configuration file; the SDK projects still target v143.
+   DevCheck validates components in the newest supported installation with C++ build tools.
 
 2. Run `DevCheck -CheckAll -FixAll` from an admin prompt to verify your configuration and perform
    additional installation and configuration updates (if necessary). See `One-Time Setup` for more details.
