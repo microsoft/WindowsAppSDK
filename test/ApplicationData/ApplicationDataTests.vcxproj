@@ -116,6 +116,7 @@
     <ClCompile Include="ApplicationDataTests.cpp" />
     <ClCompile Include="ApplicationDataTests_Elevated.cpp" />
     <ClCompile Include="UnpackagedApplicationDataTests.cpp" />
+    <ClCompile Include="UnpackagedApplicationDataContextTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -139,6 +140,11 @@
     <Copy SkipUnchangedFiles="true" SourceFiles="Test.testdef" DestinationFolder="$(OutDir)" />
   </Target>
   <ItemGroup>
+    <ProjectReference Include="ContextTestApp\ApplicationDataContextTestApp.vcxproj">
+      <Project>{9FC9537C-93C7-4824-BD51-F6837B46E785}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="$(RepoRoot)\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>

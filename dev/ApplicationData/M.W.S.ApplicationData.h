@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <mutex>
+
 #include "Microsoft.Windows.Storage.ApplicationData.g.h"
 
 namespace winrt::Microsoft::Windows::Storage::implementation
@@ -17,6 +19,8 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForUser(winrt::Windows::System::User user);
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForPackageFamily(hstring const& packageFamilyName);
         static winrt::Microsoft::Windows::Storage::ApplicationData GetForUnpackaged(hstring const& publisher, hstring const& product);
+        static winrt::Microsoft::Windows::Storage::ApplicationData GetForUnpackaged();
+        static void SetContextForUnpackaged(winrt::hstring const& publisher, winrt::hstring const& product);
         bool IsMachinePathSupported();
         hstring LocalCachePath();
         hstring LocalPath();
@@ -44,6 +48,10 @@ namespace winrt::Microsoft::Windows::Storage::implementation
         static void _VerifyProduct(winrt::hstring const& string);
 
     private:
+        static std::mutex s_unpackagedContextLock;
+        static winrt::hstring s_unpackagedPublisher;
+        static winrt::hstring s_unpackagedProduct;
+
         winrt::Windows::Storage::ApplicationData m_applicationData;
         winrt::hstring m_packageFamilyName;
     };
