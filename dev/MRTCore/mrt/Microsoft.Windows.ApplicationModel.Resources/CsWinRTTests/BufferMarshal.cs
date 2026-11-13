@@ -11,7 +11,7 @@ namespace MrtCoreCsWinRTTests
     {
         public static unsafe bool TryGetDataUnsafe(IMemoryBufferReference reference, out IntPtr data, out uint capacity)
         {
-#if NET10_0_OR_GREATER
+#if CSWINRT3_0
             bool result = WindowsRuntime.InteropServices.WindowsRuntimeBufferMarshal.TryGetDataUnsafe(reference, out byte* dataPointer, out capacity);
             data = (IntPtr)dataPointer;
             return result;

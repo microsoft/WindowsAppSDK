@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net11.0</TargetFrameworks>
     <RuntimeIdentifier>win-$(Platform)</RuntimeIdentifier>
     <RuntimeIdentifier Condition="'$(Platform)'=='AnyCpu'" >win-x86</RuntimeIdentifier>
     <!-- There is no 'win-arm64ec' RuntimeIdentifier: ARM64EC is a compilation/ABI target for

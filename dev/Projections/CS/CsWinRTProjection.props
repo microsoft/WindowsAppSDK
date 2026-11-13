@@ -1,7 +1,7 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <!--
   Shared properties for all CsWinRT C# projection projects.
-  Multi-targets .NET 6 (CsWinRT 2.x) and .NET 10 (CsWinRT 3.0).
+  Multi-targets .NET 6 (CsWinRT 2.x) and .NET 11 (CsWinRT 3.0).
 -->
 <Project>
 
@@ -9,7 +9,7 @@
   <Import Project="$(RepoRoot)\build\CsMultiTargetPaths.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0-windows10.0.17763.0;net10.0-windows10.0.26100.1</TargetFrameworks>
+    <TargetFrameworks>net6.0-windows10.0.17763.0;net11.0-windows10.0.17763.1</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <Platforms>x64;x86;arm64</Platforms>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,7 +32,7 @@
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.26100.1'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0-windows10.0.17763.1'">
     <CsWinRTGenerateReferenceProjection>true</CsWinRTGenerateReferenceProjection>
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>

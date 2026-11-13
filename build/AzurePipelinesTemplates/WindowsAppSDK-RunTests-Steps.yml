@@ -222,10 +222,10 @@ steps:
         TargetFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppSDK.Test.SampleTests\net6.0-windows10.0.18362.0\net6'
         Contents: '**'
     - task: CopyFiles@2
-      displayName: 'Copy net10 output to SampleTests folder'
+      displayName: 'Copy net11 output to SampleTests folder'
       inputs:
-        SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppSDK.Test.NetCore\net10.0\win-$(buildPlatform)'
-        TargetFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppSDK.Test.SampleTests\net10.0-windows10.0.26100.1\net10'
+        SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppSDK.Test.NetCore\net11.0\win-$(buildPlatform)'
+        TargetFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppSDK.Test.SampleTests\net11.0-windows10.0.18362.1\net11'
         Contents: '**'
   
   - task: PowerShell@2

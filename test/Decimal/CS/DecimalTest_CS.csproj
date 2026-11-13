@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0-windows10.0.19041.0;net10.0-windows10.0.26100.1</TargetFrameworks>
+    <TargetFrameworks>net6.0-windows10.0.19041.0;net11.0-windows10.0.19041.1</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <Platforms>x86;x64;arm64</Platforms>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -46,10 +46,10 @@
   </PropertyGroup>
 
   <!-- Reference the same assemblies the Foundation NuGet package ships for each TFM. -->
-  <ItemGroup Condition="!$(TargetFramework.StartsWith('net10.0'))">
+  <ItemGroup Condition="!$(TargetFramework.StartsWith('net11.0'))">
     <ProjectReference Include="$(RepoRoot)\dev\Projections\CS\Microsoft.Windows.Foundation.Projection\Microsoft.Windows.Foundation.Projection.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net10.0'))">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net11.0'))">
     <ProjectReference Include="$(RepoRoot)\dev\Projections\CS\Microsoft.Windows.Foundation\Microsoft.Windows.Foundation.csproj" />
   </ItemGroup>
 

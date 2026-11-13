@@ -460,8 +460,8 @@ Try {
             {
                 Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\net6.0-windows10.0.17763.0\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$BasePath\lib\net6.0-windows10.0.17763.0" -force
                 Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\net6.0-windows10.0.17763.0\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb" -destination "$BasePath\lib\net6.0-windows10.0.17763.0" -force
-                Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\net10.0-windows10.0.26100.1\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$BasePath\lib\net10.0-windows10.0.26100.1" -force
-                Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\net10.0-windows10.0.26100.1\ref\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$BasePath\ref\net10.0-windows10.0.26100.1" -force
+                Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\net11.0-windows10.0.17763.1\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$BasePath\lib\net11.0-windows10.0.17763.1" -force
+                Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources.Projection\net11.0-windows10.0.17763.1\ref\Microsoft.Windows.ApplicationModel.Resources.Projection.dll" -destination "$BasePath\ref\net11.0-windows10.0.17763.1" -force
                 Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.winmd" -destination "$BasePath\lib\uap10.0" -force
                 Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\$platformToRun\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.Globalization.winmd" -destination "$BasePath\lib\uap10.0" -force
             }
@@ -476,9 +476,9 @@ Try {
 
         # If AnyCPU generates another dll it needs to be added here.
         Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\net6.0-windows10.0.19041.0\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net6.0-windows10.0.17763.0"
-        Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\net10.0-windows10.0.26100.1\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net10.0-windows10.0.26100.1"
-        # net10 has a ref folder, so NuGet only compiles against ref assets; Bootstrap.Net must be there too.
-        Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\net10.0-windows10.0.26100.1\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\ref\net10.0-windows10.0.26100.1"
+        Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\net11.0-windows10.0.19041.1\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\lib\net11.0-windows10.0.17763.1"
+        # net11 has a ref folder, so NuGet only compiles against ref assets; Bootstrap.Net must be there too.
+        Copy-Item -path "BuildOutput\$configurationForMrtAndAnyCPU\anycpu\Microsoft.WindowsAppRuntime.Bootstrap.Net\net11.0-windows10.0.19041.1\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"  -destination "$BasePath\ref\net11.0-windows10.0.17763.1"
 
         #------------------
         #    Move other files and prepare manifest and appxmanifest.xml
@@ -607,7 +607,7 @@ Try {
         $LibPaths = @(
             (Join-Path $ComponentBasePath "metadata"),
             (Join-Path $ComponentBasePath "lib\net6.0-windows10.0.17763.0"),
-            (Join-Path $ComponentBasePath "ref\net10.0-windows10.0.26100.1")
+            (Join-Path $ComponentBasePath "ref\net11.0-windows10.0.17763.1")
         )
 
         foreach ($File in Get-ChildItem -Path $LibPaths)
