@@ -107,9 +107,9 @@ if ($SdkVersion -eq "10.1.17763")
 }
 elseif ($SdkVersion -eq "10.0.26100")
 {
-    # Install Windows SDK for Windows 11 (10.0.26100.4654).
+    # Install Windows SDK for Windows 11 (10.0.26100.8876).
     # Link came from https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/
-    $winSdkUrl = "https://go.microsoft.com/fwlink/?linkid=2327008"
+    $winSdkUrl = "https://go.microsoft.com/fwlink/?linkid=2372509"
 
     # `winsdksetup.exe /features + /quiet` installs all features without showing the GUI
     $sdkExitCode = Install-EXE -Url $winSdkUrl -Name "winsdksetup.exe" -ArgumentList ("/features", "+", "/quiet")
