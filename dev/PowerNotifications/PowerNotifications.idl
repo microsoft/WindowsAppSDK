@@ -107,7 +107,6 @@ namespace Microsoft.Windows.System.Power
 
         static event Windows.Foundation.EventHandler<Object> SystemIdleStatusChanged;
 
-        static Windows.Foundation.IAsyncOperation<EffectivePowerMode> EffectivePowerMode{ get; };
         static event Windows.Foundation.EventHandler<Object> EffectivePowerModeChanged;
 
         [contract(PowerNotificationsContract, 2)]
