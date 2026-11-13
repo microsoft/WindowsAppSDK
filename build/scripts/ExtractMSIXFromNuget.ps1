@@ -1,4 +1,7 @@
-﻿# Extracts MSIX packages from any .nupkg found in the Source directory to the Dest directory.
+﻿# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# Extracts MSIX packages from any .nupkg found in the Source directory to the Dest directory.
 # Looks specifically for certain named MSIX packages and renames them for consistently finding them as installer inputs.
 
 param
@@ -10,23 +13,7 @@ param
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
-function Remove-ItemIfExists ($Item)
-{
-    if (Test-Path $Item)
-    {
-        Write-Host("Removing: " + $Item)
-        Remove-Item $Item -Recurse -Force
-    }
-}
-
-# Temp locations required
-$tempExtractDirectory = 'temparchiveextract'
-$tempArchive = 'temparchive.zip'
-function Remove-TempArtifacts()
-{
-    Remove-ItemIfExists($tempExtractDirectory)
-    Remove-ItemIfExists($tempArchive)
-}
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 # Create Destination if not already existing.
 if (!(Test-Path $Dest -PathType Container))
@@ -34,18 +21,15 @@ if (!(Test-Path $Dest -PathType Container))
     New-Item -Path $Dest -ItemType Directory | Out-Null
 }
 
-function Extract-MSIXFromNuget ($NugetPath)
+# .NET methods resolve relative paths against the process directory, not the PowerShell location.
+$Dest = (Get-Item -LiteralPath $Dest).FullName
+
+# Process the archive and extract out and rename relevant files.
+function Export-MSIXFromArchive ($Archive)
 {
-    Write-Host "Extracting packages from $NugetPath"
-    Remove-TempArtifacts
-
-    # Expand-Archive only works on files with a .zip extension, regardless of whether it is a zip archive.
-    Copy-Item -Path $NugetPath -Destination $tempArchive
-    Expand-Archive -Path $tempArchive -DestinationPath $tempExtractDirectory -Force
-
-    # Process the archive and extract out and rename relevant files.
-    foreach ($filename in Get-ChildItem -Name $tempExtractDirectory -Recurse)
+    foreach ($entry in $Archive.Entries)
     {
+        $filename = $entry.FullName.Replace('/', '\')
         Write-Host $filename
         # For each item, see if we want to extract this item to a different filename.
         $DestFilename = $false
@@ -88,9 +72,49 @@ function Extract-MSIXFromNuget ($NugetPath)
         if ($DestFilename)
         {
             $Destination = Join-Path $Dest -ChildPath $DestFilename
-            $SourceFile = Join-Path $tempExtractDirectory -ChildPath $filename
-            Copy-Item -Path $SourceFile -Destination $Destination -Force
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $Destination, $true)
             Write-Host "Extracted file to:" $Destination
+        }
+    }
+}
+
+function Extract-MSIXFromNuget ($NugetPath)
+{
+    Write-Host "Extracting packages from $NugetPath"
+
+    # Read the package in place instead of expanding all of it with Expand-Archive. When Expand-Archive failed partway
+    # through, its cleanup failed too (PathNotFound on _rels\.rels), which hid the original error. Retry sharing and
+    # lock violations, which another process can cause briefly. Any other failure stops the script with its own error.
+    $maxAttempts = 3
+    for ($attempt = 1; $attempt -le $maxAttempts; $attempt++)
+    {
+        try
+        {
+            $archive = [System.IO.Compression.ZipFile]::OpenRead($NugetPath)
+            try
+            {
+                Export-MSIXFromArchive $archive
+            }
+            finally
+            {
+                $archive.Dispose()
+            }
+            return
+        }
+        catch
+        {
+            $exception = $_.Exception
+            while ($null -ne $exception.InnerException)
+            {
+                $exception = $exception.InnerException
+            }
+            Write-Warning "Extracting from $NugetPath failed on attempt $attempt/${maxAttempts}: $($exception.ToString())"
+            $isTransient = ($exception -is [System.IO.IOException]) -and (($exception.HResult -band 0xffff) -in @(32, 33))
+            if (-not $isTransient -or ($attempt -eq $maxAttempts))
+            {
+                throw
+            }
+            Start-Sleep -Seconds $attempt
         }
     }
 }
@@ -102,5 +126,3 @@ foreach($item in Get-ChildItem $Source -Recurse | Select FullName)
         Extract-MSIXFromNuget ($item.FullName)
     }
 }
-
-Remove-TempArtifacts
