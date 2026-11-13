@@ -59,7 +59,7 @@
 
   <!-- External package versions -->
   <PropertyGroup Label="External Package Versions">
-    <MicrosoftWindowsSDKBuildToolsVersion>10.0.26100.4654</MicrosoftWindowsSDKBuildToolsVersion>
+    <MicrosoftWindowsSDKBuildToolsVersion>10.0.26100.8876</MicrosoftWindowsSDKBuildToolsVersion>
     <MicrosoftWindowsSDKBuildToolsMSIXVersion>1.7.20250829.1</MicrosoftWindowsSDKBuildToolsMSIXVersion>
     <MicrosoftWindowsCppWinRTVersion>2.0.230706.1</MicrosoftWindowsCppWinRTVersion>
     <MicrosoftWindowsCsWinRTPackageVersion>2.1.1</MicrosoftWindowsCsWinRTPackageVersion>
