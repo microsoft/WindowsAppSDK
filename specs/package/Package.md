@@ -433,7 +433,7 @@ namespace Microsoft.Windows.ApplicationModel
     apicontract PackageRuntimeContract{};
 
     /// Features can be queried if currently available/enabled.
-    /// @see Package.IsPackageFeatureSupported()
+    /// @see Package.IsPackageRuntimeFeatureSupported()
     [contract(PackageRuntimeContract, 1)]
     enum PackageFeature
     {
@@ -599,6 +599,24 @@ namespace Microsoft.Windows.ApplicationModel
 
 #if !defined(PACKAGE_RUNTIME_H)
 #define PACKAGE_RUNTIME_H
+
+/// Features can be queried if currently available/enabled.
+/// @see IsPackageRuntimeFeatureSupported()
+typedef enum PackageRuntimeFeature
+{
+    /// Package Mutable path.
+    /// @see PackagePathType_Mutable
+    PackageRuntimeFeature_PackagePath_Mutable           = 1,
+
+    /// Package External Location path (MachineExternal + UserExternal)
+    /// @see PackagePathType_MachineExternal
+    /// @see PackagePathType_UserExternal
+    PackageRuntimeFeature_PackagePath_ExternalLocation  = 2,
+} PackageRuntimeFeature;
+
+/// Return TRUE if feature is supported on the current system.
+STDAPI_(BOOL) IsPackageRuntimeFeatureSupported(
+    PackageRuntimeFeature feature) noexcept;
 
 /// Options for GetPackageFilePath*() functions
 typedef enum GetPackageFilePathOptions

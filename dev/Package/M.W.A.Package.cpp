@@ -12,8 +12,8 @@
 
 namespace winrt::Microsoft::Windows::ApplicationModel::implementation
 {
-    static_assert(static_cast<std::int32_t>(PackageFeature::PackagePath_Mutable) == static_cast<std::int32_t>(::PackageFeature_PackagePath_Mutable), "PackageFeature::PackagePath_Mutable != PackageFeature_PackagePath_Mutable");
-    static_assert(static_cast<std::int32_t>(PackageFeature::PackagePath_ExternalLocation) == static_cast<std::int32_t>(::PackageFeature_PackagePath_ExternalLocation), "PackageFeature::PackagePath_ExternalLocation != PackageFeature_PackagePath_ExternalLocation");
+    static_assert(static_cast<std::int32_t>(PackageFeature::PackagePath_Mutable) == static_cast<std::int32_t>(::PackageRuntimeFeature_PackagePath_Mutable), "PackageFeature::PackagePath_Mutable != PackageRuntimeFeature_PackagePath_Mutable");
+    static_assert(static_cast<std::int32_t>(PackageFeature::PackagePath_ExternalLocation) == static_cast<std::int32_t>(::PackageRuntimeFeature_PackagePath_ExternalLocation), "PackageFeature::PackagePath_ExternalLocation != PackageRuntimeFeature_PackagePath_ExternalLocation");
 
     static_assert(static_cast<std::int32_t>(GetFilePathOptions::None) == static_cast<std::int32_t>(::GetPackageFilePathOptions_None), "GetFilePathOptions::None != FindPackageFileOptions_None");
     static_assert(static_cast<std::int32_t>(GetFilePathOptions::SearchInstallPath) == static_cast<std::int32_t>(::GetPackageFilePathOptions_SearchInstallPath), "GetFilePathOptions::SearchInstallPath != GetPackageFilePathOptions_SearchInstallPath");
@@ -29,7 +29,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::implementation
 
     bool Package::IsFeatureSupported(winrt::Microsoft::Windows::ApplicationModel::PackageFeature const& feature)
     {
-        return ::IsPackageFeatureSupported(static_cast<::PackageFeature>(feature));
+        return ::IsPackageRuntimeFeatureSupported(static_cast<::PackageRuntimeFeature>(feature));
     }
     hstring Package::GetFilePath(hstring const& filename)
     {
