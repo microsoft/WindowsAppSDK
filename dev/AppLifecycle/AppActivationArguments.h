@@ -7,13 +7,15 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     struct AppActivationArguments : AppActivationArgumentsT<AppActivationArguments>
     {
-        AppActivationArguments() = delete;
+        // Internal constructor: wraps platform IActivatedEventArgs.
         AppActivationArguments(const winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs& platformArgs)
         {
             m_kind = static_cast<ExtendedActivationKind>(platformArgs.Kind());
             m_data = platformArgs.as<IInspectable>();
         }
 
+        // Public WinRT constructor (AppLifecycleContract v3): enables creation of
+        // AppActivationArguments for scenarios like custom activation redirection.
         AppActivationArguments(ExtendedActivationKind kind, IInspectable const& data)
         {
             m_kind = kind;
@@ -26,5 +28,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     private:
         ExtendedActivationKind m_kind{};
         IInspectable m_data;
+    };
+}
+namespace winrt::Microsoft::Windows::AppLifecycle::factory_implementation
+{
+    struct AppActivationArguments : AppActivationArgumentsT<AppActivationArguments, implementation::AppActivationArguments>
+    {
     };
 }
