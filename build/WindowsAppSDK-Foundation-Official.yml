@@ -58,7 +58,7 @@ parameters:
 - name: BuildType
   displayName: "Build Type"
   type: string
-  default: 'stable'
+  default: 'experimental'
   values:
   - 'stable'
   - 'experimental'
@@ -90,16 +90,12 @@ resources:
     - repository: WinAppSDK
       type: git
       name: OS/WinAppSDK
-      ref: refs/heads/release/2.0-stable
+      ref: refs/heads/release/2.0-experimental
     # Data-only alias pinned to main so source analysis always uses the centrally maintained TSA config.
     - repository: WindowsAppSDKTsaConfig
       type: git
       name: ProjectReunion/WindowsAppSDKConfig
       ref: refs/heads/main
-    - repository: WindowsAppSDKVersionConfig
-      type: git
-      name: ProjectReunion/WindowsAppSDKConfig
-      ref: refs/heads/release/2.0-stable
     - repository: WindowsAppSDKSamples
       type: github
       endpoint: 'WinAppSDK-Github'
