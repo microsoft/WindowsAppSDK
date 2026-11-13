@@ -10,6 +10,8 @@
   "symbolInfo": [
     {
       "id": "dotnetVersion",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.dotnetVersion",
       "name": {
         "text": "Framework"
       },
@@ -36,6 +38,8 @@
     },
     {
       "id": "Packaging",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.Packaging",
       "name": {
         "text": "Packaging"
       },

@@ -10,6 +10,8 @@
   "symbolInfo": [
     {
       "id": "dotnetVersion",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.dotnetVersion",
       "name": {
         "text": "Framework"
       },
@@ -17,6 +19,8 @@
     },
     {
       "id": "targetPlatformMinVersion",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.targetPlatformMinVersion",
       "name": {
         "text": "Target Platform Minimum Version"
       },
@@ -52,6 +56,8 @@
     },
     {
       "id": "Packaging",
+      "persistenceScope": "shared",
+      "persistenceScopeName": "Microsoft.WindowsAppSDK.Packaging",
       "name": {
         "text": "Packaging"
       },
