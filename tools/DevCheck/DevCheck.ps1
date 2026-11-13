@@ -9,7 +9,7 @@
     Review the current environment and fix or warn if anything is amiss. This includes...
     * Developer mode is enabled
     * LongPath support is enabled
-    * Visual Studio 2022 is installed and properly configured
+    * Visual Studio 2026 is installed and properly configured
     * Windows SDK(s) are installed
     * Nuget.exe is installed
     * Test certificate to sign test MSIX packages is installed
@@ -638,19 +638,21 @@ function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr, [in
 }
 
 $global:vspath = ''
-function Get-VisualStudio2022InstallPath
+# Visual Studio 2026 (18.x) is required to build with the .NET 11 SDK.
+$global:vsVersionRange = '[18.0,19.0)'
+function Get-VisualStudioInstallPath
 {
-    Write-Verbose "Detecting VisualStudio 2022..."
+    Write-Verbose "Detecting VisualStudio 2026..."
     $vswhere_exe = Get-VSWhere
     if ([string]::IsNullOrEmpty($vswhere_exe))
     {
         return $null
     }
-    $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
+    $args = " -latest -products * -version $($global:vsVersionRange) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
     Write-Verbose "Executing $vswhere_exe $args"
     $path = Run-Process $vswhere_exe $args
     $path = $path -replace [environment]::NewLine, ''
-    Write-Verbose "Visual Studio 2022 detected at $path"
+    Write-Verbose "Visual Studio detected at $path"
     $global:vspath = $path
     return $path
 }
@@ -694,7 +696,7 @@ function Test-VisualStudioComponents
     $path = Join-Path $root 'docs\Coding-Guidelines'
     $filename = Join-Path $path 'VisualStudio2022.vsconfig'
 
-    $versionRange = "[17.0,18.0)"
+    $versionRange = $global:vsVersionRange
 
     $json = Get-Content $filename -EA:Stop -Raw | ConvertFrom-Json
     Write-Host "...Scanning $($json.components.Length) components in $($filename)" -NoNewline
@@ -714,16 +716,16 @@ function Test-VisualStudioComponents
     return $true
 }
 
-function Test-VisualStudio2022Install
+function Test-VisualStudioInstall
 {
     $ok = $true
-    $path = Get-VisualStudio2022InstallPath
+    $path = Get-VisualStudioInstallPath
     if ([string]::IsNullOrEmpty($path))
     {
         $global:issues++
         $ok = $false
     }
-    Write-Host "VisualStudio 2022...$path"
+    Write-Host "VisualStudio 2026...$path"
     return $ok
 }
 
@@ -1728,7 +1730,7 @@ if (($CheckAll -ne $false) -Or ($CheckVCLibs -ne $false))
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
-    $ok = Test-VisualStudio2022Install
+    $ok = Test-VisualStudioInstall
     if ($ok -eq $true)
     {
         $null = Test-VisualStudioComponents

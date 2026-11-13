@@ -4,7 +4,7 @@
 
 Development requires the following installation:
 
-1. Install Visual Studio 2022
+1. Install Visual Studio 2026
 
    Select the following workloads:
      * .NET desktop development
