@@ -5,7 +5,7 @@
 #define PACKAGE_RUNTIME_H
 
 /// Features can be queried if currently available/enabled.
-/// @see IsPackageFeatureSupported()
+/// @see WindowsAppRuntime_IsPackageFeatureSupported()
 typedef enum PackageFeature
 {
     /// Package Mutable path.
@@ -19,7 +19,7 @@ typedef enum PackageFeature
 } PackageFeature;
 
 /// Return TRUE if feature is supported on the current system.
-STDAPI_(BOOL) IsPackageFeatureSupported(
+STDAPI_(BOOL) WindowsAppRuntime_IsPackageFeatureSupported(
     PackageFeature feature) noexcept;
 
 /// Options for GetPackageFilePath*() functions

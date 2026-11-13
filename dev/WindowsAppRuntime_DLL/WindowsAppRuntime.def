@@ -35,4 +35,6 @@ EXPORTS
 
     GetPackageFilePath
     GetPackageFilePathInPackageGraph
-    IsPackageFeatureSupported
+    ; Preserve existing binary imports without exposing the Windows SDK name in the import library.
+    IsPackageFeatureSupported = WindowsAppRuntime_IsPackageFeatureSupported PRIVATE
+    WindowsAppRuntime_IsPackageFeatureSupported
