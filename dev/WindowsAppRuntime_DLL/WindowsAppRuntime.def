@@ -35,4 +35,4 @@ EXPORTS
 
     GetPackageFilePath
     GetPackageFilePathInPackageGraph
-    IsPackageFeatureSupported
+    IsPackageRuntimeFeatureSupported
