@@ -35,22 +35,33 @@ namespace winrt::Microsoft::Windows::Globalization::implementation
 
     hstring ApplicationLanguages::PrimaryLanguageOverride()
     {
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            // Windows persists the override for packaged apps, including across process restarts.
+            return winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride();
+        }
+
         auto criticalSection{ m_lock.lock_shared() };
         return m_language;
     }
 
     void ApplicationLanguages::PrimaryLanguageOverride(hstring const& language)
     {
-        bool isValidLanguageTag = IsWellFormedTag(language.c_str());
-
-        THROW_HR_IF_MSG(E_INVALIDARG, !isValidLanguageTag, "The parameter is incorrect");
-
-        auto criticalSection {m_lock.lock_exclusive()};
-        m_language = language;
+        // An empty string clears the override and restores the system language preferences.
+        if (!language.empty())
+        {
+            bool isValidLanguageTag = IsWellFormedTag(language.c_str());
+            THROW_HR_IF_MSG(E_INVALIDARG, !isValidLanguageTag, "The parameter is incorrect");
+        }
 
         if (AppModel::Identity::IsPackagedProcess())
         {
             winrt::Windows::Globalization::ApplicationLanguages::PrimaryLanguageOverride(language);
+            return;
         }
+
+        // Unpackaged apps retain a process-local override only.
+        auto criticalSection{ m_lock.lock_exclusive() };
+        m_language = language;
     }
 } // namespace winrt::Microsoft::Windows::Globalization::implementation
