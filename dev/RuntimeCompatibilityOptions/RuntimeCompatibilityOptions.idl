@@ -147,6 +147,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         LanguageModel_StreamingAndHostExitRecovery = 64913530,
         LanguageModelGpuSupport = 65019574,
         AIFabric_OcrCpuExecution = 65028598,
+
+        // 2.7.1
+        SystemBackdrops_SwitcherCompatibility = 64757487,
+        WinUI_WindowPlacementPersistence = 65103751,
+        MenuFlyout_NoMenuOpenedOnCanceledOpening = 65157874,
     };
 
     /// Represents a version of the Windows App Runtime.
