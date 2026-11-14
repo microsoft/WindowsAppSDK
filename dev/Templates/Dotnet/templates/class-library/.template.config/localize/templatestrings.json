@@ -1,0 +1,16 @@
+{
+  "name": "WinUI Class Library",
+  "author": "Microsoft",
+  "description": "Creates a WinUI 3 class library for sharing UI components.",
+  "symbols/dotnetVersion/description": "Base target framework moniker (TFM) for the WinUI project. Defaults to the installed SDK version.",
+  "symbols/dotnetVersion/choices/net10.0/description": "Target .NET 10",
+  "symbols/dotnetVersion/choices/net11.0/description": "Target .NET 11",
+  "symbols/windowsAppSdkVersion/description": "Microsoft.WindowsAppSDK NuGet version. Use * for the latest stable.",
+  "symbols/windowsSdkBuildToolsVersion/description": "Microsoft.Windows.SDK.BuildTools NuGet version. Use * for the latest stable.",
+  "postActions/pinWindowsSdkBuildTools/description": "Pin Microsoft.Windows.SDK.BuildTools to the latest stable version.",
+  "postActions/pinWindowsSdkBuildTools/manualInstructions/pinWindowsSdkBuildToolsManually/text": "Run 'dotnet add package Microsoft.Windows.SDK.BuildTools'",
+  "postActions/pinWindowsAppSdk/description": "Pin Microsoft.WindowsAppSDK to the latest stable version.",
+  "postActions/pinWindowsAppSdk/manualInstructions/pinWindowsAppSdkManually/text": "Run 'dotnet add package Microsoft.WindowsAppSDK'",
+  "postActions/restore/description": "Restore NuGet packages required by this project.",
+  "postActions/restore/manualInstructions/restoreManually/text": "Run 'dotnet restore'"
+}

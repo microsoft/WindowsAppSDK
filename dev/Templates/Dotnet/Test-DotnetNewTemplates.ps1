@@ -13,8 +13,8 @@ Unit test templates build all runner/packaging combinations without overriding
 their packaging.
 Representative unpackaged XAML and Reactor apps are also published in Release;
 their PRI and icon output is checked, followed by a startup smoke test unless
-SkipAppLaunch is specified. Legacy app and item-host builds still override
-WindowsPackageType=None.
+SkipAppLaunch is specified. Item templates are added to and built with both
+packaged and unpackaged hosts. Legacy app builds still override WindowsPackageType=None.
 
 .PARAMETER PackagePath
 Path to an existing Microsoft.WindowsAppSDK.WinUI.CSharp.Templates .nupkg. When
@@ -379,7 +379,10 @@ function Test-WinUiProjectTemplate {
         $createArguments = @('--test-runner', $TestRunner, '--packaging', $Packaging)
         $resultTemplate = "$TemplateShortName ($TestRunner, $Packaging)"
     }
-    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion -AdditionalArguments $createArguments
+    # Reactor templates have no --wasdk-version option: Windows App SDK comes
+    # transitively from Microsoft.UI.Reactor (WinUI + Runtime), not the metapackage.
+    $wasdkVersion = if ($TemplateShortName -like 'reactor*') { $null } else { $script:windowsAppSdkVersion }
+    New-ProjectFromTemplate -TemplateShortName $TemplateShortName -ProjectName $projectName -OutputPath $projectPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $wasdkVersion -AdditionalArguments $createArguments
     Add-Result -Template $resultTemplate -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $projectPath
 
     # A file-based app template scaffolds a single <name>.cs whose #: directives replace the .csproj.
@@ -534,7 +537,10 @@ function Test-PackagingOptions {
         if ($packaging -ne 'Default') {
             $createArgs += @('--packaging', $packaging)
         }
-        $createArgs += @('--wasdk-version', $script:windowsAppSdkVersion)
+        # Reactor templates have no --wasdk-version option (Windows App SDK comes from Microsoft.UI.Reactor).
+        if ($TemplateShortName -notlike 'reactor*') {
+            $createArgs += @('--wasdk-version', $script:windowsAppSdkVersion)
+        }
         Invoke-DotnetCommand -Arguments $createArgs -WorkingDirectory $WorkingRoot -Description "create $TemplateShortName ($packaging)"
         $unpackaged = $packaging -eq 'Unpackaged'
 
@@ -568,7 +574,17 @@ function Test-PackagingOptions {
             }
             $launchSettings = Get-Content -LiteralPath (Join-Path -Path $projectPath -ChildPath 'Properties\launchSettings.json') -Raw | ConvertFrom-Json
             $commands = @($launchSettings.profiles.PSObject.Properties | ForEach-Object { $_.Value.commandName })
+            $profileArgs = @($launchSettings.profiles.PSObject.Properties |
+                ForEach-Object { $_.Value.PSObject.Properties['commandLineArgs'] } | Where-Object { $_ } | ForEach-Object { $_.Value })
 
+            # A bare '--devtools' starts Reactor's MCP-server session; the dev menu needs '--devtools app'.
+            if ($profileArgs -contains '--devtools' -or
+                ($unpackaged -and $TemplateShortName -like 'reactor*' -and $profileArgs -notcontains '--devtools app')) {
+                throw "Reactor devtools launch profile must pass '--devtools app' in '$TemplateShortName' ($packaging)."
+            }
+
+            # Packaged projects list the MsixPackage profile first, as the Visual Studio F5 default, and keep a
+            # Project profile because 'dotnet run' can only apply Project or Executable profiles.
             if ($unpackaged) {
                 if (-not $packageType -or $packageType.InnerText -ne 'None' -or
                     -not $msixTooling -or $msixTooling.InnerText -ne 'false' -or
@@ -595,7 +611,7 @@ function Test-PackagingOptions {
                 $msixReference -or
                 -not $winappReference -or -not $msixCapability -or -not $packageMenu -or
                 -not (Test-Path -LiteralPath $manifestPath) -or -not (Test-Path -LiteralPath $assetsPath) -or
-                $commands.Count -ne 1 -or $commands[0] -ne 'MsixPackage') {
+                $commands[0] -ne 'MsixPackage' -or $commands -notcontains 'Project') {
                 throw "Packaged content or settings missing in '$TemplateShortName' ($packaging)."
             }
         }
@@ -631,12 +647,6 @@ function Test-ItemTemplates {
         [string]$Platform
     )
 
-    $hostName = 'ItemHost_{0}' -f ([Guid]::NewGuid().ToString('N').Substring(0, 8))
-    $hostPath = Join-Path -Path $WorkingRoot -ChildPath $hostName
-    New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion
-    Add-Result -Template 'winui (item host)' -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $hostPath
-
-    $projectFile = Join-Path -Path $hostPath -ChildPath "$hostName.csproj"
     $itemTemplates = @(
         @{ ShortName = 'winui-page'; Name = 'SettingsPage' },
         @{ ShortName = 'winui-window'; Name = 'SecondaryWindow' },
@@ -647,14 +657,23 @@ function Test-ItemTemplates {
         @{ ShortName = 'winui-dialog'; Name = 'ConfirmationDialog' }
     )
 
-    foreach ($item in $itemTemplates) {
-        $args = @('new', $item.ShortName, '-n', $item.Name, '--project', $projectFile, '--force', '--no-update-check')
-        Invoke-DotnetCommand -Arguments $args -WorkingDirectory $hostPath -Description "create item template $($item.ShortName)"
-        Add-Result -Template $item.ShortName -Platform $Platform -Step 'add item' -Status 'Succeeded' -Path $projectFile
-    }
+    foreach ($packaging in @('Packaged', 'Unpackaged')) {
+        $hostName = 'ItemHost_{0}_{1}' -f $packaging, ([Guid]::NewGuid().ToString('N').Substring(0, 8))
+        $hostPath = Join-Path -Path $WorkingRoot -ChildPath $hostName
+        $hostTemplate = "winui (item host, $packaging)"
+        New-ProjectFromTemplate -TemplateShortName 'winui' -ProjectName $hostName -OutputPath $hostPath -WorkingDirectory $WorkingRoot -WindowsAppSdkVersion $script:windowsAppSdkVersion -AdditionalArguments @('--packaging', $packaging)
+        Add-Result -Template $hostTemplate -Platform $Platform -Step 'create' -Status 'Succeeded' -Path $hostPath
 
-    Invoke-DotnetCommand -Arguments @('build', $projectFile, '-p:Configuration=Debug', "-p:Platform=$Platform", '-p:WindowsPackageType=None') -WorkingDirectory $hostPath -Description 'build item host'
-    Add-Result -Template 'winui (item host)' -Platform $Platform -Step 'build' -Status 'Succeeded' -Path $projectFile
+        $projectFile = Join-Path -Path $hostPath -ChildPath "$hostName.csproj"
+        foreach ($item in $itemTemplates) {
+            $args = @('new', $item.ShortName, '-n', $item.Name, '--project', $projectFile, '--force', '--no-update-check')
+            Invoke-DotnetCommand -Arguments $args -WorkingDirectory $hostPath -Description "create item template $($item.ShortName) ($packaging)"
+            Add-Result -Template $item.ShortName -Platform $Platform -Step "add item: $packaging" -Status 'Succeeded' -Path $projectFile
+        }
+
+        Invoke-DotnetCommand -Arguments @('build', $projectFile, '-p:Configuration=Debug', "-p:Platform=$Platform", '-r', "win-$($Platform.ToLowerInvariant())") -WorkingDirectory $hostPath -Description "build item host ($packaging)"
+        Add-Result -Template $hostTemplate -Platform $Platform -Step 'build' -Status 'Succeeded' -Path $projectFile
+    }
 }
 
 function Assert-CsprojPackageVersion {
