@@ -5,6 +5,8 @@
 
 #include <Microsoft.Utf8.h>
 
+#include <wil/win32_helpers.h>
+
 #include "WindowsAppRuntime.VersionInfo.h"
 
 #include "MddWin11.h"
@@ -88,7 +90,19 @@ private:
     static wil::unique_hmodule LoadResourceModule(bool required)
     {
         const PCWSTR c_resourceDllName{ L"Microsoft.WindowsAppRuntime.Insights.Resource.dll" };
-        wil::unique_hmodule resourceDllHandle(::LoadLibraryW(c_resourceDllName));
+        HMODULE module{ ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll") };
+        THROW_LAST_ERROR_IF_NULL_MSG(module, "Unable to get Windows App Runtime module");
+
+        auto resourceDllPath{ wil::GetModuleFileNameW<std::wstring>(module) };
+        const auto filenameOffset{ resourceDllPath.find_last_of(L"\\\\/") };
+        THROW_HR_IF_MSG(E_UNEXPECTED, filenameOffset == std::wstring::npos, "Unable to determine resource dll path");
+        resourceDllPath.resize(filenameOffset + 1);
+        resourceDllPath += c_resourceDllName;
+
+        wil::unique_hmodule resourceDllHandle(::LoadLibraryExW(
+            resourceDllPath.c_str(),
+            nullptr,
+            LOAD_WITH_ALTERED_SEARCH_PATH));
         if (!resourceDllHandle)
         {
             const auto lastError{ ::GetLastError() };
@@ -96,7 +110,7 @@ private:
             {
                 return {};
             }
-            THROW_HR_MSG(HRESULT_FROM_WIN32(lastError), "Unable to load resource dll. %ls", c_resourceDllName);
+            THROW_HR_MSG(HRESULT_FROM_WIN32(lastError), "Unable to load resource dll. %ls", resourceDllPath.c_str());
         }
         return resourceDllHandle;
     }
