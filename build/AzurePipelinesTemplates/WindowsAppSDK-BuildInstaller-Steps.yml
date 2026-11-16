@@ -285,6 +285,19 @@ steps:
     platform: $(buildPlatform)
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
+- ${{ if eq(parameters.IsMonobuild, true) }}:
+  - task: PowerShell@2
+    name: GenerateInstallerVersionInfo
+    displayName: 'Generate unified installer version resources'
+    env:
+      WindowsAppSDKBinaryVersion: $(WindowsAppSDKBinaryVersion)
+    inputs:
+      filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\VersionInfo\GenerateVersionInfo.ps1'
+      arguments: >
+        -ProductMajor "$(MajorVersion)"
+        -ProductMinor "$(MinorVersion)"
+    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+
 - task: VSBuild@1
   displayName: 'Build Windows App Runtime Install'
   inputs:
