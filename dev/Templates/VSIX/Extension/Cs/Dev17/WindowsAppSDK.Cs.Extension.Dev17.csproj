@@ -30,13 +30,15 @@
     <TargetVsixContainerName>$(AssemblyName).$(Deployment).vsix</TargetVsixContainerName>
     <IsProductComponent Condition="'$(Deployment)' == 'Component'">true</IsProductComponent>
     <TemplatePackageProject>$(MSBuildThisFileDirectory)..\..\..\..\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj</TemplatePackageProject>
+    <!-- Keep the VSIX's non-preview pack separate from the standalone CLI pack. -->
+    <_TemplatePackageProperties>IncludeReactorTemplates=false;PackageOutputPath=$([System.IO.Path]::GetFullPath('$(BaseIntermediateOutputPath)TemplatePackages'))</_TemplatePackageProperties>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(VsixManifestSource)" SubType="Designer" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools" PrivateAssets="all" />
     <PackageReference Include="Microsoft.VisualStudio.SDK" ExcludeAssets="runtime" />
     <ProjectReference Include="$(TemplatePackageProject)" ReferenceOutputAssembly="false" Private="false"
-                      SkipGetTargetFrameworkProperties="true" />
+                      SkipGetTargetFrameworkProperties="true" AdditionalProperties="$(_TemplatePackageProperties)" />
     <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\PackagedApp\WinUI.Desktop.Cs.PackagedApp.csproj"
                       Name="WinUI.Desktop.Cs.PackagedApp" ReferenceOutputAssembly="false" VSIXSubPath="ProjectTemplates"
                       IncludeOutputGroupsInVSIX="TemplateProjectOutputGroup%3b" />
@@ -54,7 +56,7 @@
   <Target Name="IncludeTemplatePackage" BeforeTargets="GetVsixSourceItems"
           DependsOnTargets="ResolveProjectReferences">
     <MSBuild Projects="$(TemplatePackageProject)" Targets="GetTemplatePackage"
-             Properties="Configuration=$(Configuration)" RemoveProperties="TargetFramework;RuntimeIdentifier;RuntimeIdentifiers">
+             Properties="Configuration=$(Configuration);$(_TemplatePackageProperties)" RemoveProperties="TargetFramework;RuntimeIdentifier;RuntimeIdentifiers">
       <Output TaskParameter="TargetOutputs" ItemName="_TemplatePackage" />
     </MSBuild>
     <Error Condition="'@(_TemplatePackage)' == ''" Text="The C# template package was not produced." />

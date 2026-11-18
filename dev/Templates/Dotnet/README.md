@@ -308,10 +308,11 @@ which contributes the `winapp` debug type used by that configuration.
 This template pack is built from the
 [WindowsAppSDK](https://github.com/microsoft/WindowsAppSDK) repository under
 `dev\Templates\Dotnet\`. Each directory under `templates` contains both
-the sources and `.template.config` metadata. The C# VSIX embeds this same
-NuGet pack and registers it with Visual Studio's template engine; there is no
-separate Visual Studio build for these templates. Experimental Reactor project
-templates appear in Visual Studio; `reactor-singlefile` remains CLI-only.
+the sources and `.template.config` metadata. The C# VSIX builds this
+NuGet pack with `IncludeReactorTemplates=false` and registers it with Visual
+Studio's template engine. Preview Reactor templates remain available in the
+standalone NuGet pack but are excluded from the VSIX. The VSIX's filtered pack
+uses a separate output directory so it does not overwrite the standalone pack.
 The two-project `.csproj` + `.wapproj` template is a VSIX-only
 exception that retains its existing `.vstemplate` implementation; it is not part
 of this NuGet pack.
