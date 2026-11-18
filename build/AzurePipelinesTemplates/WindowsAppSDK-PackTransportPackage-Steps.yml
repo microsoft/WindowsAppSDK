@@ -11,6 +11,9 @@
 #   - Foundation-Build-Stage.yml (monobuild PackFoundation job)
 
 parameters:
+  - name: UseProductionSigning
+    type: boolean
+    default: true
   - name: SignOutput
     type: boolean
     default: false
@@ -159,6 +162,7 @@ steps:
   - ${{ if eq(parameters.SignOutput, 'true') }}:
     - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
       parameters:
+        UseProductionSigning: ${{ parameters.UseProductionSigning }}
         IsMonobuild: ${{ parameters.IsMonobuild }}
         InnerParams:
           FolderPath: $(build.artifactStagingDirectory)\FullNuget
