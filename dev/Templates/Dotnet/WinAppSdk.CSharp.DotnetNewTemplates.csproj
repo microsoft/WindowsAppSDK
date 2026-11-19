@@ -26,15 +26,17 @@
     <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
     <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\localpackages'))</PackageOutputPath>
     <IncludeReactorTemplates Condition="'$(IncludeReactorTemplates)' == ''">true</IncludeReactorTemplates>
+    <IncludeItemTemplates Condition="'$(IncludeItemTemplates)' == ''">true</IncludeItemTemplates>
     <_ProjectTemplateGitIgnorePaths>content\blank-app\gitignore.txt;content\class-library\gitignore.txt;content\mvvm-app\gitignore.txt;content\navigation-app\gitignore.txt;content\tabview-app\gitignore.txt;content\unit-test\gitignore.txt</_ProjectTemplateGitIgnorePaths>
     <_ProjectTemplateGitIgnorePaths Condition="'$(IncludeReactorTemplates)' == 'true'">$(_ProjectTemplateGitIgnorePaths);content\reactor-blank-app\gitignore.txt;content\reactor-mvu-app\gitignore.txt;content\reactor-navigation-app\gitignore.txt;content\reactor-tabview-app\gitignore.txt</_ProjectTemplateGitIgnorePaths>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="README.md" />
-    <None Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\gitignore.txt;templates\**\.template.config\localize\templatestrings.json"
+    <None Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\gitignore.txt;templates\**\*.vstemplate;templates\**\.template.config\localize\templatestrings.json"
           Pack="true" PackagePath="content\%(RecursiveDir)%(Filename)%(Extension)" />
     <None Remove="templates\reactor-*\**\*" Condition="'$(IncludeReactorTemplates)' != 'true'" />
+    <None Remove="templates\item-*\**\*" Condition="'$(IncludeItemTemplates)' != 'true'" />
     <!-- Shared .gitignore for csproj-based project templates (not item or single-file templates). -->
     <None Include="templates\gitignore.txt" Pack="true"
           PackagePath="$(_ProjectTemplateGitIgnorePaths)" />
