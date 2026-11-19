@@ -17,6 +17,7 @@ if ($generation -lt 0 -or $build -lt $generation)
 {
     throw 'The installer pipeline must generate version resources before compiling the installer.'
 }
+$mapsBinaryVersion = $template.Substring($generation, $build - $generation) -match '(?m)^\s+WindowsAppSDKBinaryVersion:\s*\$\(WindowsAppSDKBinaryVersion\)\s*$'
 
 $testRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('InstallerVersionInfo-' + [guid]::NewGuid().ToString('N'))
 $originalBinaryVersion = $env:WindowsAppSDKBinaryVersion
@@ -37,7 +38,12 @@ try
 
     foreach ($version in @('102.7.3.41', '102.7.3.0', '65535.65535.65535.65535', ''))
     {
-        $env:WindowsAppSDKBinaryVersion = if ($version) { $version } else { $null }
+        $env:WINDOWSAPPSDKBINARYVERSION = if ($version) { $version } else { $null }
+        if (-not $version -and $mapsBinaryVersion)
+        {
+            # Azure Pipelines leaves an explicit mapping's undefined macro unexpanded.
+            $env:WindowsAppSDKBinaryVersion = '$(WindowsAppSDKBinaryVersion)'
+        }
         & (Join-Path $versionDirectory 'GenerateVersionInfo.ps1') -ProductMajor 2 -ProductMinor 7
         $resource = Join-Path $testRoot 'Installer.res'
         $binary = Join-Path $testRoot 'Installer.exe'
@@ -73,6 +79,25 @@ try
             throw 'Generating native installer versions changed the managed assembly identity.'
         }
         Write-Output "PASS: installer fixed/string versions for '$version'."
+    }
+
+    foreach ($version in @('102.7.3', '102.7.3.65536', '$(WindowsAppSDKBinaryVersion)'))
+    {
+        $env:WINDOWSAPPSDKBINARYVERSION = $version
+        $rejection = $null
+        try
+        {
+            & (Join-Path $versionDirectory 'GenerateVersionInfo.ps1') -ProductMajor 2 -ProductMinor 7
+        }
+        catch
+        {
+            $rejection = $_.Exception.Message
+        }
+        if (-not $rejection -or $rejection -notmatch 'WindowsAppSDKBinaryVersion')
+        {
+            throw "Invalid binary version '$version' was not rejected by version validation."
+        }
+        Write-Output "PASS: rejected invalid binary version '$version'."
     }
 }
 finally

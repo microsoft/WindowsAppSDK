@@ -289,8 +289,7 @@ steps:
   - task: PowerShell@2
     name: GenerateInstallerVersionInfo
     displayName: 'Generate unified installer version resources'
-    env:
-      WindowsAppSDKBinaryVersion: $(WindowsAppSDKBinaryVersion)
+    # Inherit the optional pipeline variable instead of mapping an undefined macro.
     inputs:
       filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\VersionInfo\GenerateVersionInfo.ps1'
       arguments: >
