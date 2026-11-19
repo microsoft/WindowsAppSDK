@@ -1,7 +1,4 @@
 parameters:
-- name: UseProductionSigning
-  type: boolean
-  default: true
 - name: SignOutput
   type: boolean
   default: false
@@ -249,7 +246,7 @@ steps:
 
   - template: WindowsAppSDK-SignPackageContents-steps.yml
     parameters:
-      UseProductionSigning: ${{ parameters.UseProductionSigning }}
+      IsOfficial: ${{ parameters.IsOfficial }}
       IsMonobuild: ${{ parameters.IsMonobuild }}
       inputPackageDirectory: '$(Agent.TempDirectory)/UnsignedVSIX'
       outputPackageDirectory: '$(ob_outputDirectory)'

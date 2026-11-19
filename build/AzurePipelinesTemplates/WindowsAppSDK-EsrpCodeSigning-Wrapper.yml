@@ -3,7 +3,7 @@
 # This eliminates if/else duplication at each call site.
 
 parameters:
-  - name: UseProductionSigning
+  - name: IsOfficial
     type: boolean
     default: true
   - name: IsMonobuild
@@ -18,9 +18,9 @@ steps:
     - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@self
       parameters:
         ${{ insert }}: ${{ parameters.InnerParams }}
-        # Omit the default to remain compatible with older shared signing templates.
-        ${{ if not(parameters.UseProductionSigning) }}:
-          UseProductionSigning: false
+        IsOfficial: ${{ parameters.IsOfficial }}
   - ${{ else }}:
     - template: Build/WindowsAppSDK/AzurePipelinesTemplates/WindowsAppSDK-EsrpCodeSigning-Steps.yml@WinAppSDK
-      parameters: ${{ parameters.InnerParams }}
+      parameters:
+        ${{ insert }}: ${{ parameters.InnerParams }}
+        IsOfficial: ${{ parameters.IsOfficial }}

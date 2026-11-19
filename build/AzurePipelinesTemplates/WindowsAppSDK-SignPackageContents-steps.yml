@@ -5,7 +5,7 @@
 # Finally, we can sign the recreated package itself.
 
 parameters:
-- name: UseProductionSigning
+- name: IsOfficial
   type: boolean
   default: true
 - name: "inputPackageDirectory"
@@ -41,7 +41,7 @@ steps:
 
   - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
-      UseProductionSigning: ${{ parameters.UseProductionSigning }}
+      IsOfficial: ${{ parameters.IsOfficial }}
       IsMonobuild: ${{ parameters.IsMonobuild }}
       InnerParams:
         DisplayName: 'CodeSign package contents'
@@ -60,7 +60,7 @@ steps:
   - ${{ if eq(parameters.packageType, 'nupkg') }}:
     - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
       parameters:
-        UseProductionSigning: ${{ parameters.UseProductionSigning }}
+        IsOfficial: ${{ parameters.IsOfficial }}
         IsMonobuild: ${{ parameters.IsMonobuild }}
         InnerParams:
           DisplayName: 'CodeSign repacked package (Nuget)'
@@ -72,7 +72,7 @@ steps:
   - ${{ if eq(parameters.packageType, 'vsix') }}:
     - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
       parameters:
-        UseProductionSigning: ${{ parameters.UseProductionSigning }}
+        IsOfficial: ${{ parameters.IsOfficial }}
         IsMonobuild: ${{ parameters.IsMonobuild }}
         InnerParams:
           DisplayName: 'CodeSign repacked package (VSIX)'

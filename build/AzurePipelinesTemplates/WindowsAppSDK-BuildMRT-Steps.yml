@@ -1,5 +1,5 @@
 parameters:
-- name: UseProductionSigning
+- name: IsOfficial
   type: boolean
   default: true
 - name: "SignOutput"
@@ -99,7 +99,7 @@ steps:
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
-      UseProductionSigning: ${{ parameters.UseProductionSigning }}
+      IsOfficial: ${{ parameters.IsOfficial }}
       IsMonobuild: ${{ parameters.IsMonobuild }}
       InnerParams:
         FolderPath: '$(build.SourcesDirectory)\BuildOutput'
