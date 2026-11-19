@@ -36,6 +36,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' &gt;= '18.0'">v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
