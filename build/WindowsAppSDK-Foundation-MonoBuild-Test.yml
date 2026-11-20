@@ -167,8 +167,6 @@ extends:
         parameters:
           componentName: 'Foundation'
           sourceBuildId: ${{ parameters.sourceBuildId }}
-          # Test and Official both evaluate TestMonitor, so both need the tag-back to retry it.
-          retryParentTestGate: ${{ in(parameters.sourcePipeline, 'Monobuild-Test', 'Monobuild-Official') }}
           dependsOn:
             - Test_x86
             - Test_x64
