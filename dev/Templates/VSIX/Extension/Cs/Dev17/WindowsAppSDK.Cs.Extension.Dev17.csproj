@@ -30,8 +30,9 @@
     <TargetVsixContainerName>$(AssemblyName).$(Deployment).vsix</TargetVsixContainerName>
     <IsProductComponent Condition="'$(Deployment)' == 'Component'">true</IsProductComponent>
     <TemplatePackageProject>$(MSBuildThisFileDirectory)..\..\..\..\Dotnet\WinAppSdk.CSharp.DotnetNewTemplates.csproj</TemplatePackageProject>
-    <!-- Keep the VSIX's non-preview pack separate from the standalone CLI pack. -->
-    <_TemplatePackageProperties>IncludeReactorTemplates=false;PackageOutputPath=$([System.IO.Path]::GetFullPath('$(BaseIntermediateOutputPath)TemplatePackages'))</_TemplatePackageProperties>
+    <!-- Item templates use .vstemplate until microsoft/microsoft-ui-xaml#12758 is fixed. -->
+    <_TemplatePackageProperties>IncludeReactorTemplates=false;IncludeItemTemplates=false;PackageOutputPath=$([System.IO.Path]::GetFullPath('$(BaseIntermediateOutputPath)TemplatePackages'))</_TemplatePackageProperties>
+    <_ItemTemplateSourceDir>$(MSBuildThisFileDirectory)..\..\..\..\Dotnet\templates\</_ItemTemplateSourceDir>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(VsixManifestSource)" SubType="Designer" />
@@ -52,6 +53,33 @@
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
+
+  <Target Name="StageItemTemplates" BeforeTargets="GetZipFilesFromVSTemplates">
+    <PropertyGroup>
+      <_ItemTemplateStageDir>$(IntermediateOutputPath)ClassicItemTemplates\</_ItemTemplateStageDir>
+    </PropertyGroup>
+    <RemoveDir Directories="$(_ItemTemplateStageDir)" />
+    <ItemGroup>
+      <_ItemTemplateSource Include="$(_ItemTemplateSourceDir)item-*\**\*"
+                           Exclude="$(_ItemTemplateSourceDir)item-*\bin\**;$(_ItemTemplateSourceDir)item-*\obj\**" />
+      <_ItemTemplateSource>
+        <StagePath>$(_ItemTemplateStageDir)$([MSBuild]::MakeRelative('$(_ItemTemplateSourceDir)', '%(_ItemTemplateSource.FullPath)'))</StagePath>
+      </_ItemTemplateSource>
+    </ItemGroup>
+    <Copy SourceFiles="@(_ItemTemplateSource)"
+          DestinationFiles="@(_ItemTemplateSource->'%(StagePath)')" />
+    <ItemGroup>
+      <_ItemTemplateTokenFile Include="$(_ItemTemplateStageDir)item-user-control\UserControl.xaml;$(_ItemTemplateStageDir)item-user-control\UserControl.xaml.cs;$(_ItemTemplateStageDir)item-resource-dictionary\ResourceDictionary.xaml" />
+    </ItemGroup>
+    <!-- The CLI engine resolves these constants; classic templates must ship literal type names (#6968). -->
+    <WriteLinesToFile File="%(_ItemTemplateTokenFile.Identity)"
+                      Lines="$([MSBuild]::Escape($([System.IO.File]::ReadAllText('%(_ItemTemplateTokenFile.Identity)').Replace('__WINUI_USERCONTROL__', 'UserControl').Replace('__WINUI_RESOURCE_DICTIONARY__', 'ResourceDictionary'))))"
+                      Overwrite="true" Encoding="UTF-8" />
+    <ItemGroup>
+      <VSTemplate Include="$(_ItemTemplateStageDir)**\*.vstemplate" OutputSubPath="WinUI" />
+      <FileWrites Include="$(_ItemTemplateStageDir)**\*" />
+    </ItemGroup>
+  </Target>
 
   <Target Name="IncludeTemplatePackage" BeforeTargets="GetVsixSourceItems"
           DependsOnTargets="ResolveProjectReferences">
@@ -80,6 +108,7 @@
       <FileWrites Include="$(_TemplatesPkgdef)" />
       <VSIXSourceItem Include="@(_TemplatePackage)" VSIXSubPath="ProjectTemplates" />
       <VSIXSourceItem Include="$(_TemplatesPkgdef)" />
+      <VSIXSourceItem Include="@(_ZipItemOutDir)" VSIXSubPath="ItemTemplates" />
     </ItemGroup>
   </Target>
 
