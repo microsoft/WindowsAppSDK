@@ -17,4 +17,13 @@
             <channelToken>Stable</channelToken>
         </alwaysDisabledChannelTokens>
     </feature>
+    <feature>
+        <name>Feature_ApplicationDataUnpackagedContext</name>
+        <description>Process-default context for unpackaged ApplicationData</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Preview</channelToken>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
 </features>
