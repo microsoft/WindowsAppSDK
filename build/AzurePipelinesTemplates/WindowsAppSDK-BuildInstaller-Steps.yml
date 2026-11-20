@@ -345,6 +345,7 @@ steps:
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
+      IsOfficial: ${{ parameters.IsOfficial }}
       IsMonobuild: ${{ parameters.IsMonobuild }}
       InnerParams:
         FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall
