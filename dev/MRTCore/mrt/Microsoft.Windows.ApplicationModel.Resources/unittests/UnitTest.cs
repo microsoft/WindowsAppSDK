@@ -161,6 +161,59 @@ namespace ManagedTest
     }
 
     [TestClass]
+    [TestProperty("IsolationLevel", "Method")]
+    public class ApplicationLanguagesTest
+    {
+        [TestMethod]
+        public void SetAndClearOverride()
+        {
+            CommonTestCode.ApplicationLanguagesTest.SetAndClearOverride();
+        }
+
+        [TestMethod]
+        public void InvalidTagPreservesOverride()
+        {
+            CommonTestCode.ApplicationLanguagesTest.InvalidTagPreservesOverride();
+        }
+
+        [TestMethod]
+        public void OverrideAffectsResourceLookup()
+        {
+            CommonTestCode.ApplicationLanguagesTest.OverrideAffectsResourceLookup();
+        }
+
+        [TestMethod]
+        public void PackagedOverrideUsesWindowsStorage()
+        {
+            string originalOverride = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride;
+            try
+            {
+                // Populate Windows storage before the first Windows App SDK getter call.
+                // The process-local cache cannot supply this value, as on app relaunch.
+                Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en-US";
+                Verify.AreEqual("en-US", Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en-GB";
+                Verify.AreEqual("en-GB", Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+
+                Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = string.Empty;
+                Verify.AreEqual(string.Empty, Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+
+                // Later changes through the Windows API must also remain visible.
+                Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "fr-FR";
+                Verify.AreEqual("fr-FR", Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+
+                Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = string.Empty;
+                Verify.AreEqual(string.Empty, Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride);
+            }
+            finally
+            {
+                Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = originalOverride;
+            }
+        }
+    }
+
+    [TestClass]
     public class ResourceContextTest
     {
         [TestMethod]
