@@ -98,7 +98,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             return m_activatedEventArgs;
         }
 
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
+        // m_waitHandleForArgs is only created by Register(). If the app was activated by an
+        // AppNotification without calling Register(), the event is not initialized and there is
+        // nothing to wait for. Return the (null) args rather than fail-fasting on an
+        // uninitialized event handle. https://github.com/microsoft/WindowsAppSDK/issues/2961
+        if (m_waitHandleForArgs.get())
+        {
+            THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !m_waitHandleForArgs.wait(c_receiveArgsTimeoutInMSec));
+        }
         return m_activatedEventArgs;
     }
 
