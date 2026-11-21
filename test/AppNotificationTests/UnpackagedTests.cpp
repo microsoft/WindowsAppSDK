@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
 #include "UnpackagedTests.h"
+#include <Security.IntegrityLevel.h>
 
 void UnpackagedTests::VerifyRegisterActivatorandUnregisterActivator()
 {
@@ -201,4 +202,25 @@ void UnpackagedTests::VerifyIconPathExists()
 void UnpackagedTests::VerifyExplicitAppId()
 {
     BaseTestSuite::VerifyExplicitAppId();
+}
+
+void UnpackagedTests::VerifyElevatedShowAndGetAll()
+{
+    VERIFY_IS_TRUE(Security::IntegrityLevel::IsElevated());
+    VERIFY_IS_TRUE(winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::IsSupported());
+    BaseTestSuite::VerifyGetAllAsyncWithOneActiveToast();
+}
+
+void UnpackagedTests::VerifyElevatedUpdate()
+{
+    VERIFY_IS_TRUE(Security::IntegrityLevel::IsElevated());
+    VERIFY_IS_TRUE(winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::IsSupported());
+    BaseTestSuite::VerifyUpdateToastProgressDataUsingValidTagAndValidGroup();
+}
+
+void UnpackagedTests::VerifyElevatedRemove()
+{
+    VERIFY_IS_TRUE(Security::IntegrityLevel::IsElevated());
+    VERIFY_IS_TRUE(winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::IsSupported());
+    BaseTestSuite::VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier();
 }
