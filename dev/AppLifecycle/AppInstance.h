@@ -19,7 +19,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         // No interface public methods.
         AppInstance();
-        AppInstance(uint32_t processId, wil::unique_handle processHandle);
+        AppInstance(uint32_t processId, wil::unique_handle processHandle, wil::unique_mutex dataMutex);
         ~AppInstance()
         {
             if (m_terminationWatcherWaitHandle)
@@ -47,6 +47,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     private:
         static std::wstring GenerateRestartAgentPath();
+        static std::wstring GetDataMutexName(std::wstring const& moduleName, uint32_t processId);
         winrt::Windows::Foundation::IAsyncAction QueueRequest(Microsoft::Windows::AppLifecycle::AppActivationArguments args);
         void RemoveInstance(uint32_t processId);
         void ProcessRedirectionRequests();

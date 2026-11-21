@@ -97,11 +97,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     }
 
     AppInstance::AppInstance() :
-        AppInstance(GetCurrentProcessId(), {})
+        AppInstance(GetCurrentProcessId(), {}, {})
     {
     }
 
-    AppInstance::AppInstance(uint32_t processId, wil::unique_handle processHandle) :
+    AppInstance::AppInstance(uint32_t processId, wil::unique_handle processHandle, wil::unique_mutex dataMutex) :
+        m_dataMutex(std::move(dataMutex)),
         m_instanceHandle(std::move(processHandle))
     {
         m_processId = processId;
@@ -117,8 +118,17 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         m_innerActivated.create(wil::EventOptions::ManualReset, eventName.c_str());
 
         // This mutex should always be created first by the process it's associated with.
-        std::wstring mutexName = m_processName + L"_Mutex";
-        m_dataMutex.create(mutexName.c_str(), CREATE_MUTEX_INITIAL_OWNER, MUTEX_ALL_ACCESS);
+        if (m_isCurrent)
+        {
+            std::wstring mutexName = GetDataMutexName(m_moduleName, processId);
+            m_dataMutex.create(mutexName.c_str(), CREATE_MUTEX_INITIAL_OWNER, MUTEX_ALL_ACCESS);
+        }
+        else
+        {
+            // The caller opens the existing mutex (see GetInstancesImpl). Creating it here instead would make
+            // this thread its initial owner whenever processId has been recycled by an unrelated process.
+            THROW_HR_IF(E_INVALIDARG, !m_dataMutex);
+        }
 
         wil::mutex_release_scope_exit releaseOnExit;
         auto weak_this = get_weak();
@@ -166,6 +176,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         m_redirectionArgs.Init(m_processName + L"_RedirectionQueue");
+    }
+
+    std::wstring AppInstance::GetDataMutexName(std::wstring const& moduleName, uint32_t processId)
+    {
+        return wil::str_printf<std::wstring>(L"%s_%d_Mutex", moduleName.c_str(), processId);
     }
 
     void AppInstance::RemoveInstance(uint32_t processId)
@@ -325,9 +340,21 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             else
             {
                 wil::unique_handle process(::OpenProcess(SYNCHRONIZE, FALSE, pid));
-                if (process != nullptr)
+
+                // A live instance creates its data mutex before publishing its PID and holds it for its
+                // lifetime, while entries are only removed lazily. A missing mutex therefore means the PID
+                // was recycled by an unrelated process. Never create the mutex on that process's behalf:
+                // the creating thread would keep owning it and block every other GetInstances() caller forever.
+                wil::unique_mutex dataMutex;
+                if ((process != nullptr) && !dataMutex.try_open(GetDataMutexName(s_current->m_moduleName, pid).c_str()))
                 {
-                    instances.Append(make<AppInstance>(pid, std::move(process)));
+                    const auto openError{ ::GetLastError() };
+                    RETURN_HR_IF(HRESULT_FROM_WIN32(openError), openError != ERROR_FILE_NOT_FOUND);
+                }
+
+                if (dataMutex)
+                {
+                    instances.Append(make<AppInstance>(pid, std::move(process), std::move(dataMutex)));
                 }
                 else
                 {
