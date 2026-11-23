@@ -73,6 +73,17 @@ namespace Test::Package::Tests
             return true;
         }
 
+        TEST_METHOD(IsPackageFeatureSupported_ExportAlias)
+        {
+            const auto module{ ::GetModuleHandleW(L"Microsoft.WindowsAppRuntime.dll") };
+            VERIFY_IS_NOT_NULL(module);
+            const auto legacyExport{ ::GetProcAddress(module, "IsPackageFeatureSupported") };
+            const auto renamedExport{ ::GetProcAddress(module, "WindowsAppRuntime_IsPackageFeatureSupported") };
+            VERIFY_IS_NOT_NULL(legacyExport);
+            VERIFY_IS_NOT_NULL(renamedExport);
+            VERIFY_IS_TRUE(legacyExport == renamedExport);
+        }
+
         TEST_METHOD(GetPackageFilePath_InvalidParameter)
         {
             PCWSTR packageFullName{ Framework_PackageFullName };

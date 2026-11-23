@@ -52,7 +52,7 @@
   "constraints": {
     "winuiProject": {
       "type": "project-capability",
-      "args": "CSharp & Msix"
+      "args": "CSharp & WinUI"
     }
   },
   "primaryOutputs": [

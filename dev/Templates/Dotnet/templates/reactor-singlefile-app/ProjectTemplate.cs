@@ -1,5 +1,4 @@
 #:package Microsoft.UI.Reactor@$ReactorVersion$
-#:package Microsoft.WindowsAppSDK@$WindowsAppSdkVersion$
 #:package Microsoft.Windows.SDK.BuildTools.WinApp@$WindowsSdkBuildToolsWinAppVersion$
 #:property OutputType=WinExe
 #:property TargetFramework=$DotNetVersion$-windows10.0.26100.0

@@ -1,4 +1,7 @@
 parameters:
+- name: IsOfficial
+  type: boolean
+  default: true
 - name: "SignOutput"
   type: boolean
   default: false
@@ -14,6 +17,10 @@ parameters:
 - name: IsMonobuild
   type: boolean
   default: false
+# Run after the final build/metadata merge, before signing and artifact staging.
+- name: preSignSteps
+  type: stepList
+  default: []
 
 steps:
 - template: WindowsAppSDK-SetupBuildEnvironment-Steps.yml
@@ -93,9 +100,13 @@ steps:
 # component detection must happen *within* the build task
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
+- ${{ each step in parameters.preSignSteps }}:
+  - ${{ step }}
+
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
+      IsOfficial: ${{ parameters.IsOfficial }}
       IsMonobuild: ${{ parameters.IsMonobuild }}
       InnerParams:
         FolderPath: '$(build.SourcesDirectory)\BuildOutput'
@@ -113,4 +124,3 @@ steps:
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
-

@@ -22,6 +22,9 @@ Dotnet\templates\
                 templatestrings.<locale>.json
         ProjectTemplate.csproj
         Package.appxmanifest
+        .vscode\launch.json          (VS Code debugging; app templates only)
+        .vscode\extensions.json      (VS Code extension; app templates only)
+        AGENTS.md                   (WinApp CLI guidance; app templates only)
         App.xaml / MainWindow.xaml / ...
 ```
 

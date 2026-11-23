@@ -37,6 +37,25 @@ public partial class UnitTestApp : Application
     /// Invoked when the application is launched.
     /// </summary>
     /// <param name="args">Details about the launch request and process.</param>
+// #if (TestRunner == "Microsoft.Testing.Platform")
+    protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    {
+        _window = new UnitTestAppWindow();
+        _window.Activate();
+        UITestMethodAttribute.DispatcherQueue = _window.DispatcherQueue;
+
+        try
+        {
+            Environment.ExitCode = await MicrosoftTestingPlatformApplication.RunAsync(
+                Environment.GetCommandLineArgs()[1..]);
+        }
+        finally
+        {
+            _window.Close();
+            Exit();
+        }
+    }
+// #else
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.CreateDefaultUI();
@@ -48,4 +67,5 @@ public partial class UnitTestApp : Application
 
         Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.Run(Environment.CommandLine);
     }
+// #endif
 }

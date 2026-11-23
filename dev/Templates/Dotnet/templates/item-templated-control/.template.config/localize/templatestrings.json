@@ -1,0 +1,7 @@
+{
+  "name": "WinUI Templated Control (Item)",
+  "author": "Microsoft",
+  "description": "Adds a WinUI 3 templated control. By default also creates Themes\\Generic.xaml with a minimal default style. If your project already has a Themes\\Generic.xaml, pass --IncludeDefaultStyle false and manually add a <Style TargetType=\"local:<Name>\"> block to it; otherwise the new control will render blank at runtime.",
+  "symbols/rootNamespace/description": "Namespace for the generated item.",
+  "symbols/IncludeDefaultStyle/description": "Set to false when the project already has a Themes\\Generic.xaml; you must then manually add a <Style TargetType=\"local:<Name>\"> for the new control."
+}

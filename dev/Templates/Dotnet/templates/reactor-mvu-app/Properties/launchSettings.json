@@ -3,6 +3,9 @@
 //#if (!unpackaged)
     "$projectname$ (Package)": {
       "commandName": "MsixPackage"
+    },
+    "$projectname$ (Unpackaged)": {
+      "commandName": "Project"
     }
 //#else
     "$projectname$ (Unpackaged)": {
@@ -10,7 +13,7 @@
     },
     "$projectname$ (Unpackaged, Devtools)": {
       "commandName": "Project",
-      "commandLineArgs": "--devtools"
+      "commandLineArgs": "--devtools app"
     }
 //#endif
   }

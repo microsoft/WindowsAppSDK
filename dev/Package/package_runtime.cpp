@@ -12,14 +12,14 @@ namespace appmodel
 static bool IsPathSupported_Mutable()
 {
     // Cache the answer on first query
-    static bool s_isSupported{ !!::IsPackageFeatureSupported(PackageFeature_PackagePath_Mutable) };
+    static bool s_isSupported{ !!::WindowsAppRuntime_IsPackageFeatureSupported(PackageFeature_PackagePath_Mutable) };
     return s_isSupported;
 }
 
 static bool IsPathSupported_ExternalLocation()
 {
     // Cache the answer on first query
-    static bool s_isSupported{ !!::IsPackageFeatureSupported(PackageFeature_PackagePath_ExternalLocation) };
+    static bool s_isSupported{ !!::WindowsAppRuntime_IsPackageFeatureSupported(PackageFeature_PackagePath_ExternalLocation) };
     return s_isSupported;
 }
 
@@ -322,7 +322,7 @@ inline GetPackageFilePathOptions ToEffectiveOptions(
 }
 }
 
-STDAPI_(BOOL) IsPackageFeatureSupported(
+STDAPI_(BOOL) WindowsAppRuntime_IsPackageFeatureSupported(
     PackageFeature feature) noexcept
 {
     switch (feature)

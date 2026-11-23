@@ -23,20 +23,6 @@
       "isVisible": "true"
     },
     {
-      "id": "publisherDn",
-      "name": {
-        "text": "Publisher Distinguished Name"
-      },
-      "isVisible": "true"
-    },
-    {
-      "id": "publisherDisplay",
-      "name": {
-        "text": "Publisher Display Name"
-      },
-      "isVisible": "true"
-    },
-    {
       "id": "windowsAppSdkVersion",
       "name": {
         "text": "Windows App SDK version (* = latest)"
@@ -65,11 +51,40 @@
       "isVisible": "false"
     },
     {
-      "id": "microsoftNetTestSdkVersion",
+      "id": "TestRunner",
       "name": {
-        "text": "Microsoft.NET.Test.Sdk version (* = latest)"
+        "text": "Test runner"
       },
-      "isVisible": "false"
+      "isVisible": "true",
+      "persistenceScope": "shared"
+    },
+    {
+      "id": "Fixture",
+      "name": {
+        "text": "Fixtures"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "Packaging",
+      "name": {
+        "text": "Packaging"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDn",
+      "name": {
+        "text": "Publisher Distinguished Name"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "publisherDisplay",
+      "name": {
+        "text": "Publisher Display Name"
+      },
+      "isVisible": "true"
     }
   ]
 }

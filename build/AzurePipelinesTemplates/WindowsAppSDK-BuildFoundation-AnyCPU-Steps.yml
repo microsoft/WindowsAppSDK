@@ -1,4 +1,7 @@
 parameters:
+- name: IsOfficial
+  type: boolean
+  default: true
 - name: "SignOutput"
   type: boolean
   default: false
@@ -63,6 +66,7 @@ steps:
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
+      IsOfficial: ${{ parameters.IsOfficial }}
       IsMonobuild: ${{ parameters.IsMonobuild }}
       InnerParams:
         FolderPath: '$(build.SourcesDirectory)\BuildOutput'
@@ -81,4 +85,3 @@ steps:
   inputs:
     SourceFolder: '$(build.SourcesDirectory)\BuildOutput'
     TargetFolder: '$(ob_outputDirectory)'
-
