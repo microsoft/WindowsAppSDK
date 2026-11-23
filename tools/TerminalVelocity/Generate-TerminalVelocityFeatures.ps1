@@ -108,23 +108,26 @@ Class Feature
         $this.Name = $entry.name
         $this.State = ConvertTo-FeatureState $entry.state
 
-        # TODO: Remove the temp workaround of downgrading to StrictModel 1.0 once b#52128443 is fixed.
-        Set-StrictMode -Version 1.0
-        $this.Id = $entry.id
-        $this.ChannelTokenStates = [System.Collections.Generic.Dictionary[string, State]]::new()
-        $this.DisabledReleaseToken = $Null -Ne $entry.alwaysDisabledReleaseTokens
-
-        ForEach ($b in $entry.alwaysDisabledChannelTokens.channelToken)
+        $namespaceManager = [System.Xml.XmlNamespaceManager]::new($entry.OwnerDocument.NameTable)
+        $namespaceManager.AddNamespace("tvf", $entry.NamespaceURI)
+        $idElement = $entry.SelectSingleNode("tvf:id", $namespaceManager)
+        if ($Null -Ne $idElement)
         {
-            $this.ChannelTokenStates[$b] = [State]::AlwaysDisabled
+            $this.Id = $idElement.InnerText
+        }
+        $this.ChannelTokenStates = [System.Collections.Generic.Dictionary[string, State]]::new()
+        $this.DisabledReleaseToken = $Null -Ne $entry.SelectSingleNode("tvf:alwaysDisabledReleaseTokens", $namespaceManager)
+
+        ForEach ($b in $entry.SelectNodes("tvf:alwaysDisabledChannelTokens/tvf:channelToken", $namespaceManager))
+        {
+            $this.ChannelTokenStates[$b.InnerText] = [State]::AlwaysDisabled
         }
 
         # AlwaysEnabled channels win over AlwaysDisabled channels
-        ForEach ($b in $entry.alwaysEnabledChannelTokens.channelToken)
+        ForEach ($b in $entry.SelectNodes("tvf:alwaysEnabledChannelTokens/tvf:channelToken", $namespaceManager))
         {
-            $this.ChannelTokenStates[$b] = [State]::AlwaysEnabled
+            $this.ChannelTokenStates[$b.InnerText] = [State]::AlwaysEnabled
         }
-        Set-StrictMode -Version 3.0
     }
 
     [string] PreprocessorName([string]$namespace)

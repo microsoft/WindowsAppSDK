@@ -1,0 +1,6 @@
+{
+  "name": "WinUI User Control (Item)",
+  "author": "Microsoft",
+  "description": "Adds a WinUI 3 UserControl with markup and code-behind.",
+  "symbols/rootNamespace/description": "Namespace for the generated item."
+}

@@ -1,3 +1,4 @@
 {
-  "icon": "icon.ico"
+  "icon": "icon.ico",
+  "itemHierarchyPaths": ["WinUI"]
 }

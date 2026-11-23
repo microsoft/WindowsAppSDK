@@ -1,0 +1,6 @@
+{
+  "name": "WinUI Blank Page (Item)",
+  "author": "Microsoft",
+  "description": "Adds a WinUI 3 Page with XAML markup and code-behind.",
+  "symbols/rootNamespace/description": "Namespace for the generated item."
+}

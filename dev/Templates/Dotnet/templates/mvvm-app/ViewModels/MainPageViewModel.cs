@@ -11,10 +11,10 @@ namespace $safeprojectname$.ViewModels;
 public partial class MainPageViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string _greeting = "Hello, WinUI!";
+    public partial string Greeting { get; set; } = "Hello, WinUI!";
 
     [ObservableProperty]
-    private int _counter;
+    public partial int Counter { get; set; }
 
     [RelayCommand]
     private void Increment()

@@ -9,7 +9,7 @@
     Review the current environment and fix or warn if anything is amiss. This includes...
     * Developer mode is enabled
     * LongPath support is enabled
-    * Visual Studio 2022 is installed and properly configured
+    * Visual Studio 2022 or 2026 is installed and properly configured
     * Windows SDK(s) are installed
     * Nuget.exe is installed
     * Test certificate to sign test MSIX packages is installed
@@ -638,41 +638,48 @@ function Run-Process([string]$exe, [string]$arguments, [Ref][string]$stderr, [in
 }
 
 $global:vspath = ''
-function Get-VisualStudio2022InstallPath
+$global:vsversion = $null
+function Get-VisualStudioInstallPath
 {
-    Write-Verbose "Detecting VisualStudio 2022..."
+    Write-Verbose "Detecting Visual Studio 2022 or 2026..."
+    $global:vspath = ''
+    $global:vsversion = $null
     $vswhere_exe = Get-VSWhere
     if ([string]::IsNullOrEmpty($vswhere_exe))
     {
         return $null
     }
-    $args = " -latest -products * -version [17.0,18.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
+    $args = " -latest -products * -version [17.0,19.0) -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format json"
     Write-Verbose "Executing $vswhere_exe $args"
-    $path = Run-Process $vswhere_exe $args
-    $path = $path -replace [environment]::NewLine, ''
-    Write-Verbose "Visual Studio 2022 detected at $path"
-    $global:vspath = $path
-    return $path
+    $instances = Run-Process $vswhere_exe $args | ConvertFrom-Json
+    if (-not $instances)
+    {
+        return $null
+    }
+    $global:vspath = $instances[0].installationPath
+    $global:vsversion = [version]$instances[0].installationVersion
+    Write-Verbose "Visual Studio $global:vsversion detected at $global:vspath"
+    return $global:vspath
 }
 
 function Test-VisualStudioComponent
 {
     param(
-        [String]$component,
-        [String]$versionRange
+        [String]$component
     )
 
     $vswhere_exe = Get-VSWhere
-    if ([string]::IsNullOrEmpty($global:vswhere))
+    if ([string]::IsNullOrEmpty($vswhere_exe))
     {
-        return 0
+        return 1
     }
-    $args = " -latest -products * -version $versionRange -requires $component -property productDisplayVersion"
+    $versionRange = "[$global:vsversion,$global:vsversion]"
+    $args = " -products * -version $versionRange -requires $component -property installationPath"
     Write-Verbose "Executing $vswhere_exe $args"
     try
     {
         $value = Run-Process $vswhere_exe $args -throwIfExitCodeIsFailure $true
-        if ([string]::IsNullOrEmpty($value))
+        if (($value -split '\r?\n') -notcontains $global:vspath)
         {
             throw "Component"
         }
@@ -682,7 +689,7 @@ function Test-VisualStudioComponent
     catch
     {
         $e = $_
-        Write-Host "...ERROR $($e): $($component) not found or valid" -ForegroundColor Red -BackgroundColor Black
+        Write-Host "...ERROR $($e): $($component) not found or valid in $global:vspath" -ForegroundColor Red -BackgroundColor Black
         return 1
     }
 }
@@ -692,9 +699,8 @@ function Test-VisualStudioComponents
     Write-Verbose "Detecting VisualStudio components..."
     $root = Get-ProjectRoot
     $path = Join-Path $root 'docs\Coding-Guidelines'
-    $filename = Join-Path $path 'VisualStudio2022.vsconfig'
-
-    $versionRange = "[17.0,18.0)"
+    $config = if ($global:vsversion.Major -eq 18) { 'VisualStudio2026.vsconfig' } else { 'VisualStudio2022.vsconfig' }
+    $filename = Join-Path $path $config
 
     $json = Get-Content $filename -EA:Stop -Raw | ConvertFrom-Json
     Write-Host "...Scanning $($json.components.Length) components in $($filename)" -NoNewline
@@ -703,10 +709,11 @@ function Test-VisualStudioComponents
     ForEach ($component in $components)
     {
         Write-Host "." -NoNewline
-        $errors += (Test-VisualStudioComponent $component $versionRange)
+        $errors += (Test-VisualStudioComponent $component)
     }
     if ($errors -gt 0)
     {
+        $global:issues += $errors
         Write-Host ""
         return $false
     }
@@ -714,16 +721,17 @@ function Test-VisualStudioComponents
     return $true
 }
 
-function Test-VisualStudio2022Install
+function Test-VisualStudioInstall
 {
     $ok = $true
-    $path = Get-VisualStudio2022InstallPath
+    $path = Get-VisualStudioInstallPath
     if ([string]::IsNullOrEmpty($path))
     {
         $global:issues++
         $ok = $false
+        Write-Host "ERROR: Visual Studio 2022 or 2026 with C++ build tools not found" -ForegroundColor Red -BackgroundColor Black
     }
-    Write-Host "VisualStudio 2022...$path"
+    Write-Host "Visual Studio...$path"
     return $ok
 }
 
@@ -1402,18 +1410,51 @@ function Start-TAEFService
         return
     }
 
-    $ok = Start-Service 'TE.Service'
-    $service = Get-Service -ErrorAction SilentlyContinue |Where-Object {$_.Name -eq "TE.Service"}
-    if ($service.Status -ne "Running")
+    # Start-Service waits forever if the service hangs while starting, which once used up a whole test job. Wait a
+    # bounded time instead, and if the service still isn't running, kill its process and try once more.
+    $timeout = New-TimeSpan -Minutes 2
+    $attempts = 2
+    for ($attempt = 1; $attempt -le $attempts; $attempt++)
     {
-        Write-Host "Start TAEF service...Failed"
-        $global:issues++
+        $service = Get-Service -Name 'TE.Service'
+        try
+        {
+            if ($service.Status -eq 'Stopped')
+            {
+                $service.Start()
+            }
+            $service.WaitForStatus('Running', $timeout)
+            Write-Host "Start TAEF service...OK"
+            return $true
+        }
+        catch
+        {
+            $service.Refresh()
+            $processId = 0
+            $serviceInfo = Get-CimInstance -ClassName Win32_Service -Filter "Name='TE.Service'"
+            if ($null -ne $serviceInfo)
+            {
+                $processId = $serviceInfo.ProcessId
+            }
+            Write-Host "Start TAEF service...Not running after $($timeout.TotalMinutes) minutes (attempt $attempt of $attempts, status $($service.Status), process $processId): $($_.Exception.Message)"
+            if ($processId -gt 0)
+            {
+                Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
+                try
+                {
+                    $service.WaitForStatus('Stopped', (New-TimeSpan -Seconds 30))
+                }
+                catch
+                {
+                    $service.Refresh()
+                    Write-Host "Stop TAEF service process $processId...Status $($service.Status)"
+                }
+            }
+        }
     }
-    else
-    {
-        Write-Host "Start TAEF service...OK"
-        return $true
-    }
+
+    Write-Host "Start TAEF service...Failed"
+    $global:issues++
 }
 
 function Stop-TAEFService
@@ -1728,7 +1769,7 @@ if (($CheckAll -ne $false) -Or ($CheckVCLibs -ne $false))
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
-    $ok = Test-VisualStudio2022Install
+    $ok = Test-VisualStudioInstall
     if ($ok -eq $true)
     {
         $null = Test-VisualStudioComponents

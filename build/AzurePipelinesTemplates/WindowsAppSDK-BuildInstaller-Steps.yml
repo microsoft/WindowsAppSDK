@@ -285,6 +285,18 @@ steps:
     platform: $(buildPlatform)
   condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
 
+- ${{ if eq(parameters.IsMonobuild, true) }}:
+  - task: PowerShell@2
+    name: GenerateInstallerVersionInfo
+    displayName: 'Generate unified installer version resources'
+    # Inherit the optional pipeline variable instead of mapping an undefined macro.
+    inputs:
+      filePath: '$(Build.SourcesDirectory)\$(foundationRepoPath)build\VersionInfo\GenerateVersionInfo.ps1'
+      arguments: >
+        -ProductMajor "$(MajorVersion)"
+        -ProductMinor "$(MinorVersion)"
+    condition: and(succeeded(), ne(variables.SkipInstallerBuild, true))
+
 - task: VSBuild@1
   displayName: 'Build Windows App Runtime Install'
   inputs:
@@ -333,6 +345,7 @@ steps:
 - ${{ if eq(parameters.SignOutput, 'true') }}:
   - template: WindowsAppSDK-EsrpCodeSigning-Wrapper.yml
     parameters:
+      IsOfficial: ${{ parameters.IsOfficial }}
       IsMonobuild: ${{ parameters.IsMonobuild }}
       InnerParams:
         FolderPath: $(foundationRepoPath)BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppRuntimeInstall

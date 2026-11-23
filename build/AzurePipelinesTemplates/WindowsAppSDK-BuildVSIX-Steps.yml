@@ -246,6 +246,7 @@ steps:
 
   - template: WindowsAppSDK-SignPackageContents-steps.yml
     parameters:
+      IsOfficial: ${{ parameters.IsOfficial }}
       IsMonobuild: ${{ parameters.IsMonobuild }}
       inputPackageDirectory: '$(Agent.TempDirectory)/UnsignedVSIX'
       outputPackageDirectory: '$(ob_outputDirectory)'
