@@ -14,6 +14,83 @@
 
 #include <filesystem>
 
+// Publish the framework package's install directory via env var.
+// WinUI's LoadLibraryAbs consults this when a sibling DLL is not next to
+// Microsoft.UI.Xaml.dll (the hybrid case, where Microsoft.UI.Xaml.dll is
+// pinned in the app's bin dir while siblings remain in the framework).
+// In non-hybrid apps the env var is still set but WinUI's primary path
+// (muxPath) succeeds first and this fallback never fires.
+static void SetFrameworkPathEnvironmentVariable(PCWSTR frameworkPath)
+{
+    SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_FRAMEWORK_PATH", frameworkPath);
+}
+
+// Ensure Microsoft.WindowsAppRuntime.dll is loaded into the process, preferring
+// the pinned (NEW) copy in BASE_DIRECTORY (app bin) over the framework copy.
+// This is the URFW-detour bootstrapping point: the detour is installed by this
+// DLL's DllMain, so whichever physical file gets loaded first determines which
+// version of UrfwInitialize runs. If the framework copy were loaded first
+// (e.g. because the OS package graph raises framework-dir search priority
+// above app-dir), an older UrfwInitialize might early-return on Win11 24H2+
+// and skip detour installation, causing pinned class activations to fall
+// through to combase Step 4 and use the framework version instead.
+//
+// Loading by absolute path with LOAD_WITH_ALTERED_SEARCH_PATH bypasses the
+// OS DLL search order entirely, making this race-free regardless of how the
+// package graph is later configured.
+//
+// Loads APP_DIR pin if present; otherwise falls back to framework path.
+// Framework fallback is what runs the DLL's DllMain → URFW always-on detour
+// installs. Pass nullptr only if you'll re-invoke with framework path later
+// (Win11 path does this around AddPackageDependency).
+static wil::unique_hmodule EnsureFoundationDllLoaded(PCWSTR frameworkPath) noexcept
+{
+    // 1. Prefer the pinned copy in app dir.
+    WCHAR baseDir[MAX_PATH]{};
+    const DWORD chars{ ::GetEnvironmentVariableW(
+        L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", baseDir, ARRAYSIZE(baseDir)) };
+    if (chars > 0 && chars < ARRAYSIZE(baseDir))
+    {
+        std::wstring pinned{ baseDir };
+        pinned += L"Microsoft.WindowsAppRuntime.dll";
+        if (::GetFileAttributesW(pinned.c_str()) != INVALID_FILE_ATTRIBUTES)
+        {
+            wil::unique_hmodule hmod{ ::LoadLibraryExW(pinned.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
+            if (hmod)
+            {
+                return hmod;
+            }
+        }
+    }
+
+    // 2. Fall back to the framework copy.
+    if (frameworkPath != nullptr)
+    {
+        std::wstring framework{ frameworkPath };
+        framework += L"\\Microsoft.WindowsAppRuntime.dll";
+        return wil::unique_hmodule{ ::LoadLibraryExW(framework.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
+    }
+
+    // 3. No fallback available; caller is responsible for ensuring the DLL
+    // gets loaded later (e.g. Win11 path relies on package graph + later PInvoke).
+    return wil::unique_hmodule{};
+}
+
+// Resolve a framework package's install path from its full name (Win11 path
+// receives only a full name from MddCore::Win11::AddPackageDependency).
+static std::wstring GetFrameworkPackagePath(PCWSTR packageFullName)
+{
+    UINT32 pathLength{ 0 };
+    const auto rc{ GetPackagePathByFullName(packageFullName, &pathLength, nullptr) };
+    if (rc != ERROR_INSUFFICIENT_BUFFER)
+    {
+        THROW_WIN32(rc);
+    }
+    auto path{ std::make_unique<WCHAR[]>(pathLength) };
+    THROW_IF_WIN32_ERROR(GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
+    return std::wstring(path.get());
+}
+
 HRESULT _MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -417,6 +494,11 @@ void FirstTimeInitialization(
     const UINT32 minVersionToUseWin11Support{ 0x00010007 };
     if ((majorMinorVersion >= minVersionToUseWin11Support) && MddCore::Win11::IsSupported())
     {
+        // Try APP_DIR pin first (before AddPackageDependency raises framework
+        // search priority). Framework fallback below covers the null case.
+        // Capture into g_windowsAppRuntimeDll or unique_hmodule frees it.
+        g_windowsAppRuntimeDll = EnsureFoundationDllLoaded(nullptr);
+
         // Add the framework package to the package graph
         const std::wstring frameworkPackageFamilyName{ GetFrameworkPackageFamilyName(majorMinorVersion, packageVersionTag.c_str()) };
         const MddPackageDependencyProcessorArchitectures architectureFilter{};
@@ -429,6 +511,16 @@ void FirstTimeInitialization(
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
         wil::unique_process_heap_string packageFullName;
         THROW_IF_FAILED(MddCore::Win11::AddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, &packageFullName));
+
+        // Publish framework path for WinUI's sibling-DLL fallback (see helper comment).
+        SetFrameworkPathEnvironmentVariable(GetFrameworkPackagePath(packageFullName.get()).c_str());
+
+        // Framework fallback when APP_DIR had no pin — runs DllMain → URFW
+        // detour. Without this, non-Foundation hybrid apps lose routing.
+        if (!g_windowsAppRuntimeDll)
+        {
+            g_windowsAppRuntimeDll = EnsureFoundationDllLoaded(GetFrameworkPackagePath(packageFullName.get()).c_str());
+        }
 
         // Update the activity context
         auto& activityContext{ WindowsAppRuntime::MddBootstrap::Activity::Context::Get() };
@@ -469,12 +561,14 @@ void FirstTimeInitialization(
         // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
         wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
 
-        auto windowsAppRuntimeDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.WindowsAppRuntime.dll" };
-        wil::unique_hmodule windowsAppRuntimeDll(LoadLibraryEx(windowsAppRuntimeDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
+        // HybridDeploy: prefer the pinned (NEW) Microsoft.WindowsAppRuntime.dll
+        // from app dir if present; otherwise fall back to the framework copy.
+        // See helper comment for rationale.
+        wil::unique_hmodule windowsAppRuntimeDll{ EnsureFoundationDllLoaded(frameworkPackageInfo->path) };
         if (!windowsAppRuntimeDll)
         {
             const auto lastError{ GetLastError() };
-            THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppRuntimeDllFilename.c_str());
+            THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading Microsoft.WindowsAppRuntime.dll (framework=%ls)", lastError, lastError, frameworkPackageInfo->path);
         }
 
         // Add the framework package to the package graph
@@ -487,6 +581,9 @@ void FirstTimeInitialization(
         const MddAddPackageDependencyOptions addOptions{};
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
         THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
+
+        // Publish framework path for WinUI's sibling-DLL fallback (see helper comment).
+        SetFrameworkPathEnvironmentVariable(frameworkPackageInfo->path);
 
         // Remove our temporary path addition
         RemoveFrameworkFromPath(frameworkPackageInfo->path);
