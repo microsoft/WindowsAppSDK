@@ -11,7 +11,7 @@
 #define PCH_H
 
 #include <unknwn.h>
-#include <Windows.h>
+#include <windows.h>
 #include <sddl.h>
 
 #include <wil/result.h>
