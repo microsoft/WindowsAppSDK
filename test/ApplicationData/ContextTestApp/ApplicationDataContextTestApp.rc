@@ -1,0 +1,16 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+#include <winres.h>
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+ApplicationData.Publisher ApplicationDataContext
+BEGIN
+    L"TestApplicationDataContext_ResourcePublisher\0"
+END
+
+ApplicationData.Product ApplicationDataContext
+BEGIN
+    L"ResourceProduct\0"
+END
