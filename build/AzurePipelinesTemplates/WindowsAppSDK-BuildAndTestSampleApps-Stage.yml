@@ -135,6 +135,7 @@ stages:
       - template: WindowsAppSDK-RunTestsInPipeline-Job.yml
         parameters:
           jobName: TestSamplesArm64
+          buildPlatform: arm64
           samplesArtifactName: ${{ parameters.SamplesBuildOutputArtifactName }}_arm64
           callingStage: 'TestSampleApps'
           sampleFeatureAreasList: ${{ parameters.sampleFeatureAreasList }}
