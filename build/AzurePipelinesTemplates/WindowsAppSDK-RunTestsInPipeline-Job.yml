@@ -68,7 +68,9 @@ jobs:
     #
     # The x64/x86 legs of this same template are the primary producers of the javascript, csharp and
     # powershell snapshots, so CodeQL is deliberately left enabled for them. See https://aka.ms/codeql3000-faq
-    Codeql.Enabled: $[ iif(eq(variables['buildPlatform'], 'arm64'), 'false', 'true') ]
+    # Use the template platform so this override is available before matrix expansion.
+    ${{ if eq(parameters.buildPlatform, 'arm64') }}:
+      Codeql.Enabled: false
   steps:
     - checkout: self
       path: s
