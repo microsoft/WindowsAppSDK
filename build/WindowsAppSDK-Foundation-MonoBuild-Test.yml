@@ -167,7 +167,6 @@ extends:
         parameters:
           componentName: 'Foundation'
           sourceBuildId: ${{ parameters.sourceBuildId }}
-          retryParentTestGate: ${{ eq(parameters.sourcePipeline, 'Monobuild-Official') }}
           dependsOn:
             - Test_x86
             - Test_x64
