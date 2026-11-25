@@ -225,6 +225,22 @@ steps:
         TargetFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\WindowsAppSDK.Test.SampleTests\net6'
         Contents: '**'
   
+  # On Windows 10, Windows Update also installs Store updates for the inbox apps. On a VM that has been running for
+  # about two hours, it can start doing that during the tests, and if it overlaps them installing and launching the DDLM,
+  # Windows can reject every later DDLM activation with E_APPLICATION_NOT_REGISTERED, failing every test that uses the
+  # Bootstrapper. Stop Windows Update for the tests. 'Restore Windows Update' below puts it back, because these VMs also
+  # run other pipelines' jobs.
+  - task: powershell@2
+    displayName: 'Stop Windows Update'
+    # The script reports its own problems and never fails, and caps its waits. Don't let a hang fail the job.
+    continueOnError: true
+    timeoutInMinutes: 15
+    inputs:
+      targetType: filePath
+      filePath: build\StopWindowsUpdate.ps1
+      arguments: -StatePath '$(Agent.TempDirectory)\WindowsUpdateState.json'
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   # At the test user's first sign-in, App Readiness defers part of its work for about 16 minutes. On a VM that signed in
   # just before the job, it resumes during the tests, and if it overlaps them installing and launching the DDLM, Windows
   # can reject every later DDLM activation with E_APPLICATION_NOT_REGISTERED, failing every test that uses the
@@ -262,6 +278,19 @@ steps:
       targetType: filePath
       filePath: build\ShowAppReadinessActivity.ps1
       arguments: -Since '$(AppReadinessWaitEndTime)'
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  # Shows whether Windows Update still deployed packages during the tests, and restores it (see 'Stop Windows Update'
+  # above). Runs even if the job failed or was canceled, so the VM goes back to its usual update settings.
+  - task: powershell@2
+    displayName: 'Restore Windows Update'
+    condition: always()
+    continueOnError: true
+    timeoutInMinutes: 10
+    inputs:
+      targetType: filePath
+      filePath: build\RestoreWindowsUpdate.ps1
+      arguments: -StatePath '$(Agent.TempDirectory)\WindowsUpdateState.json'
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - template: WindowsAppSDK-ConvertWttLogToXUnit-Wrapper.yml
