@@ -3,13 +3,16 @@
 
 <#
 .SYNOPSIS
-    Shows what Windows Update did during the tests, and restores the services StopWindowsUpdate.ps1 stopped.
+    Shows what Windows Update and the Microsoft Store did during the tests, and restores the services
+    StopWindowsUpdate.ps1 stopped.
 
 .DESCRIPTION
     Run this after the tests, even if they failed. It reads the settings StopWindowsUpdate.ps1 saved to -StatePath, and
     reports whether anything enabled or started those services again during the tests. It lists the package deployments
     started since StopWindowsUpdate.ps1 ran, by the process that requested them, so each run shows whether Windows
-    Update still deployed packages during the tests. It then restores each service's startup type and starts the
+    Update or the Microsoft Store still deployed packages during the tests. It also lists the changes Windows logged to
+    those services and to the Windows Update Medic Service since then: startup type changes, with the account that made
+    them, and, where Windows logs them, starts and stops. It then restores each service's startup type and starts the
     services that were running, because the test VMs also run other pipelines' jobs.
 
     If StopWindowsUpdate.ps1 saved no settings, for example on Windows versions other than Windows 10 client, there's
@@ -44,6 +47,43 @@ function Get-ServiceState([string]$Name) {
     [pscustomobject]@{ Name = $Name; Status = [string]$service.Status; Start = $start }
 }
 
+# Returns the changes the Service Control Manager logged to the services in $Names since $Since: startup type changes
+# (event 7040), with the account that made them, and starts and stops (event 7036), which not every Windows version logs.
+function Get-ServiceChange([datetime]$Since, [string[]]$Names) {
+    $byDisplayName = @{}
+    foreach ($name in $Names) {
+        $service = Get-Service -Name $name -ErrorAction SilentlyContinue
+        if ($service) {
+            $byDisplayName[[string]$service.DisplayName] = $name
+        }
+    }
+    $filter = @{ LogName = 'System'; ProviderName = 'Service Control Manager'; Id = 7036, 7040; StartTime = $Since }
+    foreach ($entry in @(Get-WinEvent -FilterHashtable $filter -ErrorAction SilentlyContinue)) {
+        $data = @(([xml]$entry.ToXml()).SelectNodes("//*[local-name()='Data']") | ForEach-Object { $_.InnerText })
+        # Event 7040 names the service in its fourth value; event 7036 only has its display name.
+        $name = if (($entry.Id -eq 7040) -and ($data.Count -ge 4)) { $data[3] } elseif ($data.Count -and $data[0]) { $byDisplayName[$data[0]] }
+        if ($name -notin $Names) {
+            continue
+        }
+        $change = if ($entry.Id -eq 7040) {
+            $account = 'an unknown account'
+            if ($entry.UserId) {
+                try {
+                    $account = $entry.UserId.Translate([Security.Principal.NTAccount]).Value
+                }
+                catch {
+                    $account = $entry.UserId.Value
+                }
+            }
+            'startup type changed from {0} to {1}, by {2}' -f $data[1], $data[2], $account
+        }
+        else {
+            "entered the $($data[1]) state"
+        }
+        [pscustomobject]@{ Time = $entry.TimeCreated.ToUniversalTime(); Name = $name; Change = $change }
+    }
+}
+
 try {
     if (-not (Test-Path -LiteralPath $StatePath)) {
         Write-Host 'StopWindowsUpdate.ps1 saved no service settings, so there is nothing to restore.'
@@ -67,15 +107,29 @@ try {
         foreach ($group in @($deployments | Group-Object Caller | Sort-Object Count -Descending)) {
             Write-Host ('  {0,5} by {1}' -f $group.Count, $(if ($group.Name) { $group.Name } else { 'an unknown process' }))
         }
-        $byWindowsUpdate = @($deployments | Where-Object { $_.Caller -match 'wuauserv' } | Sort-Object Time)
-        if ($byWindowsUpdate.Count) {
-            Write-Host "Windows Update deployed packages during the tests:"
-            foreach ($deployment in $byWindowsUpdate) {
-                Write-Host ('  {0} {1}' -f $deployment.Time.ToString($timeFormat), $deployment.Package)
+        $byUpdaters = @($deployments | Where-Object { $_.Caller -match 'wuauserv|InstallService' } | Sort-Object Time)
+        if ($byUpdaters.Count) {
+            Write-Host 'Windows Update or the Microsoft Store deployed packages during the tests:'
+            foreach ($deployment in $byUpdaters) {
+                Write-Host ('  {0} {1} by {2}' -f $deployment.Time.ToString($timeFormat), $deployment.Package, $deployment.Caller)
             }
         }
         else {
-            Write-Host 'Windows Update deployed no packages during the tests.'
+            Write-Host 'Neither Windows Update nor the Microsoft Store deployed packages during the tests.'
+        }
+
+        # Shows when, and by whom, something changed the services, for example the Windows Update Medic Service setting
+        # wuauserv back to start on demand.
+        $names = @($saved.Services | ForEach-Object { $_.Name }) + 'WaaSMedicSvc'
+        $changes = @(Get-ServiceChange -Since $stoppedAt.ToLocalTime() -Names $names | Sort-Object Time)
+        if ($changes.Count) {
+            Write-Host 'Changes to the services logged after Windows Update was stopped:'
+            foreach ($change in $changes) {
+                Write-Host ('  {0} {1} {2}' -f $change.Time.ToString($timeFormat), $change.Name, $change.Change)
+            }
+        }
+        else {
+            Write-Host 'No changes to the services were logged after Windows Update was stopped.'
         }
 
         foreach ($service in @($saved.Services)) {

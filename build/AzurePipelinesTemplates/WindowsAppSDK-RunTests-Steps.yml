@@ -228,8 +228,8 @@ steps:
   # On Windows 10, Windows Update also installs Store updates for the inbox apps. On a VM that has been running for
   # about two hours, it can start doing that during the tests, and if it overlaps them installing and launching the DDLM,
   # Windows can reject every later DDLM activation with E_APPLICATION_NOT_REGISTERED, failing every test that uses the
-  # Bootstrapper. Stop Windows Update for the tests. 'Restore Windows Update' below puts it back, because these VMs also
-  # run other pipelines' jobs.
+  # Bootstrapper. Stop Windows Update and the Microsoft Store Install Service for the tests. 'Restore Windows Update'
+  # below puts them back, because these VMs also run other pipelines' jobs.
   - task: powershell@2
     displayName: 'Stop Windows Update'
     # The script reports its own problems and never fails, and caps its waits. Don't let a hang fail the job.
@@ -280,8 +280,9 @@ steps:
       arguments: -Since '$(AppReadinessWaitEndTime)'
       workingDirectory: '$(Build.SourcesDirectory)'
 
-  # Shows whether Windows Update still deployed packages during the tests, and restores it (see 'Stop Windows Update'
-  # above). Runs even if the job failed or was canceled, so the VM goes back to its usual update settings.
+  # Shows whether Windows Update or the Microsoft Store still deployed packages during the tests, and what changed the
+  # services, then restores them (see 'Stop Windows Update' above). Runs even if the job failed or was canceled, so the
+  # VM goes back to its usual update settings.
   - task: powershell@2
     displayName: 'Restore Windows Update'
     condition: always()

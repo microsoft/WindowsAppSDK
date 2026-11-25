@@ -3,7 +3,8 @@
 
 <#
 .SYNOPSIS
-    Stops Windows Update for the tests on Windows 10, after saving its settings so they can be restored.
+    Stops Windows Update and Microsoft Store updates for the tests on Windows 10, after saving the services' settings so
+    they can be restored.
 
 .DESCRIPTION
     On Windows 10, Windows Update also installs Microsoft Store updates for the inbox apps (Xbox, Maps, Calculator, and
@@ -12,10 +13,12 @@
     Windows can reject every later activation of the DDLM with E_APPLICATION_NOT_REGISTERED (0x80270254), so every test
     that uses the Bootstrapper fails.
 
-    Run this just before the tests. It disables and stops the Update Orchestrator service (UsoSvc), which starts update
-    work, and the Windows Update service (wuauserv), which does it, so nothing starts them again during the tests. If
-    Windows Update started deploying packages in the last 10 minutes, the script then waits, for up to -SettleMinutes,
-    until the package deployment log has been quiet for 30 seconds, so those deployments finish before the tests start.
+    Run this just before the tests. It disables and stops the services that start update work, the Update Orchestrator
+    Service (UsoSvc) and the Microsoft Store Install Service (InstallService), and the Windows Update service (wuauserv),
+    which installs the updates. The Windows Update Medic Service can set wuauserv back to start on demand during the
+    tests, so the services that start it must stay disabled too. If Windows Update or the Microsoft Store started
+    deploying packages in the last 10 minutes, the script then waits, for up to -SettleMinutes, until the package
+    deployment log has been quiet for 30 seconds, so those deployments finish before the tests start.
 
     The test VMs also run other pipelines' jobs, so the script first saves the services' settings to -StatePath, and
     RestoreWindowsUpdate.ps1 puts them back after the tests. The problem has only been seen on Windows 10 client, so by
@@ -25,7 +28,7 @@
     The file to save the services' settings to, for RestoreWindowsUpdate.ps1.
 
 .PARAMETER SettleMinutes
-    The longest time to wait for package deployments that Windows Update started to finish.
+    The longest time to wait for package deployments that Windows Update or the Microsoft Store started to finish.
 
 .PARAMETER AnyOS
     Stop Windows Update on any Windows version, not just Windows 10 client.
@@ -41,8 +44,10 @@ param(
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
-# UsoSvc comes first, so it can't start wuauserv again while wuauserv is stopping.
-$serviceNames = @('UsoSvc', 'wuauserv')
+# UsoSvc and InstallService come first, so they can't start wuauserv again while wuauserv is stopping.
+$serviceNames = @('UsoSvc', 'InstallService', 'wuauserv')
+# The services that deploy update packages, as the package deployment log names them.
+$updaters = 'wuauserv|InstallService'
 $appxLog = 'Microsoft-Windows-AppXDeploymentServer/Operational'
 $timeFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 
@@ -81,8 +86,13 @@ try {
     }
     else {
         $states = @(foreach ($name in $serviceNames) {
-                Get-ServiceState $name | Add-Member -NotePropertyName Disabled -NotePropertyValue $false -PassThru |
-                    Add-Member -NotePropertyName Stopped -NotePropertyValue $false -PassThru
+                if (Get-Service -Name $name -ErrorAction SilentlyContinue) {
+                    Get-ServiceState $name | Add-Member -NotePropertyName Disabled -NotePropertyValue $false -PassThru |
+                        Add-Member -NotePropertyName Stopped -NotePropertyValue $false -PassThru
+                }
+                else {
+                    Write-Host "There's no $name service."
+                }
             })
         foreach ($state in $states) {
             Write-Host ('{0} is {1}, with startup type {2}.' -f $state.Name, $state.Status, $state.Start)
@@ -92,9 +102,9 @@ try {
         $saved = [pscustomobject]@{ StoppedAt = (Get-Date).ToUniversalTime().ToString('o'); Services = $states }
         $saved | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $StatePath -Encoding UTF8
 
-        $recent = @(Get-PackageDeployment -Since (Get-Date).AddMinutes(-10) -Caller 'wuauserv' | Sort-Object Time)
+        $recent = @(Get-PackageDeployment -Since (Get-Date).AddMinutes(-10) -Caller $updaters | Sort-Object Time)
         if ($recent.Count) {
-            Write-Host ('Windows Update started {0} package deployments in the last 10 minutes, the last at {1}:' -f
+            Write-Host ('Windows Update or the Microsoft Store started {0} package deployments in the last 10 minutes, the last at {1}:' -f
                 $recent.Count, $recent[-1].Time.ToString($timeFormat))
             foreach ($package in @($recent | ForEach-Object { $_.Package } | Sort-Object -Unique)) {
                 Write-Host "  $package"
@@ -133,7 +143,7 @@ try {
         $saved | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $StatePath -Encoding UTF8
 
         if ($recent.Count) {
-            # Let the deployments Windows Update had started finish, so they don't overlap the tests.
+            # Let the deployments that had started finish, so they don't overlap the tests.
             $start = Get-Date
             $deadline = $start.AddMinutes($SettleMinutes)
             while ($true) {
