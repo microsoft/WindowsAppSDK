@@ -309,9 +309,14 @@ This template pack is built from the
 [WindowsAppSDK](https://github.com/microsoft/WindowsAppSDK) repository under
 `dev\Templates\Dotnet\`. Each directory under `templates` contains both
 the sources and `.template.config` metadata. The C# VSIX builds this
-NuGet pack with `IncludeReactorTemplates=false` and registers it with Visual
-Studio's template engine. Preview Reactor templates remain available in the
-standalone NuGet pack but are excluded from the VSIX. The VSIX's filtered pack
+NuGet pack with `IncludeReactorTemplates=false;IncludeItemTemplates=false` and
+registers its project templates with Visual Studio's template engine. Preview
+Reactor templates remain available in the standalone NuGet pack but are excluded
+from the VSIX. Item templates use adjacent `.vstemplate` metadata in the VSIX,
+sharing the same sources and icons. The VSIX stages those sources and resolves
+CLI-only type placeholders before packaging them for the classic template engine.
+The standalone CLI pack still includes all item templates and excludes the
+`.vstemplate` files. The VSIX's filtered pack
 uses a separate output directory so it does not overwrite the standalone pack.
 The two-project `.csproj` + `.wapproj` template is a VSIX-only
 exception that retains its existing `.vstemplate` implementation; it is not part

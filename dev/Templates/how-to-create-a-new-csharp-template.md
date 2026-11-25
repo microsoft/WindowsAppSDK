@@ -1,10 +1,12 @@
 # Adding a new WinUI C# template
 
-C# templates have one implementation: a self-contained `dotnet new` template
+C# templates share their sources in a self-contained `dotnet new` template
 under `Dotnet\templates\<template-name>`. The NuGet package
 `Microsoft.WindowsAppSDK.WinUI.CSharp.Templates` ships both to the CLI and inside
-the C# VSIX. The only exception is the VSIX-only separate-packaging template,
-which retains its `.vstemplate` implementation under
+the C# VSIX. VSIX item templates use adjacent `.vstemplate` metadata instead of
+the JSON template engine until [microsoft/microsoft-ui-xaml#12758](https://github.com/microsoft/microsoft-ui-xaml/issues/12758)
+is fixed. The VSIX-only separate-packaging template
+retains its `.vstemplate` implementation under
 `Source\ProjectTemplates\Desktop\CSharp\PackagedApp`.
 
 ## Template layout
@@ -28,7 +30,10 @@ Dotnet\templates\
         App.xaml / MainWindow.xaml / ...
 ```
 
-For item templates, include only the item sources and `.template.config`.
+For item templates, include the item sources, `.template.config`, and a
+`.vstemplate` for Visual Studio. Preserve the existing `ItemType="Page"` and
+`CustomTool="MSBuild:Compile"` metadata on XAML project items. Use localized
+VS package resource IDs for classic template names and descriptions.
 Use neighboring templates as examples. Define a unique `identity` and
 `groupIdentity`, CLI aliases in `shortName`, and `language: C#` and `type:
 project` (or `item`) tags. Declare the generated project or item files in
@@ -64,13 +69,26 @@ changes to the pack project, the VSIX project, or the VSIX solution.
 ## Visual Studio installation
 
 The C# VSIX references the pack project and embeds its exact NuGet output under
-`ProjectTemplates`. A `Templates.pkgdef` generated at build time registers that
+`ProjectTemplates`, excluding Reactor and item templates. A `Templates.pkgdef`
+generated at build time registers that
 directory with Visual Studio's template engine, keyed to the VSIX version so
 Visual Studio rescans the templates after every update. Each deployment
 flavor's VSIX manifest declares the pkgdef as a
 `Microsoft.VisualStudio.VsPackage` asset. Visual Studio 2022 and
 later discover the templates directly, following
 [the templateSamples approach](https://github.com/phenning/templateSamples).
+
+Item templates are staged from the same source directories and packaged through
+VSSDK using their `.vstemplate` files. The staging target resolves
+`__WINUI_USERCONTROL__` and `__WINUI_RESOURCE_DICTIONARY__` to literal type names:
+these are CLI template-engine constants, not classic template parameters.
+Shipping them unchanged would reintroduce #6968. Each VSIX manifest registers
+the classic templates with a `Microsoft.VisualStudio.ItemTemplate` asset.
+The standalone CLI pack retains its JSON-based items and excludes `.vstemplate`
+files.
+
+Run `VSIX\Test-ItemTemplates.ps1 -VsixPath <C# VSIX> -CliTemplatePackagePath <standalone nupkg>`
+to check the packaged item build actions, source tokens, and CLI/VSIX separation.
 
 VSIX installation registers templates for Visual Studio; CLI users still run
 `dotnet new install`. The two-project `.csproj` + `.wapproj` template remains
