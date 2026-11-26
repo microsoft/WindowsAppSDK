@@ -133,7 +133,7 @@
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)..\WindowsAppRuntime_DLL;$(OutDir)..\WindowsAppRuntime_BootstrapDLL;$(RepoRoot)\test\inc;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>

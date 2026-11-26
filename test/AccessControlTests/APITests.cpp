@@ -50,8 +50,28 @@ namespace Test::AccessControl
             DWORD processId{};
             VERIFY_SUCCEEDED(m_testAppLauncher->ActivateApplication(GetTestPackageAppId(), L"", AO_NONE, &processId));
 
-            m_processHandle.reset(::OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
+            m_processHandle.reset(::OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_TERMINATE, FALSE, processId));
             VERIFY_IS_TRUE(m_processHandle.is_valid());
+        }
+
+        void WaitForTestAppExit()
+        {
+            if (m_processHandle.is_valid())
+            {
+                auto resetHandle = wil::scope_exit([&] { m_processHandle.reset(); });
+
+                const bool exited = wil::handle_wait(m_processHandle.get(), 10000);
+                if (!exited)
+                {
+                    // Prevent a hung helper process from stalling RemovePackageAsync in ClassUninit.
+                    ::TerminateProcess(m_processHandle.get(), 1);
+                }
+                VERIFY_IS_TRUE(exited);
+
+                DWORD exitCode{};
+                VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
+                VERIFY_ARE_EQUAL(exitCode, 0u);
+            }
         }
 
     public:
@@ -73,14 +93,7 @@ namespace Test::AccessControl
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            if (m_processHandle.is_valid())
-            {
-                VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), 10000));
-
-                DWORD exitCode{};
-                VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
-                VERIFY_ARE_EQUAL(exitCode, 0u);
-            }
+            WaitForTestAppExit();
             // Remove in reverse order to avoid conflicts between inter-dependent packages.
             ::Test::Packages::RemovePackage(GetTestPackageFullName());
             ::Test::Bootstrap::Cleanup();
@@ -97,43 +110,34 @@ namespace Test::AccessControl
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            if (m_processHandle.is_valid())
-            {
-                VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), 10000));
-                DWORD exitCode{};
-                VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
-                VERIFY_ARE_EQUAL(exitCode, 0u);
-            }
+            WaitForTestAppExit();
             VERIFY_IS_TRUE(::Test::Packages::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(::Test::Packages::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(::Test::Packages::IsPackageRegistered_DynamicDependencyLifetimeManager());
-
-            m_processHandle.reset();
             return true;
         }
 
-        void WaitForEvent(void* securityDescriptor)
+        void RunTestAppAndWaitForEvent(void* securityDescriptor)
         {
             wil::unique_event win32_event;
             SECURITY_ATTRIBUTES sa{ sizeof(sa), securityDescriptor, FALSE };
             win32_event.create(wil::EventOptions::None, L"AccessControlTest_Event", &sa);
+
+            RunTestApp();
 
             VERIFY_IS_TRUE(win32_event.wait(10000));
         }
 
         TEST_METHOD(FlatAPITest)
         {
-            RunTestApp();
-
             ::AppContainerNameAndAccess ac[1] = {{GetTestPackageFile(), EVENT_MODIFY_STATE | SYNCHRONIZE}};
             wil::unique_hlocal_security_descriptor sd;
             THROW_IF_FAILED(::GetSecurityDescriptorForAppContainerNames(1, ac, nullptr, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd, nullptr));
-            WaitForEvent(sd.get());
+            RunTestAppAndWaitForEvent(sd.get());
         }
 
         TEST_METHOD(WinRTStringTest)
         {
-            RunTestApp();
             winrt::AppContainerNameAndAccess ac[1] = { {GetTestPackageFile(), EVENT_MODIFY_STATE | SYNCHRONIZE} };
 
             auto sdString = winrt::SecurityDescriptorHelpers::GetSddlForAppContainerNames(ac, L"", EVENT_MODIFY_STATE | SYNCHRONIZE);
@@ -142,16 +146,15 @@ namespace Test::AccessControl
             VERIFY_WIN32_BOOL_SUCCEEDED(
                 ConvertStringSecurityDescriptorToSecurityDescriptorW(
                     sdString.data(), SDDL_REVISION_1, &sd, nullptr));
-            WaitForEvent(sd.get());
+            RunTestAppAndWaitForEvent(sd.get());
         }
 
         TEST_METHOD(WinRTBytesTest)
         {
-            RunTestApp();
             winrt::AppContainerNameAndAccess ac[1] = { {GetTestPackageFile(), EVENT_MODIFY_STATE | SYNCHRONIZE} };
 
             auto sdBytes = winrt::SecurityDescriptorHelpers::GetSecurityDescriptorBytesFromAppContainerNames(ac, L"", EVENT_MODIFY_STATE | SYNCHRONIZE);
-            WaitForEvent(sdBytes.data());
+            RunTestAppAndWaitForEvent(sdBytes.data());
         }
     };
 }
