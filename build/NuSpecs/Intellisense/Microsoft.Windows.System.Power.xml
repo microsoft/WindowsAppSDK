@@ -69,6 +69,21 @@
     <member name="F:Microsoft.Windows.System.Power.EnergySaverStatus.Uninitialized">
       <summary>Battery saver is uninitialized.</summary>
     </member>
+    <member name="T:Microsoft.Windows.System.Power.EnergySaverStatus2">
+      <summary>Defines values that represent the three-state Energy Saver status (Off, Standard, HighSavings) of the device.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.System.Power.EnergySaverStatus2.Unknown">
+      <summary>The Energy Saver status is unavailable.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.System.Power.EnergySaverStatus2.Off">
+      <summary>Energy Saver is inactive. Apps should operate normally.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.System.Power.EnergySaverStatus2.Standard">
+      <summary>Energy Saver is active with mild performance impact acceptable. Energy saving behaviors that have mild performance impact are encouraged.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.System.Power.EnergySaverStatus2.HighSavings">
+      <summary>Energy Saver is active and maximum battery savings are preferred, even at the cost of performance.</summary>
+    </member>
     <member name="T:Microsoft.Windows.System.Power.PowerManager">
       <summary>Provides static events that notify your app of changes to the devices power state and static properties that provide access to current power state information.</summary>
     </member>
@@ -83,6 +98,9 @@
     </member>
     <member name="E:Microsoft.Windows.System.Power.PowerManager.EnergySaverStatusChanged">
       <summary>Raised when battery saver has been turned off or on in response to changing power conditions.</summary>
+    </member>
+    <member name="E:Microsoft.Windows.System.Power.PowerManager.EnergySaverStatus2Changed">
+      <summary>Raised when the EnergySaverStatus2 value changes.</summary>
     </member>
     <member name="E:Microsoft.Windows.System.Power.PowerManager.PowerSourceKindChanged">
       <summary>Raised when the power source of the device has changed.</summary>
@@ -123,6 +141,10 @@
     </member>
     <member name="P:Microsoft.Windows.System.Power.PowerManager.EnergySaverStatus">
       <summary>Gets the current state of battery saver on the device.</summary>
+    </member>
+    <member name="P:Microsoft.Windows.System.Power.PowerManager.EnergySaverStatus2">
+      <summary>Gets the current Energy Saver status for the device.</summary>
+      <returns>The current Energy Saver status of the device.</returns>
     </member>
     <member name="P:Microsoft.Windows.System.Power.PowerManager.PowerSourceKind">
       <summary>Gets the current power source of the device.</summary>
