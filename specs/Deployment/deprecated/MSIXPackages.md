@@ -172,7 +172,7 @@ The Main package follows a different naming scheme
 
 where
 
-* ReleaseMajor = project release major version number. See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
+* ReleaseMajor = project release major version number. See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackageVersioning.md) for more details.
 * ShortVersionTag = short form of the VersionTag
 
 ShortVersionTag is derived from a VersionTag by combining the 1st letter and the last digit (if any) for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
@@ -198,7 +198,7 @@ DDLM packages follow a different naming scheme
 
 where
 
-* Version = MSIX version number (not the project release version). See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
+* Version = MSIX version number (not the project release version). See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackageVersioning.md) for more details.
 * ShortArchitecture = short form of the Architecture (x6=x64, x8=x86, a6=arm64)
 * ShortVersionTag = short form of the VersionTag
 

@@ -74,7 +74,7 @@ Windows App SDK 0.8 has 3 MSIX packages
 
 WARmain and WARddlm supplement WARfwk to do things a Framework packge can't (e.g. Packaged COM).
 See the [Dynamic Dependencies spec](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/dynamicdependencies/DynamicDependencies.md)
-and [Windows App SDK: MSIX Packages](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackage.md)
+and [Windows App SDK: MSIX Packages](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackages.md)
 for more details.
 
 Windows App SDK 1.0 has 4 MSIX packages
@@ -85,7 +85,7 @@ Windows App SDK 1.0 has 4 MSIX packages
 * `Microsoft.WinAppRuntime.DDLM` aka **WARddlm**
 
 WARsingleton supplements WARmain to provide a mechanism for features needing singular global
-behavior across all versions of Windows App SDK. See [Windows App SDK: MSIX Packages](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackage.md)
+behavior across all versions of Windows App SDK. See [Windows App SDK: MSIX Packages](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackages.md)
 for more details.
 
 ### 1.2.4. Binary Compatibility
