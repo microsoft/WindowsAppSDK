@@ -5,6 +5,9 @@
 #include <testdef.h>
 #include "Shared.h"
 
+#include <algorithm>
+#include <cwchar>
+
 using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
@@ -21,6 +24,52 @@ using namespace winrt::Windows::System;
 namespace Test::AppLifecycle
 {
     static const std::wstring c_runKeyPath = LR"(Software\Microsoft\Windows\CurrentVersion\Run\)";
+
+    // Mirrors the layout of SharedMemory<SharedProcessListData> in dev\AppLifecycle.
+    struct SharedProcessListView
+    {
+        size_t size;
+        DWORD processIds[512];
+    };
+
+    // Must match ComputeAppId() in dev\AppLifecycle\Association.cpp.
+    std::wstring ComputeCurrentAppId()
+    {
+        std::wstring seed(MAX_PATH, L'\0');
+        const auto length{ ::GetModuleFileNameW(nullptr, seed.data(), static_cast<DWORD>(seed.size())) };
+        THROW_LAST_ERROR_IF((length == 0) || (length == seed.size()));
+        seed.resize(length);
+        std::transform(seed.begin(), seed.end(), seed.begin(), ::towlower);
+
+        uint64_t hash64{ static_cast<uint64_t>(std::hash<std::wstring>{}(seed)) };
+        if constexpr (sizeof(size_t) < sizeof(uint64_t))
+        {
+            hash64 = (hash64 << 32) | hash64;
+        }
+
+        wchar_t hashString[17]{};
+        THROW_HR_IF(E_UNEXPECTED, swprintf_s(hashString, L"%I64x", hash64) < 0);
+        return std::wstring{ L"App." } + hashString;
+    }
+
+    // Must match AppInstance::GetDataMutexName() in dev\AppLifecycle\AppInstance.cpp.
+    std::wstring GetDataMutexName(std::wstring const& appId, uint32_t processId)
+    {
+        return appId + L"_" + std::to_wstring(processId) + L"_Mutex";
+    }
+
+    wil::unique_process_information StartSuspendedProcess(PCWSTR fileName)
+    {
+        wchar_t systemDirectory[MAX_PATH]{};
+        THROW_LAST_ERROR_IF(::GetSystemDirectoryW(systemDirectory, ARRAYSIZE(systemDirectory)) == 0);
+        const std::wstring path{ std::wstring(systemDirectory) + L"\\" + fileName };
+
+        STARTUPINFOW startupInfo{ sizeof(startupInfo) };
+        wil::unique_process_information processInfo;
+        THROW_IF_WIN32_BOOL_FALSE(::CreateProcessW(path.c_str(), nullptr, nullptr, nullptr, FALSE,
+            CREATE_SUSPENDED | CREATE_NO_WINDOW, nullptr, nullptr, &startupInfo, &processInfo));
+        return processInfo;
+    }
 
     class FunctionalTests
     {
@@ -327,6 +376,51 @@ namespace Test::AppLifecycle
             VERIFY_IS_TRUE(launchResult);
             WaitForEvent(protocolActivationEvent, m_failed);
             WaitForEvent(redirectedEvent, m_failed);
+        }
+
+        TEST_METHOD(GetInstancesIgnoresRecycledProcessId)
+        {
+            // Instance PIDs are only removed from the shared list lazily, so a listed PID can be recycled by an
+            // unrelated process. GetInstances() must drop such an entry instead of creating its data mutex, which
+            // left the calling thread owning that mutex and blocked every other GetInstances() caller forever.
+            auto current{ AppInstance::GetCurrent() };
+            const auto appId{ ComputeCurrentAppId() };
+
+            // A live process that never registered an AppInstance stands in for the recycled PID.
+            auto unrelated{ StartSuspendedProcess(L"cmd.exe") };
+            auto terminateOnExit{ wil::scope_exit([&] { LOG_IF_WIN32_BOOL_FALSE(::TerminateProcess(unrelated.hProcess, 0)); }) };
+            const uint32_t unrelatedPid{ unrelated.dwProcessId };
+
+            wil::unique_handle mapping{ ::OpenFileMappingW(FILE_MAP_READ | FILE_MAP_WRITE, FALSE, (appId + L"_Module").c_str()) };
+            VERIFY_IS_NOT_NULL(mapping.get());
+            wil::unique_mapview_ptr<SharedProcessListView> list{ static_cast<SharedProcessListView*>(
+                ::MapViewOfFile(mapping.get(), FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(SharedProcessListView))) };
+            VERIFY_IS_NOT_NULL(list.get());
+
+            // Plant the stale entry under this instance's data mutex, as SharedProcessList is updated.
+            wil::unique_mutex currentDataMutex;
+            VERIFY_IS_TRUE(currentDataMutex.try_open(GetDataMutexName(appId, current.ProcessId()).c_str()));
+            {
+                auto releaseOnExit{ currentDataMutex.acquire() };
+                auto freeSlot{ std::find(std::begin(list->processIds), std::end(list->processIds), DWORD{ 0 }) };
+                VERIFY_IS_TRUE(freeSlot != std::end(list->processIds));
+                *freeSlot = unrelatedPid;
+            }
+
+            // Keep the returned instances alive so a data mutex created for the stale entry would still exist below.
+            auto instances{ AppInstance::GetInstances() };
+            for (auto const& instance : instances)
+            {
+                VERIFY_ARE_NOT_EQUAL(instance.ProcessId(), unrelatedPid);
+            }
+
+            // The orphan is removed and no data mutex was created for it.
+            VERIFY_IS_TRUE(std::find(std::begin(list->processIds), std::end(list->processIds), unrelatedPid) == std::end(list->processIds));
+            wil::unique_mutex recycledDataMutex;
+            const bool opened{ recycledDataMutex.try_open(GetDataMutexName(appId, unrelatedPid).c_str()) };
+            const auto openError{ ::GetLastError() };
+            VERIFY_IS_FALSE(opened);
+            VERIFY_ARE_EQUAL(openError, static_cast<DWORD>(ERROR_FILE_NOT_FOUND));
         }
 
         TEST_METHOD(RequestRestart_Win32)
